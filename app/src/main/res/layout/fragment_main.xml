@@ -1,0 +1,40 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="20">
+
+
+    <RelativeLayout
+        android:id="@+id/scan_relative_layout"
+        android:background="@color/bugkoops_blue"
+        android:layout_height="0dp"
+        android:layout_width="fill_parent"
+        android:layout_weight="8"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/scan_button"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:background="@drawable/scan_button"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="Scan"
+            android:onClick="onScan"
+            android:textSize="30sp"
+            android:textColor="@color/bugkoops_light_blue" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:background="@color/bugkoops_dark_blue"
+        android:layout_height="0dp"
+        android:layout_width="fill_parent"
+        android:layout_weight="12">
+
+    </LinearLayout>
+
+
+</LinearLayout>
