@@ -1,11 +1,13 @@
 package com.intel.bugkoops;
 
 import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.google.zxing.ResultPoint;
@@ -15,22 +17,24 @@ import com.journeyapps.barcodescanner.CompoundBarcodeView;
 
 import java.util.List;
 
-/**
- * This sample performs continuous scanning, displaying the barcode and source image whenever
- * a barcode is scanned.
- */
-public class ScannerActivity extends Activity {
+public class ScannerActivity extends Activity implements CompoundBarcodeView.TorchListener {
     private static final String LOG_TAG = ScannerActivity.class.getSimpleName();
-    private CompoundBarcodeView barcodeView;
+
+    private static final int FLASH_STATE_OFF = 0;
+    private static final int FLASH_STATE_ON = 1;
+
+    private CompoundBarcodeView mBarcodeScannerView;
+    private Button mSwitchFlashButton;
+    private int mFlashState = FLASH_STATE_OFF;
 
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
-                barcodeView.setStatusText(result.getText());
+                mBarcodeScannerView.setStatusText(result.getText());
             }
-            //Added preview of scanned barcode
-            ImageView imageView = (ImageView) findViewById(R.id.barcodePreview);
+
+            ImageView imageView = (ImageView) findViewById(R.id.barcode_preview);
             imageView.setImageBitmap(result.getBitmapWithResultPoints(Color.YELLOW));
         }
 
@@ -46,30 +50,58 @@ public class ScannerActivity extends Activity {
 
         setContentView(R.layout.activity_scanner);
 
-        barcodeView = (CompoundBarcodeView) findViewById(R.id.barcode_scanner);
-        barcodeView.decodeContinuous(callback);
+        mBarcodeScannerView = (CompoundBarcodeView) findViewById(R.id.barcode_scanner);
+        mBarcodeScannerView.decodeContinuous(callback);
+        mBarcodeScannerView.setTorchListener(this);
+
+        mSwitchFlashButton = (Button)findViewById(R.id.switch_flashlight);
+
+        if (!hasFlash()) {
+            mSwitchFlashButton.setVisibility(View.GONE);
+        }
+
+        mFlashState = FLASH_STATE_OFF;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        barcodeView.resume();
+        mBarcodeScannerView.resume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
-        barcodeView.pause();
+        mBarcodeScannerView.pause();
     }
 
-    public void triggerScan(View view) {
-        barcodeView.decodeSingle(callback);
+    private boolean hasFlash() {
+        return getApplicationContext().getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return barcodeView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
+        return mBarcodeScannerView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
+    }
+
+    public void switchFlashlight(View view) {
+        if (mFlashState == FLASH_STATE_OFF) {
+            mBarcodeScannerView.setTorchOn();
+        } else {
+            mBarcodeScannerView.setTorchOff();
+        }
+    }
+
+    @Override
+    public void onTorchOn() {
+        mFlashState = FLASH_STATE_ON;
+        mSwitchFlashButton.setText("FLASH ON");
+    }
+
+    @Override
+    public void onTorchOff() {
+        mFlashState = FLASH_STATE_OFF;
+        mSwitchFlashButton.setText("FLASH OFF");
     }
 }
