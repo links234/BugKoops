@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="22.0.0"><source path="/home/alex/Projects/zxing-android-embedded-master/zxing-android-embedded/build/intermediates/exploded-aar/com.android.support/support-v4/22.0.0/assets"/></dataSet><dataSet config="debug"><source path="/home/alex/Projects/zxing-android-embedded-master/zxing-android-embedded/build/intermediates/bundles/debug/assets"/></dataSet><dataSet config="main"><source path="/home/alex/Projects/zxing-android-embedded-master/zxing-android-embedded/src/androidTest/assets"/></dataSet></merger>
