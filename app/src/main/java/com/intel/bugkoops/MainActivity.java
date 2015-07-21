@@ -1,5 +1,6 @@
 package com.intel.bugkoops;
 
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -56,7 +57,8 @@ public class MainActivity extends ActionBarActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                new IntentIntegrator(MainActivity.this).initiateScan();
+                Intent intent = new Intent(MainActivity.this, ScannerActivity.class);
+                startActivity(intent);
             }
         }, 190);
     }
