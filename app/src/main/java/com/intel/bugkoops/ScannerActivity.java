@@ -1,10 +1,15 @@
 package com.intel.bugkoops;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Display;
 import android.view.KeyEvent;
+import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -25,7 +30,10 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
 
     private CompoundBarcodeView mBarcodeScannerView;
     private Button mSwitchFlashButton;
-    private int mFlashState = FLASH_STATE_OFF;
+    private Button mSwitchOrientationLocking;
+
+    private int mFlashState;
+    private int mLockedOrientation;
 
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
@@ -55,12 +63,80 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
         mBarcodeScannerView.setTorchListener(this);
 
         mSwitchFlashButton = (Button)findViewById(R.id.switch_flashlight);
-
         if (!hasFlash()) {
             mSwitchFlashButton.setVisibility(View.GONE);
         }
-
         mFlashState = FLASH_STATE_OFF;
+
+        mSwitchOrientationLocking = (Button)findViewById(R.id.switch_orientation_locking);
+        mLockedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+    }
+
+    public void onSwitchFlashlight(View view) {
+        if (mFlashState == FLASH_STATE_OFF) {
+            mBarcodeScannerView.setTorchOn();
+        } else {
+            mBarcodeScannerView.setTorchOff();
+        }
+    }
+
+    public void onSwitchOrientationLocking(View view) {
+        if(mLockedOrientation == ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
+            lockOrientation();
+        } else {
+            unlockOrientation();
+        }
+    }
+
+    private void lockOrientation() {
+        if (mLockedOrientation == ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
+            Display display = getWindowManager().getDefaultDisplay();
+            int rotation = display.getRotation();
+            int baseOrientation = getResources().getConfiguration().orientation;
+            int orientation = 0;
+            if (baseOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+                if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_90) {
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                } else {
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                }
+            } else if (baseOrientation == Configuration.ORIENTATION_PORTRAIT) {
+                if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_270) {
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                } else {
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                }
+            }
+
+            mLockedOrientation = orientation;
+        }
+        setRequestedOrientation(mLockedOrientation);
+        mSwitchOrientationLocking.setText("UNLOCK");
+    }
+
+    private void unlockOrientation() {
+        if(mLockedOrientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
+            mLockedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+            setRequestedOrientation(mLockedOrientation);
+        }
+        mSwitchOrientationLocking.setText("LOCK");
+    }
+
+    private boolean hasFlash() {
+        return getApplicationContext().getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
+    }
+
+    @Override
+    public void onTorchOn() {
+        mFlashState = FLASH_STATE_ON;
+        mSwitchFlashButton.setText("FLASH OFF");
+    }
+
+    @Override
+    public void onTorchOff() {
+        mFlashState = FLASH_STATE_OFF;
+        mSwitchFlashButton.setText("FLASH ON");
     }
 
     @Override
@@ -75,33 +151,8 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
         mBarcodeScannerView.pause();
     }
 
-    private boolean hasFlash() {
-        return getApplicationContext().getPackageManager()
-                .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
-    }
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return mBarcodeScannerView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
-    }
-
-    public void switchFlashlight(View view) {
-        if (mFlashState == FLASH_STATE_OFF) {
-            mBarcodeScannerView.setTorchOn();
-        } else {
-            mBarcodeScannerView.setTorchOff();
-        }
-    }
-
-    @Override
-    public void onTorchOn() {
-        mFlashState = FLASH_STATE_ON;
-        mSwitchFlashButton.setText("FLASH ON");
-    }
-
-    @Override
-    public void onTorchOff() {
-        mFlashState = FLASH_STATE_OFF;
-        mSwitchFlashButton.setText("FLASH OFF");
     }
 }

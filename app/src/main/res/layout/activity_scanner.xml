@@ -21,15 +21,30 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:id="@+id/barcode_preview" />
 
-    <Button
-        android:id="@+id/switch_flashlight"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TEST"
-        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:onClick="switchFlashlight"/>
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/switch_flashlight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="FLASH ON"
+            android:onClick="onSwitchFlashlight"/>
+
+        <Button
+            android:id="@+id/switch_orientation_locking"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LOCK"
+            android:onClick="onSwitchOrientationLocking"/>
+
+    </LinearLayout>
 
 </RelativeLayout>
