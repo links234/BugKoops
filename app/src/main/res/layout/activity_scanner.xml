@@ -52,6 +52,13 @@
             android:text=""
             android:onClick="onSwitchInverseScan"/>
 
+        <Button
+            android:id="@+id/switch_camera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:onClick="onSwitchCamera"/>
+
     </LinearLayout>
 
 </RelativeLayout>

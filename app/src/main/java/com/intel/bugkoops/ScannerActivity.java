@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -32,6 +33,7 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
     private static final String KEY_FLASH_STATE = "mFlashState";
     private static final String KEY_LOCKED_ORIENTATION = "mLockedOrientation";
     private static final String KEY_INVERSE_SCAN = "mInverseScan";
+    private static final String KEY_CAMERA_ID = "mCameraId";
 
     private static final int FLASH_STATE_OFF = 0;
     private static final int FLASH_STATE_AUTO = 1;
@@ -43,10 +45,12 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
     private Button mSwitchFlashButton;
     private Button mSwitchOrientationLockingButton;
     private Button mSwitchInverseScanButton;
+    private Button mSwitchCameraButton;
 
     private int mFlashState;
     private int mLockedOrientation;
     private boolean mInverseScan;
+    private int mCameraId;
 
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
@@ -86,6 +90,7 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
 
         mSwitchOrientationLockingButton = (Button)findViewById(R.id.switch_orientation_locking);
         mSwitchInverseScanButton = (Button)findViewById(R.id.switch_inverse_scan);
+        mSwitchCameraButton = (Button)findViewById(R.id.switch_camera);
 
         loadDefaultSettings();
 
@@ -98,6 +103,7 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
             loadStateFromBundle(bundle);
         }
 
+        mBarcodeScannerView.getBarcodeView().getCameraSettings().setRequestedCameraId(mCameraId);
         mBarcodeScannerView.getBarcodeView().getCameraSettings().setScanInverted(mInverseScan);
         if(mFlashState == FLASH_STATE_ON) {
             final Handler handler = new Handler();
@@ -140,16 +146,26 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
         }
     }
 
+    private void updateLayoutSwitchCamera() {
+        if (mCameraId == Camera.CameraInfo.CAMERA_FACING_BACK) {
+            mSwitchCameraButton.setText("BACK");
+        } else {
+            mSwitchCameraButton.setText("FRONT");
+        }
+    }
+
     private void updateLayout() {
         updateLayoutSwitchFlashlight();
         updateLayoutSwitchOrientationLocking();
         updateLayoutSwitchInverseScan();
+        updateLayoutSwitchCamera();
     }
 
     private void loadDefaultSettings() {
         mFlashState = FLASH_STATE_OFF;
         mLockedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
         mInverseScan = false;
+        mCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
     }
 
     public void onSwitchFlashlight(View view) {
@@ -177,11 +193,20 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
     public void onSwitchInverseScan(View view) {
         if (mInverseScan) {
             mInverseScan = false;
-            reload();
         } else {
             mInverseScan = true;
-            reload();
         }
+        reload();
+    }
+
+    public void onSwitchCamera(View view) {
+        if (mCameraId == Camera.CameraInfo.CAMERA_FACING_BACK) {
+            mCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
+        } else {
+            mCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
+        }
+        reload();
+        updateLayoutSwitchCamera();
     }
 
     private void lockOrientation() {
@@ -244,12 +269,14 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
         mFlashState = inState.getInt(KEY_FLASH_STATE);
         mLockedOrientation = inState.getInt(KEY_LOCKED_ORIENTATION);
         mInverseScan = inState.getBoolean(KEY_INVERSE_SCAN);
+        mCameraId = inState.getInt(KEY_CAMERA_ID);
     }
 
     private void saveStateToBundle(Bundle outState) {
         outState.putInt(KEY_FLASH_STATE, mFlashState);
         outState.putInt(KEY_LOCKED_ORIENTATION, mLockedOrientation);
         outState.putBoolean(KEY_INVERSE_SCAN, mInverseScan);
+        outState.putInt(KEY_CAMERA_ID, mCameraId);
     }
 
     @Override
