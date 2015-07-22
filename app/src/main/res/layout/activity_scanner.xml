@@ -31,32 +31,36 @@
         android:layout_alignParentTop="true"
         android:orientation="horizontal">
 
-        <Button
+        <ImageButton
             android:id="@+id/switch_flashlight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""
+            android:src="@drawable/ic_flash_off_white_48dp"
+            android:background="@color/none"
             android:onClick="onSwitchFlashlight"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/switch_orientation_locking"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""
+            android:src="@drawable/ic_screen_rotation_white_48dp"
+            android:background="@color/none"
             android:onClick="onSwitchOrientationLocking"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/switch_inverse_scan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""
+            android:src="@drawable/ic_invert_colors_off_white_48dp"
+            android:background="@color/none"
             android:onClick="onSwitchInverseScan"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/switch_camera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""
+            android:src="@drawable/ic_camera_rear_white_48dp"
+            android:background="@color/none"
             android:onClick="onSwitchCamera"/>
 
     </LinearLayout>

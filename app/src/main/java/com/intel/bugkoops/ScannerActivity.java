@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.google.zxing.ResultPoint;
@@ -42,10 +43,10 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
     private static final int RELOAD_TORCH_DELAY = 400;
 
     private CompoundBarcodeView mBarcodeScannerView;
-    private Button mSwitchFlashButton;
-    private Button mSwitchOrientationLockingButton;
-    private Button mSwitchInverseScanButton;
-    private Button mSwitchCameraButton;
+    private ImageButton mSwitchFlashButton;
+    private ImageButton mSwitchOrientationLockingButton;
+    private ImageButton mSwitchInverseScanButton;
+    private ImageButton mSwitchCameraButton;
 
     private int mFlashState;
     private int mLockedOrientation;
@@ -83,14 +84,14 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
         mBarcodeScannerView.decodeContinuous(callback);
         mBarcodeScannerView.setTorchListener(this);
 
-        mSwitchFlashButton = (Button)findViewById(R.id.switch_flashlight);
+        mSwitchFlashButton = (ImageButton)findViewById(R.id.switch_flashlight);
         if (!hasFlash()) {
             mSwitchFlashButton.setVisibility(View.GONE);
         }
 
-        mSwitchOrientationLockingButton = (Button)findViewById(R.id.switch_orientation_locking);
-        mSwitchInverseScanButton = (Button)findViewById(R.id.switch_inverse_scan);
-        mSwitchCameraButton = (Button)findViewById(R.id.switch_camera);
+        mSwitchOrientationLockingButton = (ImageButton)findViewById(R.id.switch_orientation_locking);
+        mSwitchInverseScanButton = (ImageButton)findViewById(R.id.switch_inverse_scan);
+        mSwitchCameraButton = (ImageButton)findViewById(R.id.switch_camera);
 
         loadDefaultSettings();
 
@@ -117,40 +118,45 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
             mBarcodeScannerView.getBarcodeView().getCameraSettings().setAutoTorchEnabled(true);
         }
 
+        mBarcodeScannerView.getBarcodeView().getCameraSettings().setContinuousFocusEnabled(true);
+        mBarcodeScannerView.getBarcodeView().getCameraSettings().setExposureEnabled(true);
+        mBarcodeScannerView.getBarcodeView().getCameraSettings().setBarcodeSceneModeEnabled(true);
+        mBarcodeScannerView.getBarcodeView().getCameraSettings().setMeteringEnabled(true);
+
         updateLayout();
     }
 
     private void updateLayoutSwitchFlashlight() {
         if (mFlashState == FLASH_STATE_OFF) {
-            mSwitchFlashButton.setText("FLASH OFF");
+            mSwitchFlashButton.setImageResource(R.drawable.ic_flash_off_white_48dp);
         } else if (mFlashState == FLASH_STATE_AUTO) {
-            mSwitchFlashButton.setText("FLASH AUTO");
+            mSwitchFlashButton.setImageResource(R.drawable.ic_flash_auto_white_48dp);
         } else {
-            mSwitchFlashButton.setText("FLASH ON");
+            mSwitchFlashButton.setImageResource(R.drawable.ic_flash_on_white_48dp);
         }
     }
 
     private void updateLayoutSwitchOrientationLocking() {
         if (mLockedOrientation == ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
-            mSwitchOrientationLockingButton.setText("UNLOCKED");
+            mSwitchOrientationLockingButton.setImageResource(R.drawable.ic_screen_rotation_white_48dp);
         } else {
-            mSwitchOrientationLockingButton.setText("LOCKED");
+            mSwitchOrientationLockingButton.setImageResource(R.drawable.ic_screen_lock_rotation_white_48dp);
         }
     }
 
     private void updateLayoutSwitchInverseScan() {
         if (mInverseScan) {
-            mSwitchInverseScanButton.setText("INV ON");
+            mSwitchInverseScanButton.setImageResource(R.drawable.ic_invert_colors_white_48dp);
         } else {
-            mSwitchInverseScanButton.setText("INV OFF");
+            mSwitchInverseScanButton.setImageResource(R.drawable.ic_invert_colors_off_white_48dp);
         }
     }
 
     private void updateLayoutSwitchCamera() {
         if (mCameraId == Camera.CameraInfo.CAMERA_FACING_BACK) {
-            mSwitchCameraButton.setText("BACK");
+            mSwitchCameraButton.setImageResource(R.drawable.ic_camera_rear_white_48dp);
         } else {
-            mSwitchCameraButton.setText("FRONT");
+            mSwitchCameraButton.setImageResource(R.drawable.ic_camera_front_white_48dp);
         }
     }
 
