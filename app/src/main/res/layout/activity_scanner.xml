@@ -35,15 +35,22 @@
             android:id="@+id/switch_flashlight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="FLASH ON"
+            android:text=""
             android:onClick="onSwitchFlashlight"/>
 
         <Button
             android:id="@+id/switch_orientation_locking"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="LOCK"
+            android:text=""
             android:onClick="onSwitchOrientationLocking"/>
+
+        <Button
+            android:id="@+id/switch_inverse_scan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:onClick="onSwitchInverseScan"/>
 
     </LinearLayout>
 

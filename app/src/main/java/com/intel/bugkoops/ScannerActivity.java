@@ -29,25 +29,24 @@ import java.util.List;
 public class ScannerActivity extends Activity implements CompoundBarcodeView.TorchListener {
     private static final String LOG_TAG = ScannerActivity.class.getSimpleName();
 
-    private static final String KEY_RELOAD_OPERATION = "reloadOperation";
     private static final String KEY_FLASH_STATE = "mFlashState";
     private static final String KEY_LOCKED_ORIENTATION = "mLockedOrientation";
+    private static final String KEY_INVERSE_SCAN = "mInverseScan";
 
     private static final int FLASH_STATE_OFF = 0;
     private static final int FLASH_STATE_AUTO = 1;
     private static final int FLASH_STATE_ON = 2;
 
     private static final int RELOAD_TORCH_DELAY = 400;
-    private static final int RELOAD_NOTHING = 0;
-    private static final int RELOAD_FLASH_ON = 1;
-    private static final int RELOAD_FLASH_AUTO = 2;
 
     private CompoundBarcodeView mBarcodeScannerView;
     private Button mSwitchFlashButton;
     private Button mSwitchOrientationLockingButton;
+    private Button mSwitchInverseScanButton;
 
     private int mFlashState;
     private int mLockedOrientation;
+    private boolean mInverseScan;
 
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
@@ -86,42 +85,30 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
         }
 
         mSwitchOrientationLockingButton = (Button)findViewById(R.id.switch_orientation_locking);
+        mSwitchInverseScanButton = (Button)findViewById(R.id.switch_inverse_scan);
 
         loadDefaultSettings();
 
         if (savedInstanceState != null) {
-            mFlashState = savedInstanceState.getInt(KEY_FLASH_STATE);
-            mLockedOrientation = savedInstanceState.getInt(KEY_LOCKED_ORIENTATION);
+            loadStateFromBundle(savedInstanceState);
         }
 
         Bundle bundle = getIntent().getExtras();
-        Log.d(LOG_TAG, "TEST1");
         if (bundle != null) {
-            Log.d(LOG_TAG, "TEST2");
-            int reloadOperation = bundle.getInt(KEY_RELOAD_OPERATION);
-            switch (reloadOperation) {
-                case RELOAD_NOTHING:
-                    Log.d(LOG_TAG, "TEST3");
-                    break;
-                case RELOAD_FLASH_ON:
-                    mFlashState = FLASH_STATE_ON;
-                    final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            mBarcodeScannerView.setTorchOn();
-                        }
-                    }, RELOAD_TORCH_DELAY);
-                    Log.d(LOG_TAG, "FLASH_STATE_ON");
-                    break;
-                case RELOAD_FLASH_AUTO:
-                    Log.d(LOG_TAG, "TEST4");
-                    mFlashState = FLASH_STATE_AUTO;
-                    mBarcodeScannerView.getBarcodeView().getCameraSettings().setAutoTorchEnabled(true);
-                    break;
-                default:
-                    break;
-            }
+            loadStateFromBundle(bundle);
+        }
+
+        mBarcodeScannerView.getBarcodeView().getCameraSettings().setScanInverted(mInverseScan);
+        if(mFlashState == FLASH_STATE_ON) {
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mBarcodeScannerView.setTorchOn();
+                }
+            }, RELOAD_TORCH_DELAY);
+        } else if(mFlashState == FLASH_STATE_AUTO) {
+            mBarcodeScannerView.getBarcodeView().getCameraSettings().setAutoTorchEnabled(true);
         }
 
         updateLayout();
@@ -145,21 +132,33 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
         }
     }
 
+    private void updateLayoutSwitchInverseScan() {
+        if (mInverseScan) {
+            mSwitchInverseScanButton.setText("INV ON");
+        } else {
+            mSwitchInverseScanButton.setText("INV OFF");
+        }
+    }
+
     private void updateLayout() {
         updateLayoutSwitchFlashlight();
         updateLayoutSwitchOrientationLocking();
+        updateLayoutSwitchInverseScan();
     }
 
     private void loadDefaultSettings() {
         mFlashState = FLASH_STATE_OFF;
         mLockedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+        mInverseScan = false;
     }
 
     public void onSwitchFlashlight(View view) {
         if (mFlashState == FLASH_STATE_OFF) {
-            reload(RELOAD_FLASH_AUTO);
+            mFlashState = FLASH_STATE_AUTO;
+            reload();
         } else if (mFlashState == FLASH_STATE_AUTO) {
-            reload(RELOAD_FLASH_ON);
+            mFlashState = FLASH_STATE_ON;
+            reload();
         } else {
             mBarcodeScannerView.setTorchOff();
         }
@@ -168,10 +167,20 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
     }
 
     public void onSwitchOrientationLocking(View view) {
-        if(mLockedOrientation == ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
+        if (mLockedOrientation == ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
             lockOrientation();
         } else {
             unlockOrientation();
+        }
+    }
+
+    public void onSwitchInverseScan(View view) {
+        if (mInverseScan) {
+            mInverseScan = false;
+            reload();
+        } else {
+            mInverseScan = true;
+            reload();
         }
     }
 
@@ -216,13 +225,13 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
                 .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
     }
 
-    private void reload(int reloadOperation) {
+    private void reload() {
         Intent intent = getIntent();
         overridePendingTransition(0, 0);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 
         Bundle bundle = new Bundle();
-        bundle.putInt(KEY_RELOAD_OPERATION, reloadOperation);
+        saveStateToBundle(bundle);
         intent.putExtras(bundle);
 
         finish();
@@ -231,11 +240,23 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
         startActivity(intent);
     }
 
+    private void loadStateFromBundle(Bundle inState) {
+        mFlashState = inState.getInt(KEY_FLASH_STATE);
+        mLockedOrientation = inState.getInt(KEY_LOCKED_ORIENTATION);
+        mInverseScan = inState.getBoolean(KEY_INVERSE_SCAN);
+    }
+
+    private void saveStateToBundle(Bundle outState) {
+        outState.putInt(KEY_FLASH_STATE, mFlashState);
+        outState.putInt(KEY_LOCKED_ORIENTATION, mLockedOrientation);
+        outState.putBoolean(KEY_INVERSE_SCAN, mInverseScan);
+    }
+
     @Override
     protected void onSaveInstanceState (Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(KEY_FLASH_STATE, mFlashState);
-        outState.putInt(KEY_LOCKED_ORIENTATION,mLockedOrientation);
+
+        saveStateToBundle(outState);
     }
 
     @Override
