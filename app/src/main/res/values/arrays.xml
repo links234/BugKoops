@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="pref_flashstate_options">
+        <item>@string/pref_flashstate_label_off</item>
+        <item>@string/pref_flashstate_label_auto</item>
+        <item>@string/pref_flashstate_label_on</item>
+    </string-array>
+    <string-array name="pref_flashstate_values">
+        <item>@string/pref_flashstate_off</item>
+        <item>@string/pref_flashstate_auto</item>
+        <item>@string/pref_flashstate_on</item>
+    </string-array>
+
+    <string-array name="pref_focusingmode_options">
+        <item>@string/pref_focusingmode_label_off</item>
+        <item>@string/pref_focusingmode_label_auto</item>
+        <item>@string/pref_focusingmode_label_continuous</item>
+    </string-array>
+    <string-array name="pref_focusingmode_values">
+        <item>@string/pref_focusingmode_off</item>
+        <item>@string/pref_focusingmode_auto</item>
+        <item>@string/pref_focusingmode_continuous</item>
+    </string-array>
+
+    <string-array name="pref_cameraid_options">
+        <item>@string/pref_cameraid_label_back</item>
+        <item>@string/pref_cameraid_label_front</item>
+    </string-array>
+    <string-array name="pref_cameraid_values">
+        <item>@string/pref_cameraid_back</item>
+        <item>@string/pref_cameraid_front</item>
+    </string-array>
+
+</resources>

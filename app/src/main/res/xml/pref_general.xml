@@ -3,11 +3,52 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditTextPreference
-        android:title="Settings1"
-        android:key="Settings1"
-        android:defaultValue="default1"
-        android:inputType="text"
-        android:singleLine="true" />
+    <PreferenceCategory
+        android:title="@string/pref_category_scanner_label" />
+
+    <ListPreference
+        android:title="@string/pref_cameraid_label"
+        android:key="@string/pref_cameraid_key"
+        android:defaultValue="@string/pref_cameraid_default"
+        android:entryValues="@array/pref_cameraid_values"
+        android:entries="@array/pref_cameraid_options" />
+
+    <ListPreference
+        android:title="@string/pref_flashstate_label"
+        android:key="@string/pref_flashstate_key"
+        android:defaultValue="@string/pref_flashstate_default"
+        android:entryValues="@array/pref_flashstate_values"
+        android:entries="@array/pref_flashstate_options" />
+
+    <ListPreference
+        android:title="@string/pref_focusingmode_label"
+        android:key="@string/pref_focusingmode_key"
+        android:defaultValue="@string/pref_focusingmode_default"
+        android:entryValues="@array/pref_focusingmode_values"
+        android:entries="@array/pref_focusingmode_options" />
+
+    <CheckBoxPreference
+        android:title="@string/pref_invertcolors_label"
+        android:key="@string/pref_invertcolors_key"
+        android:defaultValue="@string/pref_invertcolors_default"
+        android:summaryOff="@string/pref_invertcolors_summaryoff"
+        android:summaryOn="@string/pref_invertcolors_summaryon" />
+
+    <CheckBoxPreference
+        android:title="@string/pref_metering_label"
+        android:key="@string/pref_metering_key"
+        android:defaultValue="@string/pref_metering_default" />
+
+    <CheckBoxPreference
+        android:title="@string/pref_exposure_label"
+        android:key="@string/pref_exposure_key"
+        android:defaultValue="@string/pref_exposure_default" />
+
+    <CheckBoxPreference
+        android:title="@string/pref_fullscreen_label"
+        android:key="@string/pref_fullscreen_key"
+        android:defaultValue="@string/pref_fullscreen_default"
+        android:summaryOff="@string/pref_fullscreen_summaryoff"
+        android:summaryOn="@string/pref_fullscreen_summaryon" />
 
 </PreferenceScreen>

@@ -10,4 +10,56 @@
     <string name="action_reports">Reports</string>
     <string name="action_settings">Settings</string>
     <string name="action_about">About</string>
+
+
+    <string name="pref_category_scanner_label">Scanner</string>
+
+    <string name="pref_invertcolors_label">Invert colors</string>
+    <string name="pref_invertcolors_summaryoff">Black on white</string>
+    <string name="pref_invertcolors_summaryon">White on black</string>
+    <string name="pref_invertcolors_key" translatable="false">invertColors</string>
+    <string name="pref_invertcolors_default" translatable="false">false</string>
+
+    <string name="pref_metering_label">Metering</string>
+    <string name="pref_metering_key" translatable="false">metering</string>
+    <string name="pref_metering_default" translatable="false">false</string>
+
+    <string name="pref_exposure_label">Exposure</string>
+    <string name="pref_exposure_key" translatable="false">exposure</string>
+    <string name="pref_exposure_default" translatable="false">false</string>
+
+    <string name="pref_flashstate_label">Flash state</string>
+    <string name="pref_flashstate_label_on">On</string>
+    <string name="pref_flashstate_label_auto">Auto</string>
+    <string name="pref_flashstate_label_off">Off</string>
+    <string name="pref_flashstate_default" translatable="false">@string/pref_flashstate_off</string>
+    <string name="pref_flashstate_key" translatable="false">flashState</string>
+    <string name="pref_flashstate_off" translatable="false">off</string>
+    <string name="pref_flashstate_auto" translatable="false">auto</string>
+    <string name="pref_flashstate_on" translatable="false">on</string>
+
+    <string name="pref_focusingmode_label">Focusing mode</string>
+    <string name="pref_focusingmode_label_off">Off</string>
+    <string name="pref_focusingmode_label_auto">Auto</string>
+    <string name="pref_focusingmode_label_continuous">Continuous</string>
+    <string name="pref_focusingmode_default" translatable="false">@string/pref_focusingmode_off</string>
+    <string name="pref_focusingmode_key" translatable="false">focusingMode</string>
+    <string name="pref_focusingmode_off" translatable="false">off</string>
+    <string name="pref_focusingmode_auto" translatable="false">auto</string>
+    <string name="pref_focusingmode_continuous" translatable="false">continuous</string>
+
+    <string name="pref_cameraid_label">Camera</string>
+    <string name="pref_cameraid_label_back">Back</string>
+    <string name="pref_cameraid_label_front">Front</string>
+    <string name="pref_cameraid_default" translatable="false">@string/pref_cameraid_back</string>
+    <string name="pref_cameraid_key" translatable="false">cameraId</string>
+    <string name="pref_cameraid_back" translatable="false">back</string>
+    <string name="pref_cameraid_front" translatable="false">front</string>
+
+    <string name="pref_fullscreen_label">Fullscreen</string>
+    <string name="pref_fullscreen_summaryoff">Hide status bar</string>
+    <string name="pref_fullscreen_summaryon">Show status bar</string>
+    <string name="pref_fullscreen_key" translatable="false">fullscreen</string>
+    <string name="pref_fullscreen_default" translatable="false">true</string>
+
 </resources>

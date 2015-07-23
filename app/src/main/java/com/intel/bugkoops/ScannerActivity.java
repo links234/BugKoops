@@ -120,7 +120,7 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
 
         mBarcodeScannerView.getBarcodeView().getCameraSettings().setContinuousFocusEnabled(true);
         mBarcodeScannerView.getBarcodeView().getCameraSettings().setExposureEnabled(true);
-        mBarcodeScannerView.getBarcodeView().getCameraSettings().setBarcodeSceneModeEnabled(true);
+        mBarcodeScannerView.getBarcodeView().getCameraSettings().setBarcodeSceneModeEnabled(false);
         mBarcodeScannerView.getBarcodeView().getCameraSettings().setMeteringEnabled(true);
 
         updateLayout();
