@@ -1,6 +1,35 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_options"
+        android:orderInCategory="101"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_action_overflow"
+        android:title="@string/action_options">
+
+        <menu>
+            <item android:id="@+id/action_profiles"
+                app:showAsAction="ifRoom"
+                android:icon="@drawable/ic_action_profiles"
+                android:title="@string/action_profiles" />
+
+            <item android:id="@+id/action_reports"
+                app:showAsAction="ifRoom"
+                android:icon="@drawable/ic_action_reports"
+                android:title="@string/action_reports" />
+
+            <item android:id="@+id/action_settings"
+                app:showAsAction="ifRoom"
+                android:icon="@drawable/ic_action_settings"
+                android:title="@string/action_settings" />
+
+            <item android:id="@+id/action_about"
+                app:showAsAction="ifRoom"
+                android:icon="@drawable/ic_action_about"
+                android:title="@string/action_about" />
+        </menu>
+
+    </item>
+
 </menu>
