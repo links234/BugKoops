@@ -12,11 +12,16 @@ public class MainActivity extends MenuActivity {
     final String LOG_TAG = getClass().getSimpleName();
 
     static final int SCAN_BUTTON_DELAY = 190;
+    static final int EXIT_TIME_WINDOW = 3000;
+
+    boolean mExit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mExit = false;
     }
 
     public void onScan(View view) {
@@ -32,5 +37,21 @@ public class MainActivity extends MenuActivity {
                 startActivity(intent);
             }
         }, SCAN_BUTTON_DELAY);
+    }
+
+    public void onBackPressed() {
+        if (mExit) {
+            finish();
+        } else {
+            Toast.makeText(this, "Press Back again to Exit.",
+                    Toast.LENGTH_SHORT).show();
+            mExit = true;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mExit = false;
+                }
+            }, EXIT_TIME_WINDOW);
+        }
     }
 }
