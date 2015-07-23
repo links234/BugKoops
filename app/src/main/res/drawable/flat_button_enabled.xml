@@ -1,0 +1,10 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/flat_button_pressed" />
+
+    <item android:bottom="@dimen/flat_button_layer_padding">
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/flat_button_corner_radius" />
+            <solid android:color="@color/flat_button_normal" />
+        </shape>
+    </item>
+</layer-list>

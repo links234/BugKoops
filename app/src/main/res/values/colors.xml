@@ -15,4 +15,10 @@
     <color name="bugkoops_scan">#015F92</color>
     <color name="bugkoops_scan_border">@color/none</color>
 
+    <color name="holo_blue_dark">#ff0099cc</color>
+    <color name="holo_blue_light">#ff33b5e5</color>
+
+    <color name="flat_button_pressed">@color/holo_blue_dark</color>
+    <color name="flat_button_normal">@color/holo_blue_light</color>
+
 </resources>
