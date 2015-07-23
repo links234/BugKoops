@@ -24,6 +24,7 @@ import com.google.zxing.ResultPoint;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
+import com.journeyapps.barcodescanner.Util;
 import com.journeyapps.barcodescanner.camera.CameraSettings;
 
 import java.util.List;
@@ -74,9 +75,11 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        if(Utility.isFullscreenEnabled(this)) {
+            requestWindowFeature(Window.FEATURE_NO_TITLE);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
 
         setContentView(R.layout.activity_scanner);
 
@@ -117,11 +120,6 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
         } else if(mFlashState == FLASH_STATE_AUTO) {
             mBarcodeScannerView.getBarcodeView().getCameraSettings().setAutoTorchEnabled(true);
         }
-
-        mBarcodeScannerView.getBarcodeView().getCameraSettings().setContinuousFocusEnabled(true);
-        mBarcodeScannerView.getBarcodeView().getCameraSettings().setExposureEnabled(true);
-        mBarcodeScannerView.getBarcodeView().getCameraSettings().setBarcodeSceneModeEnabled(false);
-        mBarcodeScannerView.getBarcodeView().getCameraSettings().setMeteringEnabled(true);
 
         updateLayout();
     }
@@ -168,10 +166,45 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
     }
 
     private void loadDefaultSettings() {
-        mFlashState = FLASH_STATE_OFF;
+
+        final String flashState = Utility.getFlashState(this);
+        if (flashState.equals(getString(R.string.pref_flashstate_off))) {
+            mFlashState = FLASH_STATE_OFF;
+        } else if (flashState.equals(getString(R.string.pref_flashstate_auto))) {
+            mFlashState = FLASH_STATE_AUTO;
+        } else {
+            mFlashState = FLASH_STATE_ON;
+        }
+
         mLockedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
-        mInverseScan = false;
-        mCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
+
+        mInverseScan = Utility.isInvertColorsEnabled(this);
+
+        final String cameraId = Utility.getCameraId(this);
+        if (cameraId.equals(getString(R.string.pref_cameraid_back))) {
+            mCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
+        } else {
+            mCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
+        }
+
+        final String focusingMode = Utility.getFocusingMode(this);
+        if (focusingMode.equals(getString(R.string.pref_focusingmode_off))) {
+            mBarcodeScannerView.getBarcodeView().getCameraSettings().setAutoFocusEnabled(false);
+            mBarcodeScannerView.getBarcodeView().getCameraSettings().setContinuousFocusEnabled(false);
+        } else if (focusingMode.equals(getString(R.string.pref_focusingmode_auto))) {
+            mBarcodeScannerView.getBarcodeView().getCameraSettings().setAutoFocusEnabled(true);
+            mBarcodeScannerView.getBarcodeView().getCameraSettings().setContinuousFocusEnabled(false);
+        } else {
+            mBarcodeScannerView.getBarcodeView().getCameraSettings().setAutoFocusEnabled(false);
+            mBarcodeScannerView.getBarcodeView().getCameraSettings().setContinuousFocusEnabled(true);
+        }
+
+        mBarcodeScannerView.getBarcodeView().getCameraSettings().setExposureEnabled(
+                Utility.isExposureEnabled(this)
+        );
+        mBarcodeScannerView.getBarcodeView().getCameraSettings().setMeteringEnabled(
+                Utility.isMeteringEnabled(this)
+        );
     }
 
     public void onSwitchFlashlight(View view) {
@@ -182,6 +215,7 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
             mFlashState = FLASH_STATE_ON;
             reload();
         } else {
+            mFlashState = FLASH_STATE_OFF;
             mBarcodeScannerView.setTorchOff();
         }
 

@@ -57,8 +57,8 @@
     <string name="pref_cameraid_front" translatable="false">front</string>
 
     <string name="pref_fullscreen_label">Fullscreen</string>
-    <string name="pref_fullscreen_summaryoff">Hide status bar</string>
-    <string name="pref_fullscreen_summaryon">Show status bar</string>
+    <string name="pref_fullscreen_summaryoff">Show status bar</string>
+    <string name="pref_fullscreen_summaryon">Hide status bar</string>
     <string name="pref_fullscreen_key" translatable="false">fullscreen</string>
     <string name="pref_fullscreen_default" translatable="false">true</string>
 
