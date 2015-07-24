@@ -10,6 +10,8 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
+import com.intel.bugkoops.UI.ScanButton;
+
 
 /**
  * A placeholder fragment containing a simple view.
@@ -18,7 +20,7 @@ public class MainActivityFragment extends Fragment {
 
     final String LOG_TAG = getClass().getSimpleName();
 
-    static final float SCAN_BUTTON_HEIGHT_PERCENT = 0.67f;
+    static final float SCAN_BUTTON_HEIGHT_PERCENT = 0.75f;
 
     public MainActivityFragment() {
     }
@@ -28,7 +30,7 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View mView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        final Button scanBtn = (Button) mView.findViewById(R.id.scan_button);
+        final ScanButton scanBtn = (ScanButton) mView.findViewById(R.id.scan_button);
 
         scanBtn.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override

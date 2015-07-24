@@ -7,12 +7,12 @@
     android:layout_weight="20"
     android:orientation="horizontal">
 
-    <Button
+    <com.intel.bugkoops.UI.ScanButton
         android:id="@+id/scan_button"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        android:background="@drawable/scan_button"
+        android:background="@color/none"
         android:gravity="center_vertical|center_horizontal"
         android:text="Scan"
         android:onClick="onScan"

@@ -8,6 +8,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
+import com.intel.bugkoops.UI.ScanButton;
+
 public class MainActivity extends MenuActivity {
     final String LOG_TAG = getClass().getSimpleName();
 
@@ -53,5 +55,11 @@ public class MainActivity extends MenuActivity {
                 }
             }, EXIT_TIME_WINDOW);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ((ScanButton)findViewById(R.id.scan_button)).reset();
     }
 }
