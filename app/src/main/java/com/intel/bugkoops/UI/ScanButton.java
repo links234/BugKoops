@@ -34,6 +34,8 @@ public class ScanButton extends Button {
     private int mPressedColor;
     private ObjectAnimator mPressedAnimator;
 
+    private Handler mHandler;
+
     public ScanButton(Context context) {
         super(context);
         init(context, null);
@@ -100,6 +102,7 @@ public class ScanButton extends Button {
     }
 
     private void disableRing() {
+        mHandler.removeCallbacksAndMessages(null);
         mPressedAnimator.setFloatValues(animationProgress, mOuterRadius - mInnerRadius);
         mPressedAnimator.setRepeatCount(0);
         mPressedAnimator.setDuration((long) ((mOuterRadius - mInnerRadius - animationProgress) / (mOuterRadius - mInnerRadius) * NORMAL_ANIMATION_TIME));
@@ -107,6 +110,7 @@ public class ScanButton extends Button {
     }
 
     private void enableRing() {
+        mHandler.removeCallbacksAndMessages(null);
         long goBackTime = (long)((animationProgress)/(mOuterRadius-mInnerRadius)*NORMAL_ANIMATION_TIME);
 
         mPressedAnimator.setFloatValues(animationProgress, 0.0f);
@@ -114,8 +118,7 @@ public class ScanButton extends Button {
         mPressedAnimator.setDuration(goBackTime);
         mPressedAnimator.start();
 
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 mPressedAnimator.setFloatValues(0.0f, mOuterRadius - mInnerRadius);
@@ -128,6 +131,7 @@ public class ScanButton extends Button {
     }
 
     public void reset() {
+        mHandler.removeCallbacksAndMessages(null);
         mPressedAnimator.setFloatValues(0.0f, mOuterRadius - mInnerRadius);
         mPressedAnimator.setDuration(NORMAL_ANIMATION_TIME);
         mPressedAnimator.setRepeatMode(ObjectAnimator.REVERSE);
@@ -148,6 +152,8 @@ public class ScanButton extends Button {
         int color = context.getResources().getColor(R.color.bugkoops_scan);
 
         setColor(color);
+
+        mHandler = new Handler();
 
         animationProgress = 0.0f;
         mPressedAnimator = ObjectAnimator.ofFloat(this, "animationProgress", 0f, 0f);
