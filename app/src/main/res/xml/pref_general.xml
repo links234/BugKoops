@@ -51,4 +51,14 @@
         android:summaryOff="@string/pref_fullscreen_summaryoff"
         android:summaryOn="@string/pref_fullscreen_summaryon" />
 
+    <com.intel.bugkoops.ResetPreferencesDialog
+        android:dialogMessage="@string/pref_resettodefault_label_message"
+        android:key="@string/pref_resettodefault_key"
+        android:negativeButtonText="@string/pref_resettodefault_label_negative"
+        android:persistent="false"
+        android:positiveButtonText="@string/pref_resettodefault_label_positive"
+        android:summary="@string/pref_resettodefualt_label_summary"
+        android:title="@string/pref_resettodefault_label_title" >
+    </com.intel.bugkoops.ResetPreferencesDialog>
+
 </PreferenceScreen>

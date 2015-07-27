@@ -14,7 +14,7 @@
         android:layout_centerInParent="true"
         android:background="@color/none"
         android:gravity="center_vertical|center_horizontal"
-        android:text="Scan"
+        android:text="@string/scan"
         android:onClick="onScan"
         android:textSize="50sp"
         android:textColor="@color/bugkoops_light_blue" />
