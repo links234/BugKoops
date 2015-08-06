@@ -16,21 +16,22 @@ import android.view.Surface;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import com.google.zxing.ResultMetadataType;
 import com.google.zxing.ResultPoint;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
-import com.journeyapps.barcodescanner.Util;
-import com.journeyapps.barcodescanner.camera.CameraSettings;
+import com.intel.bugkoops.Data.PacketManager;
 
 import java.util.List;
 
 public class ScannerActivity extends Activity implements CompoundBarcodeView.TorchListener {
     private static final String LOG_TAG = ScannerActivity.class.getSimpleName();
+
+    private static ScannerActivity sInstance;
 
     private static final String KEY_FLASH_STATE = "mFlashState";
     private static final String KEY_LOCKED_ORIENTATION = "mLockedOrientation";
@@ -57,9 +58,24 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
-            if (result.getText() != null) {
-                mBarcodeScannerView.setStatusText(result.getText());
+            List<byte[]> listData = (List<byte[]>)result.getResultMetadata().get(
+                    ResultMetadataType.BYTE_SEGMENTS);
+
+            int messageLength = 0;
+
+            for(byte[] dataSegment : listData) {
+                messageLength+=dataSegment.length;
             }
+
+            byte[] packet = new byte[messageLength];
+
+            int offset=0;
+            for(byte[] dataSegment : listData) {
+                System.arraycopy(dataSegment, 0, packet, offset, dataSegment.length);
+                offset+=dataSegment.length;
+            }
+
+            PacketManager.push(packet);
 
             ImageView imageView = (ImageView) findViewById(R.id.barcode_preview);
             imageView.setImageBitmap(result.getBitmapWithResultPoints(Color.YELLOW));
@@ -70,8 +86,14 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
         }
     };
 
+    public static ScannerActivity getInstance() {
+        return sInstance;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        sInstance = this;
+
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 

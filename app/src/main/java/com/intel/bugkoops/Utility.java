@@ -6,11 +6,16 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import java.io.UnsupportedEncodingException;
+
 public class Utility {
+    private static final String LOG_TAG = Utility.class.getSimpleName();
+
     public static String getCameraId(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getString(context.getString(R.string.pref_cameraid_key),
@@ -66,5 +71,23 @@ public class Utility {
         builder.setView(messageView);
         builder.create();
         builder.show();
+    }
+
+    public static int bytesToInt(byte b0, byte b1) {
+        return ((0xFF & b0) << 8) | (0xFF & b1);
+    }
+
+    public static int bytesToInt(byte b0, byte b1, byte b2, byte b3) {
+        return ((0xFF & b0) << 24) | ((0xFF & b1) << 16) | ((0xFF & b2) << 8) | (0xFF & b3);
+    }
+
+    public static String bytesToString(byte[] data) {
+        String text="";
+        try {
+            text = new String(data, "ISO-8859-1");
+        } catch (UnsupportedEncodingException e) {
+            Log.e(LOG_TAG, "Unsupported encoding !");
+        }
+        return text;
     }
 }
