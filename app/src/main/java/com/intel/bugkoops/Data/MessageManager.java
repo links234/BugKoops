@@ -6,6 +6,9 @@ import android.util.Log;
 import java.util.HashMap;
 
 public class MessageManager {
+    public static final byte PACKET_STATUS_DONE = 0;
+    public static final byte PACKET_STATUS_NOTFOUND = 1;
+
     private static final String LOG_TAG = MessageManager.class.getSimpleName();
 
     private static HashMap<Integer, HashMap<Integer, HashMap<Integer, String>>> db = new HashMap<>();
@@ -13,7 +16,13 @@ public class MessageManager {
 
     private static float lastElapsedTime = 0.0f;
 
+    private static byte[] lastPacketStatus;
+
+    public static boolean lastScanGotHere;
+
     public static void push(int messageId, int packetCount, int packetId, String result) {
+        lastScanGotHere = true;
+
         if(db.get(messageId) == null) {
             db.put(messageId, new HashMap<Integer, HashMap<Integer, String>>());
         }
@@ -28,13 +37,18 @@ public class MessageManager {
             startTime.get(messageId).put(packetCount, SystemClock.elapsedRealtime());
         }
 
-        Log.d(LOG_TAG, "messageId = "+Integer.toString(messageId));
-        Log.d(LOG_TAG, "packetCount = "+Integer.toString(packetCount));
-        Log.d(LOG_TAG, "packetId = " + Integer.toString(packetId));
-
         HashMap<Integer,String> messageDb = db.get(messageId).get(packetCount);
 
         messageDb.put(packetId,result);
+
+        lastPacketStatus = new byte[packetCount];
+        for(int id = 1; id <= packetCount; ++id) {
+            if(messageDb.containsKey(id)) {
+                lastPacketStatus[id-1] = PACKET_STATUS_DONE;
+            } else {
+                lastPacketStatus[id-1] = PACKET_STATUS_NOTFOUND;
+            }
+        }
 
         if(messageDb.size() == packetCount) {
 
@@ -64,4 +78,7 @@ public class MessageManager {
         return lastElapsedTime;
     }
 
+    public static byte[] getLastPacketStatus() {
+        return lastPacketStatus;
+    }
 }

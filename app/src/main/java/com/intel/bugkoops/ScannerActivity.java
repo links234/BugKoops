@@ -5,7 +5,10 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +24,7 @@ import android.widget.ImageView;
 
 import com.google.zxing.ResultMetadataType;
 import com.google.zxing.ResultPoint;
+import com.intel.bugkoops.Data.MessageManager;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
@@ -61,6 +65,8 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
             List<byte[]> listData = (List<byte[]>)result.getResultMetadata().get(
                     ResultMetadataType.BYTE_SEGMENTS);
 
+            MessageManager.lastScanGotHere = false;
+
             int messageLength = 0;
 
             for(byte[] dataSegment : listData) {
@@ -77,8 +83,41 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
 
             PacketManager.push(packet);
 
+            Bitmap preview = result.getBitmapWithResultPoints(Color.YELLOW);
+
+            if(MessageManager.lastScanGotHere) {
+                Canvas canvas = new Canvas(preview);
+
+                Paint red;
+                red = new Paint();
+                red.setStyle(Paint.Style.FILL);
+                red.setColor(Color.RED);
+
+                Paint green;
+                green = new Paint();
+                green.setStyle(Paint.Style.FILL);
+                green.setColor(Color.GREEN);
+
+                byte[] packetStatus = MessageManager.getLastPacketStatus();
+
+                int width=preview.getWidth()/(packetStatus.length+1);
+                int height=width;
+
+                int x=width/2;
+                int y=0;
+
+                for(int i=0; i<packetStatus.length; ++i) {
+                    if(packetStatus[i] == MessageManager.PACKET_STATUS_NOTFOUND) {
+                        canvas.drawRect(x, y, x + width, y + height, red);
+                    } else {
+                        canvas.drawRect(x, y, x + width, y + height, green);
+                    }
+                    x+=width;
+                }
+            }
+
             ImageView imageView = (ImageView) findViewById(R.id.barcode_preview);
-            imageView.setImageBitmap(result.getBitmapWithResultPoints(Color.YELLOW));
+            imageView.setImageBitmap(preview);
         }
 
         @Override
