@@ -1,13 +1,13 @@
 package com.intel.bugkoops.Data;
 
 import android.os.SystemClock;
-import android.util.Log;
 
 import java.util.HashMap;
 
 public class MessageManager {
     public static final byte PACKET_STATUS_DONE = 0;
     public static final byte PACKET_STATUS_NOTFOUND = 1;
+    public static final byte PACKET_STATUS_LAST_SCANNED = 2;
 
     private static final String LOG_TAG = MessageManager.class.getSimpleName();
 
@@ -49,6 +49,7 @@ public class MessageManager {
                 lastPacketStatus[id-1] = PACKET_STATUS_NOTFOUND;
             }
         }
+        lastPacketStatus[packetId-1] = PACKET_STATUS_LAST_SCANNED;
 
         if(messageDb.size() == packetCount) {
 

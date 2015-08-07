@@ -62,62 +62,85 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
-            List<byte[]> listData = (List<byte[]>)result.getResultMetadata().get(
-                    ResultMetadataType.BYTE_SEGMENTS);
-
-            MessageManager.lastScanGotHere = false;
-
-            int messageLength = 0;
-
-            for(byte[] dataSegment : listData) {
-                messageLength+=dataSegment.length;
-            }
-
-            byte[] packet = new byte[messageLength];
-
-            int offset=0;
-            for(byte[] dataSegment : listData) {
-                System.arraycopy(dataSegment, 0, packet, offset, dataSegment.length);
-                offset+=dataSegment.length;
-            }
-
-            PacketManager.push(packet);
-
-            Bitmap preview = result.getBitmapWithResultPoints(Color.YELLOW);
-
-            if(MessageManager.lastScanGotHere) {
-                Canvas canvas = new Canvas(preview);
-
-                Paint red;
-                red = new Paint();
-                red.setStyle(Paint.Style.FILL);
-                red.setColor(Color.RED);
-
-                Paint green;
-                green = new Paint();
-                green.setStyle(Paint.Style.FILL);
-                green.setColor(Color.GREEN);
-
-                byte[] packetStatus = MessageManager.getLastPacketStatus();
-
-                int width=preview.getWidth()/(packetStatus.length+1);
-                int height=width;
-
-                int x=width/2;
-                int y=0;
-
-                for(int i=0; i<packetStatus.length; ++i) {
-                    if(packetStatus[i] == MessageManager.PACKET_STATUS_NOTFOUND) {
-                        canvas.drawRect(x, y, x + width, y + height, red);
-                    } else {
-                        canvas.drawRect(x, y, x + width, y + height, green);
-                    }
-                    x+=width;
+            boolean scannerFailed = false;
+            if(result.getResultMetadata() == null)
+            {
+                scannerFailed = true;
+            } else {
+                if (result.getResultMetadata().get(
+                        ResultMetadataType.BYTE_SEGMENTS) == null) {
+                    scannerFailed = true;
                 }
             }
 
-            ImageView imageView = (ImageView) findViewById(R.id.barcode_preview);
-            imageView.setImageBitmap(preview);
+            if(!scannerFailed)
+            {
+                List<byte[]> listData = (List<byte[]>) result.getResultMetadata().get(
+                        ResultMetadataType.BYTE_SEGMENTS);
+
+                MessageManager.lastScanGotHere = false;
+
+                int messageLength = 0;
+
+                for (byte[] dataSegment : listData) {
+                    messageLength += dataSegment.length;
+                }
+
+                byte[] packet = new byte[messageLength];
+
+                int offset = 0;
+                for (byte[] dataSegment : listData) {
+                    System.arraycopy(dataSegment, 0, packet, offset, dataSegment.length);
+                    offset += dataSegment.length;
+                }
+
+                PacketManager.push(packet);
+
+                Bitmap preview = result.getBitmapWithResultPoints(Color.YELLOW);
+
+                if (MessageManager.lastScanGotHere) {
+                    Canvas canvas = new Canvas(preview);
+
+                    Paint red;
+                    red = new Paint();
+                    red.setStyle(Paint.Style.FILL);
+                    red.setColor(Color.RED);
+
+                    Paint green;
+                    green = new Paint();
+                    green.setStyle(Paint.Style.FILL);
+                    green.setColor(Color.GREEN);
+
+                    Paint blue;
+                    blue = new Paint();
+                    blue.setStyle(Paint.Style.FILL);
+                    blue.setColor(Color.BLUE);
+
+                    byte[] packetStatus = MessageManager.getLastPacketStatus();
+
+                    int width = preview.getWidth() / (packetStatus.length + 1);
+                    int height = width;
+
+                    int x = width / 2;
+                    int y = 0;
+
+                    for (int i = 0; i < packetStatus.length; ++i) {
+                        if (packetStatus[i] == MessageManager.PACKET_STATUS_NOTFOUND) {
+                            canvas.drawRect(x, y, x + width, y + height, red);
+                        } else if (packetStatus[i] == MessageManager.PACKET_STATUS_DONE) {
+                            canvas.drawRect(x, y, x + width, y + height, green);
+                        } else if (packetStatus[i] == MessageManager.PACKET_STATUS_LAST_SCANNED) {
+                            canvas.drawRect(x, y, x + width, y + height, blue);
+                        }
+                        x += width;
+                    }
+                }
+
+                ImageView imageView = (ImageView) findViewById(R.id.barcode_preview);
+                imageView.setImageBitmap(preview);
+            } else {
+                Log.e(LOG_TAG, "Scanner failed! (invalid metadata)");
+            }
         }
 
         @Override
