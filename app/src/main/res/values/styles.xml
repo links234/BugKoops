@@ -3,10 +3,10 @@
     <style name="AppTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/bugkoops_blue</item>
         <item name="colorPrimaryDark">@color/bugkoops_dark_blue</item>
+        <item name="actionBarStyle">@style/ActionBar.Solid.NoTitle</item>
     </style>
 
     <style name="MainTheme" parent="AppTheme">
-        <item name="actionBarStyle">@style/ActionBar.Solid.NoTitle</item>
     </style>
 
     <style name="SettingsTheme" parent="AppTheme">

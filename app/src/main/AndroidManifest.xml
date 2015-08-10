@@ -31,6 +31,19 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+        <activity
+            android:name=".ReportActivity"
+            android:label="@string/title_activity_report" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
+        <provider
+            android:authorities="@string/content_authority"
+            android:name=".Data.BugKoopsProvider"
+            android:exported="false" />
+
     </application>
 
 </manifest>

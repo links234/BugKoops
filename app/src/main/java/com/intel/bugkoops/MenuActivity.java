@@ -24,6 +24,9 @@ public class MenuActivity extends ActionBarActivity {
             case R.id.action_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
+            case R.id.action_reports:
+                startActivity(new Intent(this, ReportActivity.class));
+                break;
             case R.id.action_about:
                 Utility.showAbout(this);
                 break;
