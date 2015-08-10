@@ -14,9 +14,13 @@ public class MainActivity extends MenuActivity {
     final String LOG_TAG = getClass().getSimpleName();
 
     static final int SCAN_BUTTON_DELAY = 190;
+    static final int SCAN_BUTTON_ACTIVATE_DELAY = 200;
     static final int EXIT_TIME_WINDOW = 3000;
 
     boolean mExit;
+    boolean mScan;
+
+    static MainActivity sInstance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,21 +28,35 @@ public class MainActivity extends MenuActivity {
         setContentView(R.layout.activity_main);
 
         mExit = false;
+        mScan = false;
+
+        sInstance = this;
     }
 
     public void onScan(View view) {
-        final Animation scanAnim = AnimationUtils.loadAnimation(this, R.anim.anim_scan);
+        if(!mScan) {
+            mScan = true;
+            final Animation scanAnim = AnimationUtils.loadAnimation(this, R.anim.anim_scan);
 
-        findViewById(R.id.scan_button).startAnimation(scanAnim);
+            findViewById(R.id.scan_button).startAnimation(scanAnim);
 
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(MainActivity.this, ScannerActivity.class);
-                startActivity(intent);
-            }
-        }, SCAN_BUTTON_DELAY);
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(MainActivity.this, ScannerActivity.class);
+                    startActivity(intent);
+
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            MainActivity.getInstance().mScan = false;
+                        }
+                    }, SCAN_BUTTON_ACTIVATE_DELAY);
+                }
+            }, SCAN_BUTTON_DELAY);
+        }
     }
 
     public void onBackPressed() {
@@ -61,5 +79,9 @@ public class MainActivity extends MenuActivity {
     protected void onResume() {
         super.onResume();
         ((ScanButton)findViewById(R.id.scan_button)).reset();
+    }
+
+    static MainActivity getInstance() {
+        return sInstance;
     }
 }
