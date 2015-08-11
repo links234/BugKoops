@@ -37,8 +37,14 @@ public class BugKoopsContract {
         public static final String COLUMN_TITLE = "title";
         public static final String COLUMN_TEXT = "text";
 
-        public static Uri buildUri(long id) {
-            return ContentUris.withAppendedId(CONTENT_URI, id);
+        public static Uri buildUriFromId(long id) {
+            return CONTENT_URI.buildUpon().appendPath("id")
+                    .appendPath(Long.toString(id)).build();
+        }
+
+        public static Uri buildUriFromStartDate(long date) {
+            return CONTENT_URI.buildUpon().appendPath("date")
+                    .appendPath(Long.toString(normalizeDate(date))).build();
         }
 
         public static int getIdFromUri(Uri uri) {

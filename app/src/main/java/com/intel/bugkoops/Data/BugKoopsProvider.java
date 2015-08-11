@@ -153,7 +153,7 @@ public class BugKoopsProvider extends ContentProvider {
                 normalizeDate(values);
                 long _id = db.insert(BugKoopsContract.ReportEntry.TABLE_NAME, null, values);
                 if ( _id > 0 )
-                    returnUri = BugKoopsContract.ReportEntry.buildUri(_id);
+                    returnUri = BugKoopsContract.ReportEntry.buildUriFromId(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
