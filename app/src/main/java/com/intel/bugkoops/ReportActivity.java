@@ -3,14 +3,23 @@ package com.intel.bugkoops;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 
 public class ReportActivity extends MenuActivity implements ReportListFragment.Callback  {
-    final String LOG_TAG = getClass().getSimpleName();
+    private final String LOG_TAG = getClass().getSimpleName();
+
+    private boolean mTwoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
+
+        mTwoPane = false;
+
+        ReportListFragment forecastFragment =  ((ReportListFragment)getSupportFragmentManager()
+                .findFragmentById(R.id.fragment_report_list));
+        forecastFragment.setUseTodayLayout(!mTwoPane);
     }
 
     @Override
