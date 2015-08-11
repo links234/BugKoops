@@ -5,4 +5,7 @@
 
     <dimen name="flat_button_corner_radius">4dp</dimen>
     <dimen name="flat_button_layer_padding">3dp</dimen>
+
+    <dimen name="list_item_min_height">60dp</dimen>
+    <dimen name="list_item_top_min_height">120dp</dimen>
 </resources>
