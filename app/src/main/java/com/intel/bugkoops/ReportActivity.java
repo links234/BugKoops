@@ -15,7 +15,7 @@ public class ReportActivity extends MenuActivity implements ReportListFragment.C
 
     @Override
     public void onItemSelected(Uri contentUri) {
-        Intent intent = new Intent(this, ReportActivity.class)
+        Intent intent = new Intent(this, ReportDetailActivity.class)
                 .setData(contentUri);
         startActivity(intent);
     }

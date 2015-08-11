@@ -3,6 +3,7 @@
     <string name="title_activity_scanner">Scanner</string>
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_report">Reports</string>
+    <string name="title_activity_report_detail">Report details</string>
 
     <string name="scan">Scan</string>
 

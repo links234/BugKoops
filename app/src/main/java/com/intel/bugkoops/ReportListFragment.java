@@ -111,13 +111,6 @@ public class ReportListFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        // This is called when a new Loader needs to be created.  This
-        // fragment only uses one loader, so we don't care about checking the id.
-
-        // To only show current and future dates, filter the query to return weather only for
-        // dates after or including today.
-
-        // Sort order:  Ascending, by date.
         String sortOrder = BugKoopsContract.ReportEntry.COLUMN_DATE + " ASC";
 
         Uri reportUri = BugKoopsContract.ReportEntry.buildUriFromStartDate(System.currentTimeMillis());
