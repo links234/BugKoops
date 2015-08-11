@@ -21,11 +21,11 @@ public class MenuActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
-                break;
             case R.id.action_reports:
                 startActivity(new Intent(this, ReportActivity.class));
+                break;
+            case R.id.action_settings:
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
             case R.id.action_about:
                 Utility.showAbout(this);
