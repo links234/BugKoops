@@ -4,7 +4,8 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
-import android.text.format.Time;
+
+import java.util.Date;
 
 public class BugKoopsContract {
     public static final String CONTENT_AUTHORITY = "com.intel.bugkoops";
@@ -14,11 +15,12 @@ public class BugKoopsContract {
     public static final String PATH_REPORT = "report";
     public static final String PATH_PROFILE = "profile";
 
-    public static long normalizeDate(long startDate) {
-        Time time = new Time();
-        time.set(startDate);
-        int julianDay = Time.getJulianDay(startDate, time.gmtoff);
-        return time.setJulianDay(julianDay);
+    public static long dateToDB(Date date) {
+        return date.getTime();
+    }
+
+    public static Date dateFromDB(long date) {
+        return new Date(date);
     }
 
     public static final class ReportEntry implements BaseColumns {
@@ -44,7 +46,7 @@ public class BugKoopsContract {
 
         public static Uri buildUriFromStartDate(long date) {
             return CONTENT_URI.buildUpon().appendPath("date")
-                    .appendPath(Long.toString(normalizeDate(date))).build();
+                    .appendPath(Long.toString(date)).build();
         }
 
         public static int getIdFromUri(Uri uri) {

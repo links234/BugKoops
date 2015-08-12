@@ -150,7 +150,6 @@ public class BugKoopsProvider extends ContentProvider {
 
         switch (match) {
             case REPORT: {
-                normalizeDate(values);
                 long _id = db.insert(BugKoopsContract.ReportEntry.TABLE_NAME, null, values);
                 if ( _id > 0 )
                     returnUri = BugKoopsContract.ReportEntry.buildUriFromId(_id);
@@ -206,13 +205,6 @@ public class BugKoopsProvider extends ContentProvider {
         return rowsDeleted;
     }
 
-    private void normalizeDate(ContentValues values) {
-        if (values.containsKey(BugKoopsContract.ReportEntry.COLUMN_DATE)) {
-            long dateValue = values.getAsLong(BugKoopsContract.ReportEntry.COLUMN_DATE);
-            values.put(BugKoopsContract.ReportEntry.COLUMN_DATE, BugKoopsContract.normalizeDate(dateValue));
-        }
-    }
-
     @Override
     public int update(
             Uri uri, ContentValues values, String selection, String[] selectionArgs) {
@@ -222,7 +214,6 @@ public class BugKoopsProvider extends ContentProvider {
 
         switch (match) {
             case REPORT:
-                normalizeDate(values);
                 rowsUpdated = db.update(BugKoopsContract.ReportEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;

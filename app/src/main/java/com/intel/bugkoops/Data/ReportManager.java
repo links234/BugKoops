@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import com.intel.bugkoops.ScannerActivity;
 
+import java.util.Date;
+
 public class ReportManager {
     private static final String LOG_TAG = ReportManager.class.getSimpleName();
 
@@ -20,7 +22,7 @@ public class ReportManager {
 
         // Then add the data, along with the corresponding name of the data type,
         // so the content provider knows what kind of value is being inserted.
-        reportValues.put(BugKoopsContract.ReportEntry.COLUMN_DATE, BugKoopsContract.normalizeDate(System.currentTimeMillis()));
+        reportValues.put(BugKoopsContract.ReportEntry.COLUMN_DATE, BugKoopsContract.dateToDB(new Date()));
         reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TITLE, "Scanned report");
         reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TEXT, text);
 

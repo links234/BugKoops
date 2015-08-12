@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
-import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -89,5 +88,9 @@ public class Utility {
             Log.e(LOG_TAG, "Unsupported encoding !");
         }
         return text;
+    }
+
+    public static String summary(String text) {
+        return text.substring(0,Math.min(60,text.length()-1));
     }
 }

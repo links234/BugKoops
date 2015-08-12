@@ -1,7 +1,6 @@
 package com.intel.bugkoops;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.CursorLoader;
@@ -11,7 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.LoaderManager;
 import android.content.Loader;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -21,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 
 import com.intel.bugkoops.Data.BugKoopsContract;
@@ -186,9 +183,9 @@ public class ReportListFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        String sortOrder = BugKoopsContract.ReportEntry.COLUMN_DATE + " ASC";
+        String sortOrder = BugKoopsContract.ReportEntry.COLUMN_DATE + " DESC";
 
-        Uri reportUri = BugKoopsContract.ReportEntry.buildUriFromStartDate(System.currentTimeMillis());
+        Uri reportUri = BugKoopsContract.ReportEntry.buildUriFromStartDate(0);
 
         return new CursorLoader(getActivity(),
                 reportUri,

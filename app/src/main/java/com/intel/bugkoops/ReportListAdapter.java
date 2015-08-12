@@ -6,7 +6,6 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ReportListAdapter extends CursorAdapter {
@@ -18,14 +17,14 @@ public class ReportListAdapter extends CursorAdapter {
     private boolean mUseLastLayout = true;
 
     public static class ViewHolder {
-        public final ImageView iconView;
         public final TextView dateView;
+        public final TextView titleView;
         public final TextView descriptionView;
 
         public ViewHolder(View view) {
-            iconView = (ImageView) view.findViewById(R.id.list_item_report_icon);
             dateView = (TextView) view.findViewById(R.id.list_item_report_date_textview);
-            descriptionView = (TextView) view.findViewById(R.id.list_item_report_title_textview);
+            titleView = (TextView) view.findViewById(R.id.list_item_report_title_textview);
+            descriptionView = (TextView) view.findViewById(R.id.list_item_report_description_textview);
         }
     }
 
@@ -62,12 +61,12 @@ public class ReportListAdapter extends CursorAdapter {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
         long dateInMillis = cursor.getLong(ReportListFragment.COL_REPORT_DATE);
+        String title = cursor.getString(ReportListFragment.COL_REPORT_TITLE);
+        String description = Utility.summary(cursor.getString(ReportListFragment.COL_REPORT_TEXT));
+
         viewHolder.dateView.setText(Long.toString(dateInMillis));
-
-        String description = cursor.getString(ReportListFragment.COL_REPORT_TITLE);
+        viewHolder.titleView.setText(title);
         viewHolder.descriptionView.setText(description);
-
-        viewHolder.iconView.setContentDescription(description);
 
     }
 
