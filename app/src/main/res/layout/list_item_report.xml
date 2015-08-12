@@ -15,7 +15,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_weight="80">
+        android:layout_weight="70">
 
         <TextView
             android:id="@+id/list_item_report_title_textview"
@@ -35,7 +35,7 @@
         android:id="@+id/list_item_report_date_textview"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:layout_weight="20"/>
+        android:textAppearance="?android:textAppearanceMedium"
+        android:layout_weight="30"/>
 
 </LinearLayout>

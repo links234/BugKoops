@@ -8,6 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.intel.bugkoops.Data.BugKoopsContract;
+
+import java.util.Date;
+
 public class ReportListAdapter extends CursorAdapter {
 
     private static final int VIEW_TYPE_COUNT = 2;
@@ -60,11 +64,12 @@ public class ReportListAdapter extends CursorAdapter {
 
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
-        long dateInMillis = cursor.getLong(ReportListFragment.COL_REPORT_DATE);
+        Date date = BugKoopsContract.dateFromDB(
+                cursor.getLong(ReportListFragment.COL_REPORT_DATE));
         String title = cursor.getString(ReportListFragment.COL_REPORT_TITLE);
         String description = Utility.summary(cursor.getString(ReportListFragment.COL_REPORT_TEXT));
 
-        viewHolder.dateView.setText(Long.toString(dateInMillis));
+        viewHolder.dateView.setText(Utility.getPrettyDate(date));
         viewHolder.titleView.setText(title);
         viewHolder.descriptionView.setText(description);
 

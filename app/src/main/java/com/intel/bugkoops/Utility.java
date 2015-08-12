@@ -11,6 +11,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Utility {
     private static final String LOG_TAG = Utility.class.getSimpleName();
@@ -92,5 +95,10 @@ public class Utility {
 
     public static String summary(String text) {
         return text.substring(0,Math.min(60,text.length()-1));
+    }
+
+    public static String getPrettyDate(Date date) {
+        final DateFormat dateFormat = new SimpleDateFormat("EEE, d MMM HH:mm:ss");
+        return dateFormat.format(date);
     }
 }
