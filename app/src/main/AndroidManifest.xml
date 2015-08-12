@@ -50,6 +50,7 @@
             android:name=".Data.BugKoopsProvider"
             android:authorities="@string/content_authority"
             android:exported="false" />
+
     </application>
 
 </manifest>

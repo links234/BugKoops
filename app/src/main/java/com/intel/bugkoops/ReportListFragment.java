@@ -1,8 +1,11 @@
 package com.intel.bugkoops;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.intel.bugkoops.Data.BugKoopsContract;
@@ -108,7 +112,7 @@ public class ReportListFragment extends Fragment implements LoaderManager.Loader
 
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                SparseBooleanArray checked = mListView.getCheckedItemPositions();
+                final SparseBooleanArray checked = mListView.getCheckedItemPositions();
                 switch (item.getItemId()) {
                     case R.id.action_report_list_modal_select_all:
                         for (int position = 0; position < mListView.getAdapter().getCount(); ++position) {
@@ -121,16 +125,32 @@ public class ReportListFragment extends Fragment implements LoaderManager.Loader
                         }
                         return false;
                     case R.id.action_report_list_modal_delete:
-                        final ContentResolver contentResolver = getActivity().getContentResolver();
-                        for (int i = 0; i < checked.size(); i++) {
-                            Cursor cursor = (Cursor) mReportListAdapter.getItem(checked.keyAt(i));
-                            long id = cursor.getLong(COL_REPORT_ID);
-                            contentResolver.delete(BugKoopsContract.ReportEntry.buildUriFromId(id),
-                                    null, null);
-                        }
-                        getLoaderManager().restartLoader(0, null, ReportListFragment.this);
-                        mode.finish();
-                        return true;
+                        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which){
+                                    case DialogInterface.BUTTON_POSITIVE:
+                                        final ContentResolver contentResolver = getActivity().getContentResolver();
+                                        for (int i = 0; i < checked.size(); i++) {
+                                            Cursor cursor = (Cursor) mReportListAdapter.getItem(checked.keyAt(i));
+                                            long id = cursor.getLong(COL_REPORT_ID);
+                                            contentResolver.delete(BugKoopsContract.ReportEntry.buildUriFromId(id),
+                                                    null, null);
+                                        }
+                                        getLoaderManager().restartLoader(0, null, ReportListFragment.this);
+                                        break;
+                                    case DialogInterface.BUTTON_NEGATIVE:
+                                        break;
+                                }
+                            }
+                        };
+
+                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                        alertDialog.setMessage(ReportListFragment.this.getString(R.string.dialog_delete_question))
+                                .setPositiveButton(ReportListFragment.this.getString(R.string.dialog_positive), dialogClickListener)
+                                .setNegativeButton(ReportListFragment.this.getString(R.string.dialog_negative), dialogClickListener).show();
+
+                        return false;
                     default:
                         return false;
                 }

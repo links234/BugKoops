@@ -24,6 +24,10 @@
         <b>Sponsored by</b> <a href="http://www.intel.com">Intel</a>\n
     </string>
 
+    <string name="dialog_positive">Yes</string>
+    <string name="dialog_negative">No</string>
+    <string name="dialog_delete_question">Are you sure you want to delete these reports?</string>
+
     <string name="pref_category_scanner_label">Scanner</string>
 
     <string name="pref_invertcolors_label">Invert colors</string>
@@ -82,5 +86,4 @@
     <string name="pref_resettodefault_key" translatable="false">resetToDefault</string>
 
     <string name="content_authority" translatable="false">com.intel.bugkoops</string>
-
 </resources>

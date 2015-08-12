@@ -1,6 +1,7 @@
 package com.intel.bugkoops;
 
 import android.os.Bundle;
+import android.view.Menu;
 
 
 public class ReportDetailActivity extends MenuActivity {
