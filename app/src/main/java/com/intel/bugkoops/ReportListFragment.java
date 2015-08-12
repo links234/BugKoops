@@ -1,15 +1,22 @@
 package com.intel.bugkoops;
 
+import android.app.Fragment;
+import android.content.ContentResolver;
+import android.content.CursorLoader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.app.LoaderManager;
+import android.content.Loader;
+import android.util.Log;
+import android.util.SparseBooleanArray;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -17,7 +24,7 @@ import com.intel.bugkoops.Data.BugKoopsContract;
 
 public class ReportListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final String LOG_TAG = ReportListFragment.class.getSimpleName();
-    private ReportListAdapter mForecastAdapter;
+    private ReportListAdapter mReportListAdapter;
 
     private ListView mListView;
     private int mPosition = ListView.INVALID_POSITION;
@@ -25,9 +32,9 @@ public class ReportListFragment extends Fragment implements LoaderManager.Loader
 
     private static final String SELECTED_KEY = "selected_position";
 
-    private static final int FORECAST_LOADER = 0;
+    private static final int REPORT_LOADER = 0;
 
-    private static final String[] FORECAST_COLUMNS = {
+    private static final String[] REPORT_COLUMNS = {
             BugKoopsContract.ReportEntry._ID,
             BugKoopsContract.ReportEntry.COLUMN_DATE,
             BugKoopsContract.ReportEntry.COLUMN_TITLE,
@@ -60,12 +67,13 @@ public class ReportListFragment extends Fragment implements LoaderManager.Loader
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        mForecastAdapter = new ReportListAdapter(getActivity(), null, 0);
+        mReportListAdapter = new ReportListAdapter(getActivity(), null, 0);
 
         View rootView = inflater.inflate(R.layout.fragment_report, container, false);
 
         mListView = (ListView) rootView.findViewById(R.id.listview_report);
-        mListView.setAdapter(mForecastAdapter);
+        mListView.setAdapter(mReportListAdapter);
+        mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -80,18 +88,71 @@ public class ReportListFragment extends Fragment implements LoaderManager.Loader
             }
         });
 
+        mListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+                final int checkedCount = mListView.getCheckedItemCount();
+                mode.setTitle(checkedCount + " Selected");
+            }
+
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                mode.getMenuInflater().inflate(R.menu.menu_report_list_modal, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                SparseBooleanArray checked = mListView.getCheckedItemPositions();
+                switch (item.getItemId()) {
+                    case R.id.action_report_list_modal_select_all:
+                        for (int position = 0; position < mListView.getAdapter().getCount(); ++position) {
+                            if(!checked.get(position)) {
+                                mListView.performItemClick(
+                                        mListView.getAdapter().getView(position, null, null),
+                                        position,
+                                        mListView.getAdapter().getItemId(position));
+                            }
+                        }
+                        return false;
+                    case R.id.action_report_list_modal_delete:
+                        final ContentResolver contentResolver = getActivity().getContentResolver();
+                        for (int i = 0; i < checked.size(); i++) {
+                            Cursor cursor = (Cursor) mReportListAdapter.getItem(checked.keyAt(i));
+                            long id = cursor.getLong(COL_REPORT_ID);
+                            contentResolver.delete(BugKoopsContract.ReportEntry.buildUriFromId(id),
+                                    null, null);
+                        }
+                        getLoaderManager().restartLoader(0, null, ReportListFragment.this);
+                        mode.finish();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+            }
+        });
+
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
         }
 
-        mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
+        mReportListAdapter.setUseTodayLayout(mUseTodayLayout);
 
         return rootView;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(FORECAST_LOADER, null, this);
+        getLoaderManager().initLoader(REPORT_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -111,7 +172,7 @@ public class ReportListFragment extends Fragment implements LoaderManager.Loader
 
         return new CursorLoader(getActivity(),
                 reportUri,
-                FORECAST_COLUMNS,
+                REPORT_COLUMNS,
                 null,
                 null,
                 sortOrder);
@@ -119,7 +180,7 @@ public class ReportListFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mForecastAdapter.swapCursor(data);
+        mReportListAdapter.swapCursor(data);
         if (mPosition != ListView.INVALID_POSITION) {
             mListView.smoothScrollToPosition(mPosition);
         }
@@ -127,13 +188,13 @@ public class ReportListFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mForecastAdapter.swapCursor(null);
+        mReportListAdapter.swapCursor(null);
     }
 
     public void setUseTodayLayout(boolean useTodayLayout) {
         mUseTodayLayout = useTodayLayout;
-        if (mForecastAdapter != null) {
-            mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
+        if (mReportListAdapter != null) {
+            mReportListAdapter.setUseTodayLayout(mUseTodayLayout);
         }
     }
 }

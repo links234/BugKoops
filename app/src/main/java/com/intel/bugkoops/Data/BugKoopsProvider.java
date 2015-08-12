@@ -185,6 +185,13 @@ public class BugKoopsProvider extends ContentProvider {
                 rowsDeleted = db.delete(
                         BugKoopsContract.ReportEntry.TABLE_NAME, selection, selectionArgs);
                 break;
+            case REPORT_WITH_ID:
+                selection = "_ID = ?";
+                selectionArgs = new String[]{Long.toString(
+                        BugKoopsContract.ReportEntry.getIdFromUri(uri))};
+                rowsDeleted = db.delete(
+                        BugKoopsContract.ReportEntry.TABLE_NAME, selection, selectionArgs);
+                break;
             case PROFILE:
                 rowsDeleted = db.delete(
                         BugKoopsContract.ProfileEntry.TABLE_NAME, selection, selectionArgs);

@@ -3,7 +3,6 @@ package com.intel.bugkoops;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 
 public class ReportActivity extends MenuActivity implements ReportListFragment.Callback  {
     private final String LOG_TAG = getClass().getSimpleName();
@@ -17,7 +16,7 @@ public class ReportActivity extends MenuActivity implements ReportListFragment.C
 
         mTwoPane = false;
 
-        ReportListFragment forecastFragment =  ((ReportListFragment)getSupportFragmentManager()
+        ReportListFragment forecastFragment =  ((ReportListFragment)getFragmentManager()
                 .findFragmentById(R.id.fragment_report_list));
         forecastFragment.setUseTodayLayout(!mTwoPane);
     }
