@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.intel.bugkoops.Data.BugKoopsContract;
+import com.journeyapps.barcodescanner.Util;
 
 import java.util.Date;
 
@@ -67,23 +68,23 @@ public class ReportListAdapter extends CursorAdapter {
         Date date = BugKoopsContract.dateFromDB(
                 cursor.getLong(ReportListFragment.COL_REPORT_DATE));
         String title = cursor.getString(ReportListFragment.COL_REPORT_TITLE);
-        String description = Utility.summary(cursor.getString(ReportListFragment.COL_REPORT_TEXT));
+        String description = cursor.getString(ReportListFragment.COL_REPORT_TEXT);
+
+        viewHolder.titleView.setText(title);
 
         int viewType = getItemViewType(cursor.getPosition());
         switch (viewType) {
             case VIEW_TYPE_LAST: {
                 viewHolder.dateView.setText(Utility.getDate(date));
+                viewHolder.descriptionView.setText(Utility.summaryMedium(description));
                 break;
             }
             case VIEW_TYPE_OTHER: {
                 viewHolder.dateView.setText(Utility.getPrettyDate(date));
+                viewHolder.descriptionView.setText(Utility.summarySmall(description));
                 break;
             }
         }
-
-        viewHolder.titleView.setText(title);
-        viewHolder.descriptionView.setText(description);
-
     }
 
     public void setUseTodayLayout(boolean useTodayLayout) {

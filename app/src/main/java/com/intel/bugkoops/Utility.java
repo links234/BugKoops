@@ -94,8 +94,12 @@ public class Utility {
         return text;
     }
 
-    public static String summary(String text) {
+    public static String summarySmall(String text) {
         return text.substring(0,Math.min(60,text.length()-1));
+    }
+
+    public static String summaryMedium(String text) {
+        return text.substring(0, Math.min(115,text.length()-1));
     }
 
     public static String getPrettyDate(Date date) {
@@ -107,7 +111,7 @@ public class Utility {
         long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(duration);
         long diffInHours = TimeUnit.MILLISECONDS.toHours(duration);
         long diffInDays = endDate.getDay() - date.getDay();
-        
+
 
         if(diffInDays==0) {
             if(diffInHours>0) {
