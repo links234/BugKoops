@@ -115,7 +115,7 @@ public class Utility {
 
         if(diffInDays==0) {
             if(diffInHours>0) {
-                if(diffInMinutes == 1) {
+                if(diffInHours == 1) {
                     return Long.toString(diffInHours) + " hour ago";
                 } else {
                     return Long.toString(diffInHours) + " hours ago";

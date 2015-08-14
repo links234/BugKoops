@@ -10,6 +10,7 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.intel.bugkoops.Data.BugKoopsContract;
@@ -35,10 +36,9 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
     public static final int COL_REPORT_TITLE = 2;
     public static final int COL_REPORT_TEXT = 3;
 
-    private TextView mFriendlyDateView;
     private TextView mDateView;
-    private TextView mTitleView;
-    private TextView mTextView;
+    private EditText mTitleView;
+    private EditText mTextView;
 
     public ReportDetailFragment() {
         setHasOptionsMenu(true);
@@ -55,9 +55,8 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
 
         View rootView = inflater.inflate(R.layout.fragment_report_detail, container, false);
         mDateView = (TextView) rootView.findViewById(R.id.detail_report_date_textview);
-        mFriendlyDateView = (TextView) rootView.findViewById(R.id.detail_report_day_textview);
-        mTitleView = (TextView) rootView.findViewById(R.id.detail_report_title_textview);
-        mTextView = (TextView) rootView.findViewById(R.id.detail_report_text_textview);
+        mTitleView = (EditText) rootView.findViewById(R.id.detail_report_title_textview);
+        mTextView = (EditText) rootView.findViewById(R.id.detail_report_text_textview);
         return rootView;
     }
 
@@ -89,9 +88,6 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
             String title = data.getString(COL_REPORT_TITLE);
             String text = data.getString(COL_REPORT_TEXT);
 
-            String friendlyDateText = "Friendly date " + Long.toString(date);
-
-            mFriendlyDateView.setText(friendlyDateText);
             mDateView.setText(Utility.getDate(BugKoopsContract.dateFromDB(date)));
             mTitleView.setText(title);
             mTextView.setText(text);
