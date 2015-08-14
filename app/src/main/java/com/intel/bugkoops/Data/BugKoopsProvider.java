@@ -19,7 +19,7 @@ public class BugKoopsProvider extends ContentProvider {
 
     private static final SQLiteQueryBuilder sReportQueryBuilder;
 
-    static{
+    static {
         sReportQueryBuilder = new SQLiteQueryBuilder();
 
         sReportQueryBuilder.setTables(BugKoopsContract.ReportEntry.TABLE_NAME);

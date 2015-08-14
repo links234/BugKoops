@@ -14,6 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class Utility {
     private static final String LOG_TAG = Utility.class.getSimpleName();
@@ -98,6 +99,48 @@ public class Utility {
     }
 
     public static String getPrettyDate(Date date) {
+        Date endDate   = new Date();
+
+        long duration  = endDate.getTime() - date.getTime();
+
+        long diffInSeconds = TimeUnit.MILLISECONDS.toSeconds(duration);
+        long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(duration);
+        long diffInHours = TimeUnit.MILLISECONDS.toHours(duration);
+        long diffInDays = endDate.getDay() - date.getDay();
+        
+
+        if(diffInDays==0) {
+            if(diffInHours>0) {
+                if(diffInMinutes == 1) {
+                    return Long.toString(diffInHours) + " hour ago";
+                } else {
+                    return Long.toString(diffInHours) + " hours ago";
+                }
+            } else if(diffInMinutes>0) {
+                if(diffInMinutes == 1) {
+                    return Long.toString(diffInMinutes) + " minute ago";
+                } else {
+                    return Long.toString(diffInMinutes) + " minutes ago";
+                }
+            } else if(diffInSeconds>0) {
+                if(diffInSeconds == 1) {
+                    return Long.toString(diffInSeconds) + " second ago";
+                } else {
+                    return Long.toString(diffInSeconds) + " seconds ago";
+                }
+            } else {
+                return "Just now";
+            }
+        } else if(diffInDays==1) {
+            final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+            return "Yesterday at "+dateFormat.format(date);
+        } else {
+            final DateFormat dateFormat = new SimpleDateFormat("EEE, d MMM HH:mm:ss");
+            return dateFormat.format(date);
+        }
+    }
+
+    public static String getDate(Date date) {
         final DateFormat dateFormat = new SimpleDateFormat("EEE, d MMM HH:mm:ss");
         return dateFormat.format(date);
     }

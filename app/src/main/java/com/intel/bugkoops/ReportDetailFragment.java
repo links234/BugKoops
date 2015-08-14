@@ -56,7 +56,7 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
         View rootView = inflater.inflate(R.layout.fragment_report_detail, container, false);
         mDateView = (TextView) rootView.findViewById(R.id.detail_report_date_textview);
         mFriendlyDateView = (TextView) rootView.findViewById(R.id.detail_report_day_textview);
-        mTitleView = (TextView) rootView.findViewById(R.id.detail_report_text_textview);
+        mTitleView = (TextView) rootView.findViewById(R.id.detail_report_title_textview);
         mTextView = (TextView) rootView.findViewById(R.id.detail_report_text_textview);
         return rootView;
     }
@@ -92,7 +92,7 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
             String friendlyDateText = "Friendly date " + Long.toString(date);
 
             mFriendlyDateView.setText(friendlyDateText);
-            mDateView.setText(Long.toString(date));
+            mDateView.setText(Utility.getDate(BugKoopsContract.dateFromDB(date)));
             mTitleView.setText(title);
             mTextView.setText(text);
         }

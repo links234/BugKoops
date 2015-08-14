@@ -69,7 +69,18 @@ public class ReportListAdapter extends CursorAdapter {
         String title = cursor.getString(ReportListFragment.COL_REPORT_TITLE);
         String description = Utility.summary(cursor.getString(ReportListFragment.COL_REPORT_TEXT));
 
-        viewHolder.dateView.setText(Utility.getPrettyDate(date));
+        int viewType = getItemViewType(cursor.getPosition());
+        switch (viewType) {
+            case VIEW_TYPE_LAST: {
+                viewHolder.dateView.setText(Utility.getDate(date));
+                break;
+            }
+            case VIEW_TYPE_OTHER: {
+                viewHolder.dateView.setText(Utility.getPrettyDate(date));
+                break;
+            }
+        }
+
         viewHolder.titleView.setText(title);
         viewHolder.descriptionView.setText(description);
 
