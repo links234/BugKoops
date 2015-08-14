@@ -35,7 +35,7 @@
         android:id="@+id/list_item_report_date_textview"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:textAppearanceMedium"
+        android:textAppearance="?android:textAppearanceSmall"
         android:layout_weight="30"/>
 
 </LinearLayout>

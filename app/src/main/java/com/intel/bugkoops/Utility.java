@@ -94,12 +94,37 @@ public class Utility {
         return text;
     }
 
+    public static String summary(String text, int numberOfLines, int charsPerLine) {
+        String summary = new String();
+        String[] lines = text.split("\\r?\\n",numberOfLines);
+        for(String line : lines) {
+            if(summary.length() + line.length() >= charsPerLine*numberOfLines)
+            {
+                break;
+            }
+            summary += line;
+            summary += "\n";
+        }
+
+        if(summary.length()==0)
+        {
+            return summary;
+        }
+        return summary.substring(0,Math.min(charsPerLine*numberOfLines,summary.length()-1));
+    }
+
     public static String summarySmall(String text) {
-        return text.substring(0,Math.min(60,text.length()-1));
+        final int NUMBER_OF_LINES = 3;
+        final int CHARS_PER_LINE = 21;
+
+        return summary(text, NUMBER_OF_LINES, CHARS_PER_LINE);
     }
 
     public static String summaryMedium(String text) {
-        return text.substring(0, Math.min(115,text.length()-1));
+        final int NUMBER_OF_LINES = 7;
+        final int CHARS_PER_LINE = 25;
+
+        return summary(text, NUMBER_OF_LINES, CHARS_PER_LINE);
     }
 
     public static String getPrettyDate(Date date) {
