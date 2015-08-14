@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.intel.bugkoops.Data.BugKoopsContract;
 
 public class ReportDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-
     private static final String LOG_TAG = ReportDetailFragment.class.getSimpleName();
     static final String DETAIL_URI = "URI";
 

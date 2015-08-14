@@ -65,6 +65,12 @@ public class ReportListFragment extends Fragment implements LoaderManager.Loader
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        getLoaderManager().restartLoader(0, null, ReportListFragment.this);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -143,7 +149,7 @@ public class ReportListFragment extends Fragment implements LoaderManager.Loader
                         };
 
                         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-                        alertDialog.setMessage(ReportListFragment.this.getString(R.string.dialog_delete_question))
+                        alertDialog.setMessage(ReportListFragment.this.getString(R.string.dialog_delete_reports_question))
                                 .setPositiveButton(ReportListFragment.this.getString(R.string.dialog_positive), dialogClickListener)
                                 .setNegativeButton(ReportListFragment.this.getString(R.string.dialog_negative), dialogClickListener).show();
 

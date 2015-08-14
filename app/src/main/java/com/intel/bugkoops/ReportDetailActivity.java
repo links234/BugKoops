@@ -1,10 +1,19 @@
 package com.intel.bugkoops;
 
+import android.app.AlertDialog;
+import android.content.ContentResolver;
+import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.intel.bugkoops.Data.BugKoopsContract;
+
 public class ReportDetailActivity extends MenuActivity {
+    private static final String LOG_TAG = ReportDetailActivity.class.getSimpleName();
+
+    private long mId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -13,7 +22,10 @@ public class ReportDetailActivity extends MenuActivity {
 
         if (savedInstanceState == null) {
             Bundle arguments = new Bundle();
-            arguments.putParcelable(ReportDetailFragment.DETAIL_URI, getIntent().getData());
+            Uri uri = getIntent().getData();
+            arguments.putParcelable(ReportDetailFragment.DETAIL_URI, uri);
+
+            mId = BugKoopsContract.ReportEntry.getIdFromUri(uri);
 
             ReportDetailFragment fragment = new ReportDetailFragment();
             fragment.setArguments(arguments);
@@ -34,10 +46,36 @@ public class ReportDetailActivity extends MenuActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_report_detail_save:
+                break;
+            case R.id.action_report_detail_delete:
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
+                                final ContentResolver contentResolver = getContentResolver();
+                                contentResolver.delete(BugKoopsContract.ReportEntry.buildUriFromId(mId),
+                                        null, null);
+                                finish();
+                                break;
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                break;
+                        }
+                    }
+                };
 
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+                alertDialog.setMessage(getString(R.string.dialog_delete_report_question))
+                        .setPositiveButton(getString(R.string.dialog_positive), dialogClickListener)
+                        .setNegativeButton(getString(R.string.dialog_negative), dialogClickListener).show();
+                break;
+            case R.id.action_report_detail_send:
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
+        return true;
     }
 }
 
