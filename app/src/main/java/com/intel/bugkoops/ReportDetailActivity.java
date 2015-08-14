@@ -49,7 +49,23 @@ public class ReportDetailActivity extends MenuActivity {
         switch (item.getItemId()) {
             case R.id.action_report_detail_save:
                 if(reportDetailFragment.modified()) {
-                    reportDetailFragment.save();
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which){
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    reportDetailFragment.save();
+                                    break;
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    break;
+                            }
+                        }
+                    };
+
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+                    alertDialog.setMessage(getString(R.string.dialog_save_report_question))
+                            .setPositiveButton(getString(R.string.dialog_positive), dialogClickListener)
+                            .setNegativeButton(getString(R.string.dialog_negative), dialogClickListener).show();
                 }
                 break;
             case R.id.action_report_detail_delete:
