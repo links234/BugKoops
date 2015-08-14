@@ -101,8 +101,28 @@ public class ReportDetailActivity extends MenuActivity {
     @Override
     public void onBackPressed() {
         if(reportDetailFragment.modified()) {
-            reportDetailFragment.save();
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which){
+                        case DialogInterface.BUTTON_POSITIVE:
+                            reportDetailFragment.save();
+                            finish();
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            finish();
+                            break;
+                        case DialogInterface.BUTTON_NEUTRAL:
+                            break;
+                    }
+                }
+            };
+
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+            alertDialog.setMessage(getString(R.string.dialog_discard_report_change_question))
+                    .setPositiveButton(getString(R.string.dialog_save), dialogClickListener)
+                    .setNegativeButton(getString(R.string.dialog_discard), dialogClickListener)
+                    .setNeutralButton(getString(R.string.dialog_neutral), dialogClickListener).show();
         }
-        finish();
     }
 }

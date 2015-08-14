@@ -33,6 +33,11 @@
     <string name="dialog_delete_report_question">Are you sure you want to delete this report?</string>
     <string name="dialog_save_report_question">Are you sure you want to overwrite this report?</string>
 
+    <string name="dialog_discard_report_change_question">You have modified this report. What do you want to happen to changes?</string>
+    <string name="dialog_discard">Discard</string>
+    <string name="dialog_save">Save</string>
+    <string name="dialog_neutral">Cancel</string>
+
     <string name="pref_category_scanner_label">Scanner</string>
 
     <string name="pref_invertcolors_label">Invert colors</string>
