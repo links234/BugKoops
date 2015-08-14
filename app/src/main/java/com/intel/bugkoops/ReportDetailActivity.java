@@ -5,10 +5,8 @@ import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.intel.bugkoops.Data.BugKoopsContract;
 
@@ -50,7 +48,9 @@ public class ReportDetailActivity extends MenuActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_report_detail_save:
-                reportDetailFragment.save();
+                if(reportDetailFragment.modified()) {
+                    reportDetailFragment.save();
+                }
                 break;
             case R.id.action_report_detail_delete:
                 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -84,8 +84,9 @@ public class ReportDetailActivity extends MenuActivity {
 
     @Override
     public void onBackPressed() {
-        reportDetailFragment.save();
+        if(reportDetailFragment.modified()) {
+            reportDetailFragment.save();
+        }
         finish();
     }
 }
-

@@ -41,6 +41,10 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
     private EditText mTitleEdit;
     private EditText mTextEdit;
 
+    private long initialDate;
+    private String initialTitle;
+    private String initialText;
+
     public ReportDetailFragment() {
         setHasOptionsMenu(true);
     }
@@ -92,6 +96,10 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
             mDateView.setText(Utility.getDate(BugKoopsContract.dateFromDB(date)));
             mTitleEdit.setText(title);
             mTextEdit.setText(text);
+
+            initialDate = date;
+            initialTitle = title;
+            initialText = text;
         }
     }
 
@@ -100,10 +108,20 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
     }
 
     public void save() {
+        String title = mTitleEdit.getText().toString();
+        String text = mTextEdit.getText().toString();
+
         ContentValues reportValues = new ContentValues();
-        reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TITLE, mTitleEdit.getText().toString());
-        reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TEXT, mTextEdit.getText().toString());
+        reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TITLE, title);
+        reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TEXT, text);
         final ContentResolver contentResolver = getActivity().getContentResolver();
         contentResolver.update(mUri, reportValues, null, null);
+    }
+
+    public boolean modified() {
+        String title = mTitleEdit.getText().toString();
+        String text = mTextEdit.getText().toString();
+
+        return !initialTitle.equals(title) || !initialText.equals(text);
     }
 }
