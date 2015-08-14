@@ -217,6 +217,13 @@ public class BugKoopsProvider extends ContentProvider {
                 rowsUpdated = db.update(BugKoopsContract.ReportEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;
+            case REPORT_WITH_ID:
+                selection = "_ID = ?";
+                selectionArgs = new String[]{Long.toString(
+                        BugKoopsContract.ReportEntry.getIdFromUri(uri))};
+                rowsUpdated = db.update(
+                        BugKoopsContract.ReportEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
             case PROFILE:
                 rowsUpdated = db.update(BugKoopsContract.ProfileEntry.TABLE_NAME, values, selection,
                         selectionArgs);

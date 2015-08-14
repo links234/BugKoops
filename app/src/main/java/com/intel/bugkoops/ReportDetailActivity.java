@@ -5,8 +5,10 @@ import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.intel.bugkoops.Data.BugKoopsContract;
 
@@ -14,6 +16,7 @@ public class ReportDetailActivity extends MenuActivity {
     private static final String LOG_TAG = ReportDetailActivity.class.getSimpleName();
 
     private long mId;
+    private ReportDetailFragment reportDetailFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,11 +30,11 @@ public class ReportDetailActivity extends MenuActivity {
 
             mId = BugKoopsContract.ReportEntry.getIdFromUri(uri);
 
-            ReportDetailFragment fragment = new ReportDetailFragment();
-            fragment.setArguments(arguments);
+            reportDetailFragment = new ReportDetailFragment();
+            reportDetailFragment.setArguments(arguments);
 
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.detail_report_container, fragment)
+                    .add(R.id.detail_report_container, reportDetailFragment)
                     .commit();
         }
     }
@@ -47,6 +50,7 @@ public class ReportDetailActivity extends MenuActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_report_detail_save:
+                reportDetailFragment.save();
                 break;
             case R.id.action_report_detail_delete:
                 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -76,6 +80,12 @@ public class ReportDetailActivity extends MenuActivity {
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        reportDetailFragment.save();
+        finish();
     }
 }
 

@@ -1,5 +1,7 @@
 package com.intel.bugkoops;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,8 +38,8 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
     public static final int COL_REPORT_TEXT = 3;
 
     private TextView mDateView;
-    private EditText mTitleView;
-    private EditText mTextView;
+    private EditText mTitleEdit;
+    private EditText mTextEdit;
 
     public ReportDetailFragment() {
         setHasOptionsMenu(true);
@@ -54,8 +56,8 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
 
         View rootView = inflater.inflate(R.layout.fragment_report_detail, container, false);
         mDateView = (TextView) rootView.findViewById(R.id.detail_report_date_textview);
-        mTitleView = (EditText) rootView.findViewById(R.id.detail_report_title_textview);
-        mTextView = (EditText) rootView.findViewById(R.id.detail_report_text_textview);
+        mTitleEdit = (EditText) rootView.findViewById(R.id.detail_report_title_textview);
+        mTextEdit = (EditText) rootView.findViewById(R.id.detail_report_text_textview);
         return rootView;
     }
 
@@ -88,12 +90,20 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
             String text = data.getString(COL_REPORT_TEXT);
 
             mDateView.setText(Utility.getDate(BugKoopsContract.dateFromDB(date)));
-            mTitleView.setText(title);
-            mTextView.setText(text);
+            mTitleEdit.setText(title);
+            mTextEdit.setText(text);
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+    }
+
+    public void save() {
+        ContentValues reportValues = new ContentValues();
+        reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TITLE, mTitleEdit.getText().toString());
+        reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TEXT, mTextEdit.getText().toString());
+        final ContentResolver contentResolver = getActivity().getContentResolver();
+        contentResolver.update(mUri, reportValues, null, null);
     }
 }
