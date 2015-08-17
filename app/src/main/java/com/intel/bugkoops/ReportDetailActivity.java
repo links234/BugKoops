@@ -123,6 +123,8 @@ public class ReportDetailActivity extends MenuActivity {
                     .setPositiveButton(getString(R.string.dialog_save), dialogClickListener)
                     .setNegativeButton(getString(R.string.dialog_discard), dialogClickListener)
                     .setNeutralButton(getString(R.string.dialog_neutral), dialogClickListener).show();
+        } else {
+            finish();
         }
     }
 }
