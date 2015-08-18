@@ -5,11 +5,13 @@ import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.LoaderManager;
 import android.content.Loader;
+import android.support.design.widget.FloatingActionButton;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -27,6 +29,7 @@ public class ReportListFragment extends Fragment implements LoaderManager.Loader
     public static final String LOG_TAG = ReportListFragment.class.getSimpleName();
     private ReportListAdapter mReportListAdapter;
 
+    private FloatingActionButton mAddFAB;
     private ListView mListView;
     private int mPosition = ListView.INVALID_POSITION;
     private boolean mUseTodayLayout;
@@ -77,6 +80,14 @@ public class ReportListFragment extends Fragment implements LoaderManager.Loader
         mReportListAdapter = new ReportListAdapter(getActivity(), null, 0);
 
         View rootView = inflater.inflate(R.layout.fragment_report, container, false);
+
+        mAddFAB = (FloatingActionButton) rootView.findViewById(R.id.action_report_list_add);
+        mAddFAB.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), ReportDetailActivity.class);
+                startActivity(intent);
+            }
+        });
 
         mListView = (ListView) rootView.findViewById(R.id.listview_report);
         mListView.setAdapter(mReportListAdapter);

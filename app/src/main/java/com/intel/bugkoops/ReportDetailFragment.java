@@ -17,6 +17,8 @@ import android.widget.TextView;
 
 import com.intel.bugkoops.Data.BugKoopsContract;
 
+import java.util.Date;
+
 public class ReportDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String LOG_TAG = ReportDetailFragment.class.getSimpleName();
     static final String DETAIL_URI = "URI";
@@ -53,15 +55,24 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Bundle arguments = getArguments();
-        if (arguments != null) {
-            mUri = arguments.getParcelable(ReportDetailFragment.DETAIL_URI);
-        }
-
         View rootView = inflater.inflate(R.layout.fragment_report_detail, container, false);
         mDateView = (TextView) rootView.findViewById(R.id.detail_report_date_textview);
         mTitleEdit = (EditText) rootView.findViewById(R.id.detail_report_title_textview);
         mTextEdit = (EditText) rootView.findViewById(R.id.detail_report_text_textview);
+
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            mUri = arguments.getParcelable(ReportDetailFragment.DETAIL_URI);
+        } else {
+            initialDate = BugKoopsContract.dateToDB(new Date());
+            initialTitle = "";
+            initialText = "";
+
+            mDateView.setText(Utility.getDate(BugKoopsContract.dateFromDB(initialDate)));
+            mTitleEdit.setText(initialTitle);
+            mTextEdit.setText(initialText);
+        }
+
         return rootView;
     }
 
@@ -111,11 +122,25 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
         String title = mTitleEdit.getText().toString();
         String text = mTextEdit.getText().toString();
 
-        ContentValues reportValues = new ContentValues();
-        reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TITLE, title);
-        reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TEXT, text);
         final ContentResolver contentResolver = getActivity().getContentResolver();
-        contentResolver.update(mUri, reportValues, null, null);
+        ContentValues reportValues = new ContentValues();
+
+        if(mUri != null) {
+            reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TITLE, title);
+            reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TEXT, text);
+            contentResolver.update(mUri, reportValues, null, null);
+        } else {
+            reportValues.put(BugKoopsContract.ReportEntry.COLUMN_DATE, initialDate);
+            reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TITLE, title);
+            reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TEXT, text);
+
+            mUri = contentResolver.insert(
+                    BugKoopsContract.ReportEntry.CONTENT_URI,
+                    reportValues
+            );
+        }
+        initialText = text;
+        initialTitle = title;
     }
 
     public boolean modified() {

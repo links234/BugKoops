@@ -14,6 +14,7 @@ public class ReportDetailActivity extends MenuActivity {
     private static final String LOG_TAG = ReportDetailActivity.class.getSimpleName();
 
     private long mId;
+    private boolean mIsNew;
     private ReportDetailFragment reportDetailFragment;
 
     @Override
@@ -22,18 +23,29 @@ public class ReportDetailActivity extends MenuActivity {
         setContentView(R.layout.activity_report_detail);
 
         if (savedInstanceState == null) {
-            Bundle arguments = new Bundle();
             Uri uri = getIntent().getData();
-            arguments.putParcelable(ReportDetailFragment.DETAIL_URI, uri);
+            if(uri != null) {
+                Bundle arguments = new Bundle();
+                arguments.putParcelable(ReportDetailFragment.DETAIL_URI, uri);
 
-            mId = BugKoopsContract.ReportEntry.getIdFromUri(uri);
+                mId = BugKoopsContract.ReportEntry.getIdFromUri(uri);
 
-            reportDetailFragment = new ReportDetailFragment();
-            reportDetailFragment.setArguments(arguments);
+                reportDetailFragment = new ReportDetailFragment();
+                reportDetailFragment.setArguments(arguments);
 
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.detail_report_container, reportDetailFragment)
-                    .commit();
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.detail_report_container, reportDetailFragment)
+                        .commit();
+            } else {
+                mId = 0;
+                mIsNew = true;
+
+                reportDetailFragment = new ReportDetailFragment();
+
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.detail_report_container, reportDetailFragment)
+                        .commit();
+            }
         }
     }
 
