@@ -18,6 +18,10 @@
     <string name="action_settings">Settings</string>
     <string name="action_about">About</string>
 
+    <string name="action_send_email">Email</string>
+    <string name="action_send_share">Share</string>
+    <string name="action_send_bugzilla">Bugzilla</string>
+
     <string name="about_description">Bug reporting application from encoded QR codes</string>
     <string name="about_credits">
         <b>Special credits goes to:</b>\n
