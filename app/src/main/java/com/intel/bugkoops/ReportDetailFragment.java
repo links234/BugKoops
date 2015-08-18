@@ -39,13 +39,19 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
     public static final int COL_REPORT_TITLE = 2;
     public static final int COL_REPORT_TEXT = 3;
 
+    public static final int REPORT_TYPE_TITLE = 1;
+    public static final int REPORT_TYPE_DATE = 2;
+    public static final int REPORT_TYPE_TEXT = 4;
+
+    public static final int REPORT_TYPE_ALL = REPORT_TYPE_DATE | REPORT_TYPE_TEXT | REPORT_TYPE_TITLE;
+
     private TextView mDateView;
     private EditText mTitleEdit;
     private EditText mTextEdit;
 
-    private long initialDate;
-    private String initialTitle;
-    private String initialText;
+    private long mInitialDate;
+    private String mInitialTitle;
+    private String mInitialText;
 
     public ReportDetailFragment() {
         setHasOptionsMenu(true);
@@ -64,13 +70,13 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
         if (arguments != null) {
             mUri = arguments.getParcelable(ReportDetailFragment.DETAIL_URI);
         } else {
-            initialDate = BugKoopsContract.dateToDB(new Date());
-            initialTitle = "";
-            initialText = "";
+            mInitialDate = BugKoopsContract.dateToDB(new Date());
+            mInitialTitle = "";
+            mInitialText = "";
 
-            mDateView.setText(Utility.getDate(BugKoopsContract.dateFromDB(initialDate)));
-            mTitleEdit.setText(initialTitle);
-            mTextEdit.setText(initialText);
+            mDateView.setText(Utility.getDate(BugKoopsContract.dateFromDB(mInitialDate)));
+            mTitleEdit.setText(mInitialTitle);
+            mTextEdit.setText(mInitialText);
         }
 
         return rootView;
@@ -108,9 +114,9 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
             mTitleEdit.setText(title);
             mTextEdit.setText(text);
 
-            initialDate = date;
-            initialTitle = title;
-            initialText = text;
+            mInitialDate = date;
+            mInitialTitle = title;
+            mInitialText = text;
         }
     }
 
@@ -130,7 +136,7 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
             reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TEXT, text);
             contentResolver.update(mUri, reportValues, null, null);
         } else {
-            reportValues.put(BugKoopsContract.ReportEntry.COLUMN_DATE, initialDate);
+            reportValues.put(BugKoopsContract.ReportEntry.COLUMN_DATE, mInitialDate);
             reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TITLE, title);
             reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TEXT, text);
 
@@ -139,18 +145,45 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
                     reportValues
             );
         }
-        initialText = text;
-        initialTitle = title;
+        mInitialText = text;
+        mInitialTitle = title;
     }
 
     public boolean modified() {
         String title = mTitleEdit.getText().toString();
         String text = mTextEdit.getText().toString();
 
-        return !initialTitle.equals(title) || !initialText.equals(text);
+        return !mInitialTitle.equals(title) || !mInitialText.equals(text);
     }
 
     public boolean firstTime() {
         return mUri == null;
+    }
+
+    public long getDate() {
+        return mInitialDate;
+    }
+
+    public String getTitle() {
+        return mInitialTitle;
+    }
+
+    public String getText() {
+        return mInitialText;
+    }
+
+    public String getReport(int reportType) {
+        String report = "";
+        if( (reportType&REPORT_TYPE_TITLE) != 0) {
+            report += "<title>\n"+mInitialTitle+"\n</title>\n";
+        }
+        if( (reportType&REPORT_TYPE_DATE) != 0) {
+            report += "<date>\n"+Utility.getDate(BugKoopsContract.dateFromDB(mInitialDate))+"\n</date>\n";
+        }
+        if( (reportType&REPORT_TYPE_TEXT) != 0) {
+            report += "<text>\n"+mInitialText+"\n</text>\n";
+        }
+
+        return report;
     }
 }

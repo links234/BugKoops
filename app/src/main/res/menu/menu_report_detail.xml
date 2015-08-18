@@ -21,17 +21,17 @@
         app:showAsAction="always">
 
         <menu>
-            <item android:id="@+id/action_send_email"
+            <item android:id="@+id/action_report_detail_send_email"
                 app:showAsAction="ifRoom"
                 android:icon="@drawable/ic_action_email"
                 android:title="@string/action_send_email" />
 
-            <item android:id="@+id/action_send_share"
+            <item android:id="@+id/action_report_detail_send_share"
                 app:showAsAction="ifRoom"
                 android:icon="@drawable/ic_action_share"
                 android:title="@string/action_send_share" />
 
-            <item android:id="@+id/action_send_bugzilla"
+            <item android:id="@+id/action_report_detail_send_bugzilla"
                 app:showAsAction="ifRoom"
                 android:icon="@drawable/ic_action_report"
                 android:title="@string/action_send_bugzilla" />

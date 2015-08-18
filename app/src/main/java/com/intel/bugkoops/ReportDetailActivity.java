@@ -3,10 +3,12 @@ package com.intel.bugkoops;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.intel.bugkoops.Data.BugKoopsContract;
 
@@ -102,14 +104,49 @@ public class ReportDetailActivity extends MenuActivity {
                     }
                 };
 
-
-
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
                 alertDialog.setMessage(getString(R.string.dialog_delete_report_question))
                         .setPositiveButton(getString(R.string.dialog_positive), dialogClickListener)
                         .setNegativeButton(getString(R.string.dialog_negative), dialogClickListener).show();
                 break;
-            case R.id.action_report_detail_send:
+            case R.id.action_report_detail_send_email:
+                reportDetailFragment.save();
+
+                String[] TO = {""};
+                String[] CC = {""};
+                Intent emailIntent = new Intent(Intent.ACTION_SEND);
+
+                emailIntent.setData(Uri.parse("mailto:"));
+                emailIntent.setType("message/rfc822");
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
+                emailIntent.putExtra(Intent.EXTRA_CC, CC);
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, reportDetailFragment.getTitle());
+                emailIntent.putExtra(Intent.EXTRA_TEXT, reportDetailFragment.getReport(ReportDetailFragment.REPORT_TYPE_DATE|ReportDetailFragment.REPORT_TYPE_TEXT));
+
+                try {
+                    startActivity(Intent.createChooser(emailIntent, "Choose an email client:"));
+                }
+                catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(this, "There is no email client installed.", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.action_report_detail_send_share:
+                reportDetailFragment.save();
+
+                Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, reportDetailFragment.getReport(ReportDetailFragment.REPORT_TYPE_ALL));
+                sendIntent.setType("text/plain");
+
+                try {
+                    startActivity(Intent.createChooser(sendIntent, "Choose a sharing client:"));
+                }
+                catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(this, "There is no application installed able to share this report.", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.action_report_detail_send_bugzilla:
+                reportDetailFragment.save();
+
                 break;
             default:
                 return super.onOptionsItemSelected(item);
