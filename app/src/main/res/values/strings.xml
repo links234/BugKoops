@@ -32,8 +32,10 @@
     <string name="dialog_delete_reports_question">Are you sure you want to delete these reports?</string>
     <string name="dialog_delete_report_question">Are you sure you want to delete this report?</string>
     <string name="dialog_save_report_question">Are you sure you want to overwrite this report?</string>
+    <string name="dialog_save_new_report_question">Are you sure you want to save this new report?</string>
 
     <string name="dialog_discard_report_change_question">You have modified this report. What do you want to happen to changes?</string>
+    <string name="dialog_discard_report_new_question">This report have not been saved yet. What do you want to happen to changes?</string>
     <string name="dialog_discard">Discard</string>
     <string name="dialog_save">Save</string>
     <string name="dialog_neutral">Cancel</string>

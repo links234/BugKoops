@@ -74,8 +74,13 @@ public class ReportDetailActivity extends MenuActivity {
                         }
                     };
 
+                    String alertDialogMessage = getString(R.string.dialog_save_report_question);
+                    if(reportDetailFragment.firstTime()) {
+                        alertDialogMessage = getString(R.string.dialog_save_new_report_question);
+                    }
+
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-                    alertDialog.setMessage(getString(R.string.dialog_save_report_question))
+                    alertDialog.setMessage(alertDialogMessage)
                             .setPositiveButton(getString(R.string.dialog_positive), dialogClickListener)
                             .setNegativeButton(getString(R.string.dialog_negative), dialogClickListener).show();
                 }
@@ -96,6 +101,8 @@ public class ReportDetailActivity extends MenuActivity {
                         }
                     }
                 };
+
+
 
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
                 alertDialog.setMessage(getString(R.string.dialog_delete_report_question))
@@ -130,8 +137,13 @@ public class ReportDetailActivity extends MenuActivity {
                 }
             };
 
+            String alertDialogMessage = getString(R.string.dialog_discard_report_change_question);
+            if(reportDetailFragment.firstTime()) {
+                alertDialogMessage = getString(R.string.dialog_discard_report_new_question);
+            }
+
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-            alertDialog.setMessage(getString(R.string.dialog_discard_report_change_question))
+            alertDialog.setMessage(alertDialogMessage)
                     .setPositiveButton(getString(R.string.dialog_save), dialogClickListener)
                     .setNegativeButton(getString(R.string.dialog_discard), dialogClickListener)
                     .setNeutralButton(getString(R.string.dialog_neutral), dialogClickListener).show();

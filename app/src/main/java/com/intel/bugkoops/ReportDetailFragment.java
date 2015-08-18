@@ -149,4 +149,8 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
 
         return !initialTitle.equals(title) || !initialText.equals(text);
     }
+
+    public boolean firstTime() {
+        return mUri == null;
+    }
 }
