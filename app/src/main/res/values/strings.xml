@@ -49,6 +49,8 @@
     <string name="dialog_choose_email_title">Choose an email client:</string>
     <string name="dialog_choose_email_failed">There is no email client installed.</string>
 
+    <string name="dialog_save_before_send">Do you want to save changes before sending?</string>
+
     <string name="toast_exit">Press Back again to Exit.</string>
 
     <string name="pref_category_scanner_label">Scanner</string>

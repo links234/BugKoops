@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -110,48 +111,82 @@ public class ReportDetailActivity extends MenuActivity {
                         .setNegativeButton(getString(R.string.dialog_negative), dialogClickListener).show();
                 break;
             case R.id.action_report_detail_send_email:
-                reportDetailFragment.save();
+                saveBeforeSend(new Runnable() {
+                    @Override
+                    public void run() {
+                        String[] TO = {""};
+                        String[] CC = {""};
+                        Intent emailIntent = new Intent(Intent.ACTION_SEND);
 
-                String[] TO = {""};
-                String[] CC = {""};
-                Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                        emailIntent.setData(Uri.parse("mailto:"));
+                        emailIntent.setType("message/rfc822");
+                        emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
+                        emailIntent.putExtra(Intent.EXTRA_CC, CC);
+                        emailIntent.putExtra(Intent.EXTRA_SUBJECT, reportDetailFragment.getTitle());
+                        emailIntent.putExtra(Intent.EXTRA_TEXT, reportDetailFragment.getReport(ReportDetailFragment.REPORT_TYPE_DATE | ReportDetailFragment.REPORT_TYPE_TEXT));
 
-                emailIntent.setData(Uri.parse("mailto:"));
-                emailIntent.setType("message/rfc822");
-                emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
-                emailIntent.putExtra(Intent.EXTRA_CC, CC);
-                emailIntent.putExtra(Intent.EXTRA_SUBJECT, reportDetailFragment.getTitle());
-                emailIntent.putExtra(Intent.EXTRA_TEXT, reportDetailFragment.getReport(ReportDetailFragment.REPORT_TYPE_DATE|ReportDetailFragment.REPORT_TYPE_TEXT));
-
-                try {
-                    startActivity(Intent.createChooser(emailIntent, getString(R.string.dialog_choose_email_title)));
-                }
-                catch (android.content.ActivityNotFoundException ex) {
-                    Toast.makeText(this, getString(R.string.dialog_choose_email_failed), Toast.LENGTH_SHORT).show();
-                }
+                        try {
+                            startActivity(Intent.createChooser(emailIntent, getString(R.string.dialog_choose_email_title)));
+                        } catch (android.content.ActivityNotFoundException ex) {
+                            Toast.makeText(ReportDetailActivity.this, getString(R.string.dialog_choose_email_failed), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
                 break;
             case R.id.action_report_detail_send_share:
-                reportDetailFragment.save();
+                saveBeforeSend(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                        sendIntent.putExtra(Intent.EXTRA_TEXT, reportDetailFragment.getReport(ReportDetailFragment.REPORT_TYPE_ALL));
+                        sendIntent.setType("text/plain");
 
-                Intent sendIntent = new Intent(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, reportDetailFragment.getReport(ReportDetailFragment.REPORT_TYPE_ALL));
-                sendIntent.setType("text/plain");
-
-                try {
-                    startActivity(Intent.createChooser(sendIntent, getString(R.string.dialog_choose_share_title)));
-                }
-                catch (android.content.ActivityNotFoundException ex) {
-                    Toast.makeText(this, getString(R.string.dialog_choose_share_failed), Toast.LENGTH_SHORT).show();
-                }
+                        try {
+                            startActivity(Intent.createChooser(sendIntent, getString(R.string.dialog_choose_share_title)));
+                        } catch (android.content.ActivityNotFoundException ex) {
+                            Toast.makeText(ReportDetailActivity.this, getString(R.string.dialog_choose_share_failed), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
                 break;
             case R.id.action_report_detail_send_bugzilla:
-                reportDetailFragment.save();
-
+                saveBeforeSend(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(ReportDetailActivity.this, "BUGZILLA SEND", Toast.LENGTH_SHORT).show();
+                    }
+                });
                 break;
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    public void saveBeforeSend(final Runnable action) {
+        if(reportDetailFragment.modified()) {
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            reportDetailFragment.save();
+                            action.run();
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            action.run();
+                            break;
+                    }
+                }
+            };
+
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+            alertDialog.setMessage(getString(R.string.dialog_save_before_send))
+                    .setPositiveButton(getString(R.string.dialog_positive), dialogClickListener)
+                    .setNegativeButton(getString(R.string.dialog_negative), dialogClickListener).show();
+        } else {
+            action.run();
+        }
     }
 
     @Override
