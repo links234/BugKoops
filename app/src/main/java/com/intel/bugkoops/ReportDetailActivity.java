@@ -124,10 +124,10 @@ public class ReportDetailActivity extends MenuActivity {
                 emailIntent.putExtra(Intent.EXTRA_TEXT, reportDetailFragment.getReport(ReportDetailFragment.REPORT_TYPE_DATE|ReportDetailFragment.REPORT_TYPE_TEXT));
 
                 try {
-                    startActivity(Intent.createChooser(emailIntent, "Choose an email client:"));
+                    startActivity(Intent.createChooser(emailIntent, getString(R.string.dialog_choose_email_title)));
                 }
                 catch (android.content.ActivityNotFoundException ex) {
-                    Toast.makeText(this, "There is no email client installed.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.dialog_choose_email_failed), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.action_report_detail_send_share:
@@ -138,10 +138,10 @@ public class ReportDetailActivity extends MenuActivity {
                 sendIntent.setType("text/plain");
 
                 try {
-                    startActivity(Intent.createChooser(sendIntent, "Choose a sharing client:"));
+                    startActivity(Intent.createChooser(sendIntent, getString(R.string.dialog_choose_share_title)));
                 }
                 catch (android.content.ActivityNotFoundException ex) {
-                    Toast.makeText(this, "There is no application installed able to share this report.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.dialog_choose_share_failed), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.action_report_detail_send_bugzilla:

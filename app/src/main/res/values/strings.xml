@@ -44,6 +44,13 @@
     <string name="dialog_save">Save</string>
     <string name="dialog_neutral">Cancel</string>
 
+    <string name="dialog_choose_share_title">Choose a sharing client:</string>
+    <string name="dialog_choose_share_failed">There is no application installed able to share this report.</string>
+    <string name="dialog_choose_email_title">Choose an email client:</string>
+    <string name="dialog_choose_email_failed">There is no email client installed.</string>
+
+    <string name="toast_exit">Press Back again to Exit.</string>
+
     <string name="pref_category_scanner_label">Scanner</string>
 
     <string name="pref_invertcolors_label">Invert colors</string>

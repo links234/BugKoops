@@ -63,7 +63,7 @@ public class MainActivity extends MenuActivity {
         if (mExit) {
             finish();
         } else {
-            Toast.makeText(this, "Press Back again to Exit.",
+            Toast.makeText(this, getString(R.string.toast_exit),
                     Toast.LENGTH_SHORT).show();
             mExit = true;
             new Handler().postDelayed(new Runnable() {
