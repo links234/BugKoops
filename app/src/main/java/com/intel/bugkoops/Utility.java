@@ -128,6 +128,8 @@ public class Utility {
     }
 
     public static String getPrettyDate(Date date) {
+        final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
+
         Date endDate   = new Date();
 
         long duration  = endDate.getTime() - date.getTime();
@@ -135,8 +137,7 @@ public class Utility {
         long diffInSeconds = TimeUnit.MILLISECONDS.toSeconds(duration);
         long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(duration);
         long diffInHours = TimeUnit.MILLISECONDS.toHours(duration);
-        long diffInDays = endDate.getDay() - date.getDay();
-
+        long diffInDays = (int)(duration/DAY_IN_MILLIS);
 
         if(diffInDays==0) {
             if(diffInHours>0) {
