@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -153,7 +154,7 @@ public class ReportDetailActivity extends MenuActivity {
                 saveBeforeSend(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(ReportDetailActivity.this, "BUGZILLA SEND", Toast.LENGTH_SHORT).show();
+                        AsyncTask task = new BugzillaProgressTask(ReportDetailActivity.this).execute();
                     }
                 });
                 break;
