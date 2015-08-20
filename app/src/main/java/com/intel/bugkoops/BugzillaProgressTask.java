@@ -13,6 +13,8 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -83,6 +85,12 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
                 return false;
             }
 
+            publishProgress("Sending report ... ");
+            if(!send()) {
+                setTaskResult("Failed to send report!");
+                return false;
+            }
+
             publishProgress("Logging out ... ");
             if(!logout()) {
                 setTaskResult("Failed to logout!");
@@ -114,6 +122,19 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
 
         Log.d(LOG_TAG, "Result get = " + mGetResult);
 
+        try {
+            JSONObject json = new JSONObject(mGetResult);
+
+            if(errorResponse(json)) {
+                return false;
+            }
+
+            mToken = json.getString("token");
+        } catch(JSONException e) {
+            Log.e(LOG_TAG, "JSONException", e);
+            return false;
+        }
+
         return true;
     }
 
@@ -134,6 +155,48 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
             JSONObject json = new JSONObject(mGetResult);
 
             if(errorResponse(json)) {
+                return false;
+            }
+        } catch(JSONException e) {
+            Log.e(LOG_TAG, "JSONException", e);
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean send() {
+        Uri builtUri = Uri.parse(mServer).buildUpon()
+                .appendPath("rest")
+                .appendPath("bug")
+                .appendQueryParameter("token", mToken)
+                .build();
+
+        String product = "TestProduct";
+        String component = "TestComponent";
+        String version = "unspecified";
+        String summary = "This is a test bug - please disregard";
+
+        JSONObject jsonRequest = new JSONObject();
+
+        try {
+            jsonRequest.put("product", product);
+            jsonRequest.put("component", component);
+            jsonRequest.put("version", version);
+            jsonRequest.put("summary", summary);
+        } catch(JSONException e) {
+            Log.e(LOG_TAG, "JSONException", e);
+            return false;
+        }
+
+        if(!post(builtUri.toString(), jsonRequest.toString())) {
+            return false;
+        }
+
+        try {
+            JSONObject jsonResult = new JSONObject(mGetResult);
+
+            if(errorResponse(jsonResult)) {
                 return false;
             }
         } catch(JSONException e) {
@@ -172,41 +235,66 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
         }
     }
 
-    private boolean get(String url) {
-        return request(url, "GET");
+    private boolean post(String url, String data) {
+        return request(url, "POST", data);
     }
 
-    private boolean request(String url, String method) {
+    private boolean get(String url) {
+        return request(url, "GET", null);
+    }
+
+    private boolean request(String url, String method, String data) {
         Uri builtUri = Uri.parse(url);
         if(builtUri.getScheme() == null || builtUri.getScheme().equals("https")) {
-            return httpsRequest(url, method);
+            return httpsRequest(url, method, data);
         } else {
-            return httpRequest(url, method);
+            return httpRequest(url, method, data);
         }
     }
 
-    private Boolean httpsRequest(String url, String method) {
+    private Boolean httpsRequest(String url, String method, String data) {
         try {
             mGetResult = "";
             mResponseCode = 0;
 
             URL obj = new URL(url);
-            HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+            HttpsURLConnection connection = (HttpsURLConnection) obj.openConnection();
 
-            con.setRequestMethod(method);
-            con.setRequestProperty("User-Agent", USER_AGENT);
+            connection.setDoInput(true);
+            if(data != null) {
+                connection.setDoOutput(true);
+            }
+            connection.setRequestMethod(method);
+            connection.setRequestProperty("User-Agent", USER_AGENT);
 
-            mResponseCode = con.getResponseCode();
+            if(data != null ) {
+                OutputStream outputStream = connection.getOutputStream();
+                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, "UTF-8");
 
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(con.getInputStream()));
+                outputStreamWriter.write(data);
+
+                outputStreamWriter.flush();
+                outputStream.close();
+            }
+
+            mResponseCode = connection.getResponseCode();
+
+            BufferedReader input;
+            if (mResponseCode == HttpURLConnection.HTTP_OK) {
+                input = new BufferedReader( new InputStreamReader(
+                        connection.getInputStream()));
+            } else {
+                input = new BufferedReader( new InputStreamReader(
+                        connection.getErrorStream()));
+            }
+
             String inputLine;
             StringBuilder response = new StringBuilder();
 
-            while ((inputLine = in.readLine()) != null) {
+            while ((inputLine = input.readLine()) != null) {
                 response.append(inputLine);
             }
-            in.close();
+            input.close();
 
             mGetResult = response.toString();
 
@@ -221,28 +309,49 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
         return false;
     }
 
-    private Boolean httpRequest(String url, String method) {
+    private Boolean httpRequest(String url, String method, String data) {
         try {
             mGetResult = "";
             mResponseCode = 0;
 
             URL obj = new URL(url);
-            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
 
-            con.setRequestMethod(method);
-            con.setRequestProperty("User-Agent", USER_AGENT);
+            connection.setDoInput(true);
+            if(data != null) {
+                connection.setDoOutput(true);
+            }
+            connection.setRequestMethod(method);
+            connection.setRequestProperty("User-Agent", USER_AGENT);
 
-            mResponseCode = con.getResponseCode();
+            if(data != null ) {
+                OutputStream outputStream = connection.getOutputStream();
+                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, "UTF-8");
 
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(con.getInputStream()));
+                outputStreamWriter.write(data);
+
+                outputStreamWriter.flush();
+                outputStream.close();
+            }
+
+            mResponseCode = connection.getResponseCode();
+
+            BufferedReader input;
+            if (mResponseCode == HttpURLConnection.HTTP_OK) {
+                input = new BufferedReader( new InputStreamReader(
+                        connection.getInputStream()));
+            } else {
+                input = new BufferedReader( new InputStreamReader(
+                        connection.getErrorStream()));
+            }
+
             String inputLine;
             StringBuilder response = new StringBuilder();
 
-            while ((inputLine = in.readLine()) != null) {
+            while ((inputLine = input.readLine()) != null) {
                 response.append(inputLine);
             }
-            in.close();
+            input.close();
 
             mGetResult = response.toString();
 
