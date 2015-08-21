@@ -42,7 +42,8 @@
         </activity>
         <activity
             android:name=".ReportDetailActivity"
-            android:label="@string/title_activity_report_detail" >
+            android:label="@string/title_activity_report_detail"
+            android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ReportActivity" />

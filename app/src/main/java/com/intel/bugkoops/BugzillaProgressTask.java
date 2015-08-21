@@ -4,8 +4,9 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
-import android.widget.Toast;
+import android.view.View;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,7 +41,11 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
     private String mUser;
     private String mPassword;
 
-    public BugzillaProgressTask(Activity activity) {
+    private JSONObject mJsonReport;
+
+    private Snackbar mResultSnackbar;
+
+    public BugzillaProgressTask(Activity activity, JSONObject jsonReport) {
         mActivity = activity;
         mDialog = new ProgressDialog(activity);
 
@@ -53,6 +58,20 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
 
         mUser = "Here comes your default account login";
         mPassword = "Here comes your default account password";
+
+        mJsonReport = jsonReport;
+
+        mResultSnackbar = Snackbar.make(
+                activity.findViewById(R.id.detail_report_snackbar),
+                "",
+                Snackbar.LENGTH_INDEFINITE);
+
+        mResultSnackbar.setAction("OK", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mResultSnackbar.setDuration(0);
+            }
+        });
     }
 
     protected void onPreExecute() {
@@ -69,13 +88,13 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
 
         if(mTaskResult == null) {
             if (success) {
-                Toast.makeText(mActivity, "Report sent!", Toast.LENGTH_LONG).show();
+                mTaskResult = "Report sent!";
             } else {
-                Toast.makeText(mActivity, "Unexpected error while sending report!", Toast.LENGTH_LONG).show();
+                mTaskResult = "Unexpected error while sending report!";
             }
-        } else {
-            Toast.makeText(mActivity, mTaskResult, Toast.LENGTH_LONG).show();
         }
+
+        mResultSnackbar.setText(mTaskResult).show();
     }
 
     protected Boolean doInBackground(final String... args) {
@@ -87,6 +106,8 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
 
             publishProgress("Sending report ... ");
             if(!send()) {
+                publishProgress("Logging out ... ");
+                logout();
                 setTaskResult("Failed to send report!");
                 return false;
             }
@@ -192,6 +213,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
           //  jsonRequest.put("priority", priority);
             jsonRequest.put("platform", platform);
            // jsonRequest.put("severity", severity);
+            jsonRequest.put("test_test_Test", "blahblah");
         } catch(JSONException e) {
             Log.e(LOG_TAG, "JSONException", e);
             return false;
