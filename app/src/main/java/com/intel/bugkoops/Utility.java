@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.text.method.LinkMovementMethod;
@@ -194,5 +195,30 @@ public class Utility {
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    public static String defaultValue(String string, String defaultValue) {
+        if(string == null) {
+            return defaultValue;
+        }
+        return string;
+    }
+
+    public static String getString(Bundle bundle, String key) {
+        if(bundle == null) {
+            return null;
+        }
+        return bundle.getString(key);
+    }
+
+    public static String getString(Bundle bundle, String key, String defaultValue) {
+        return defaultValue(getString(bundle, key), defaultValue);
+    }
+
+    public static Bundle getBundle(Bundle bundle, String key) {
+        if(bundle == null) {
+            return null;
+        }
+        return bundle.getBundle(key);
     }
 }
