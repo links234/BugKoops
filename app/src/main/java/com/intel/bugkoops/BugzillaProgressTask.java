@@ -172,10 +172,13 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
                 .appendQueryParameter("token", mToken)
                 .build();
 
-        String product = "TestProduct";
-        String component = "TestComponent";
-        String version = "unspecified";
+        String product = "FoodReplicator";
+        String component = "Salt";
+        String version = "1.0";
         String summary = "This is a test bug - please disregard";
+        String description = "This is a description";
+        String op_sys = "All";
+        String platform = "All";
 
         JSONObject jsonRequest = new JSONObject();
 
@@ -184,14 +187,23 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
             jsonRequest.put("component", component);
             jsonRequest.put("version", version);
             jsonRequest.put("summary", summary);
+            jsonRequest.put("op_sys", op_sys);
+            jsonRequest.put("description", description);
+          //  jsonRequest.put("priority", priority);
+            jsonRequest.put("platform", platform);
+           // jsonRequest.put("severity", severity);
         } catch(JSONException e) {
             Log.e(LOG_TAG, "JSONException", e);
             return false;
         }
 
+        Log.d(LOG_TAG, "Post body = " + jsonRequest.toString());
+
         if(!post(builtUri.toString(), jsonRequest.toString())) {
             return false;
         }
+
+        Log.d(LOG_TAG, "Result get = " + mGetResult);
 
         try {
             JSONObject jsonResult = new JSONObject(mGetResult);
@@ -223,7 +235,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
                 setTaskResult(json.getString("message"));
             }
         } catch(JSONException e) {
-            setTaskResult("Unexpected exception!");
+            setTaskResult("Error! Server response is malformed!");
             return false;
         }
         return true;
@@ -260,14 +272,16 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
             URL obj = new URL(url);
             HttpsURLConnection connection = (HttpsURLConnection) obj.openConnection();
 
-            connection.setDoInput(true);
-            if(data != null) {
-                connection.setDoOutput(true);
-            }
             connection.setRequestMethod(method);
             connection.setRequestProperty("User-Agent", USER_AGENT);
 
-            if(data != null ) {
+            connection.setDoInput(true);
+            if(data != null) {
+                connection.setDoOutput(true);
+
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setRequestProperty("Content-Length",  String.valueOf(data.length()));
+
                 OutputStream outputStream = connection.getOutputStream();
                 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, "UTF-8");
 
@@ -317,14 +331,16 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
             URL obj = new URL(url);
             HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
 
-            connection.setDoInput(true);
-            if(data != null) {
-                connection.setDoOutput(true);
-            }
             connection.setRequestMethod(method);
             connection.setRequestProperty("User-Agent", USER_AGENT);
 
-            if(data != null ) {
+            connection.setDoInput(true);
+            if(data != null) {
+                connection.setDoOutput(true);
+
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setRequestProperty("Content-Length",  String.valueOf(data.length()));
+
                 OutputStream outputStream = connection.getOutputStream();
                 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, "UTF-8");
 
