@@ -6,7 +6,8 @@
     android:minHeight="@dimen/list_item_top_min_height"
     android:orientation="horizontal"
     android:background="@drawable/top_touch_selector"
-    android:weightSum="100">
+    android:weightSum="100"
+    android:baselineAligned="false">
 
     <LinearLayout
         android:layout_height="wrap_content"
@@ -14,8 +15,10 @@
         android:layout_weight="60"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginStart="30dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginEnd="15dp"
         android:orientation="vertical">
 
         <TextView
