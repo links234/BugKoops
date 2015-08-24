@@ -94,6 +94,8 @@ public class BugzillaREST implements BugzillaAPI{
         mUser = null;
         mPassword = null;
 
+        mResult = new Bundle();
+
         return true;
     }
 

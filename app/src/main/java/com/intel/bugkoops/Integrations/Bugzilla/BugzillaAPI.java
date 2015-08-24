@@ -18,6 +18,7 @@ public interface BugzillaAPI {
     String KEY_ERROR = "error";
     String KEY_MESSAGE = "message";
 
+    String KEY_ID = "id";
     String KEY_PRODUCT = "product";
     String KEY_COMPONENT = "component";
     String KEY_VERSION = "version";

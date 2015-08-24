@@ -2,7 +2,6 @@ package com.intel.bugkoops;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -11,10 +10,7 @@ import android.view.View;
 
 import com.intel.bugkoops.Integrations.Bugzilla.BugzillaAPI;
 import com.intel.bugkoops.Integrations.Bugzilla.BugzillaREST;
-import com.intel.bugkoops.Network.HttpConnection;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.intel.bugkoops.Integrations.Bugzilla.BugzillaXMLRPC;
 
 public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
     final String LOG_TAG = getClass().getSimpleName();
@@ -48,7 +44,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
 
         mParams = params;
 
-        mServer = new BugzillaREST(
+        mServer = new BugzillaXMLRPC(
                 Utility.getString(mParams, KEY_SERVER, DEFAULT_SERVER),
                 USER_AGENT);
 
@@ -90,33 +86,28 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
 
     protected Boolean doInBackground(final String... args) {
         try {
-            if(!mServer.login(
+
+            boolean result = mServer.login(
                     Utility.getString(mParams, KEY_LOGIN, DEFAULT_LOGIN),
-                    Utility.getString(mParams, KEY_PASSWORD, DEFAULT_PASSWORD))) {
+                    Utility.getString(mParams, KEY_PASSWORD, DEFAULT_PASSWORD));
+            if(error() || !result) {
                 setTaskResult("Failed to login!");
-                return false;
-            }
-            if(error(mServer.getResult())) {
                 return false;
             }
 
             publishProgress("Sending report ... ");
-            if(!mServer.send(Utility.getBundle(mParams, KEY_REPORT))) {
+            result = mServer.send(Utility.getBundle(mParams, KEY_REPORT));
+            if(error() || !result) {
                 publishProgress("Logging out ... ");
                 mServer.logout();
                 setTaskResult("Failed to send report!");
                 return false;
             }
-            if(error(mServer.getResult())) {
-                return false;
-            }
 
             publishProgress("Logging out ... ");
-            if(!mServer.logout()) {
+            result = mServer.logout();
+            if(error() || !result) {
                 setTaskResult("Failed to logout!");
-                return false;
-            }
-            if(error(mServer.getResult())) {
                 return false;
             }
 
@@ -148,5 +139,9 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
             return true;
         }
         return false;
+    }
+
+    private boolean error() {
+        return error(mServer.getResult());
     }
 }
