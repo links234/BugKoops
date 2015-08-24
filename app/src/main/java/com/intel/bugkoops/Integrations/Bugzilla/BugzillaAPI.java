@@ -29,10 +29,14 @@ public interface BugzillaAPI {
     String KEY_PRIORITY = "priority";
     String KEY_SEVERITY = "severity";
 
+    boolean version();
+
     boolean login(String user, String password);
     boolean logout();
 
     boolean send(Bundle report);
+
+    String getAPIVersion();
 
     Bundle getResult();
 }

@@ -22,6 +22,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 public class BugzillaXMLRPC implements BugzillaAPI{
     final String LOG_TAG = getClass().getSimpleName();
 
+    static public final String API_VERSION = "XMLRPC";
+
     static private final String CONTENT_TYPE = "text/xml";
 
     private HttpConnection mHttpConnection;
@@ -34,6 +36,8 @@ public class BugzillaXMLRPC implements BugzillaAPI{
 
     private Bundle mResult;
 
+    private String mVersion;
+
     public BugzillaXMLRPC(String server, String userAgent) {
         mHttpConnection = new HttpConnection(userAgent);
 
@@ -44,7 +48,42 @@ public class BugzillaXMLRPC implements BugzillaAPI{
         mUser = null;
         mPassword = null;
 
+        mVersion = null;
+
         mResult = new Bundle();
+    }
+
+    public boolean version() {
+        if(mVersion == null) {
+            Uri builtUri = Uri.parse(mServer).buildUpon()
+                    .appendPath("xmlrpc.cgi")
+                    .build();
+
+            XMLRPCBuilder request = new XMLRPCBuilder();
+
+            request.start("Bugzilla.version");
+            request.startStruct();
+            request.endStruct();
+            request.end();
+
+            Log.d(LOG_TAG, "Post body = " + request.toString());
+
+            if (!mHttpConnection.post(builtUri.toString(), request.toString(), CONTENT_TYPE)) {
+                return false;
+            }
+            Log.d(LOG_TAG, "Result get = " + mHttpConnection.getRequestResult());
+
+            if (!translate(mHttpConnection.getRequestResult())) {
+                return false;
+            }
+
+            mVersion = mResult.getString(KEY_VERSION);
+            return true;
+        }
+
+        mResult = new Bundle();
+        mResult.putString(KEY_VERSION, mVersion);
+        return true;
     }
 
     public boolean login(String user, String password) {
@@ -175,6 +214,10 @@ public class BugzillaXMLRPC implements BugzillaAPI{
         return true;
     }
 
+    public String getAPIVersion() {
+        return API_VERSION;
+    }
+
     public Bundle getResult() {
         return mResult;
     }
@@ -225,11 +268,11 @@ public class BugzillaXMLRPC implements BugzillaAPI{
                 }
 
                 if(name.equalsIgnoreCase("faultstring")) {
-                    name = "message";
-                    mResult.putBoolean("error", true);
+                    name = KEY_MESSAGE;
+                    mResult.putBoolean(KEY_ERROR, true);
                 } else if(name.equalsIgnoreCase("faultcode")) {
                     name = "code";
-                    mResult.putBoolean("error", true);
+                    mResult.putBoolean(KEY_ERROR, true);
                 }
 
                 if(type == null || type.equalsIgnoreCase("string")) {
@@ -242,6 +285,9 @@ public class BugzillaXMLRPC implements BugzillaAPI{
                 }
             }
 
+            if(mResult.getBoolean(KEY_ERROR)) {
+                return false;
+            }
         } catch (Exception e) {
             setError("Invalid XMLRPC response: " + e.toString());
             return false;

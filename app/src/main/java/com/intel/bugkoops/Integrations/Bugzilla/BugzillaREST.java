@@ -15,6 +15,10 @@ import java.util.Iterator;
 public class BugzillaREST implements BugzillaAPI{
     final String LOG_TAG = getClass().getSimpleName();
 
+    static public final String API_VERSION = "REST";
+
+    static private final String CONTENT_TYPE = "application/json";
+
     private HttpConnection mHttpConnection;
     private String mServer;
 
@@ -25,6 +29,8 @@ public class BugzillaREST implements BugzillaAPI{
 
     private Bundle mResult;
 
+    private String mVersion;
+
     public BugzillaREST(String server, String userAgent) {
         mHttpConnection = new HttpConnection(userAgent);
 
@@ -34,6 +40,34 @@ public class BugzillaREST implements BugzillaAPI{
 
         mUser = null;
         mPassword = null;
+
+        mVersion = null;
+    }
+
+    public boolean version() {
+        if(mVersion == null) {
+            Uri builtUri = Uri.parse(mServer).buildUpon()
+                    .appendPath("rest")
+                    .appendPath("version")
+                    .build();
+
+            if (!mHttpConnection.get(builtUri.toString())) {
+                return false;
+            }
+
+            Log.d(LOG_TAG, "Result get = " + mHttpConnection.getRequestResult());
+
+            if (!translate(mHttpConnection.getRequestResult())) {
+                return false;
+            }
+
+            mVersion = mResult.getString(KEY_VERSION);
+            return true;
+        }
+
+        mResult = new Bundle();
+        mResult.putString(KEY_VERSION, mVersion);
+        return true;
     }
 
     public boolean login(String user, String password) {
@@ -134,7 +168,7 @@ public class BugzillaREST implements BugzillaAPI{
 
         Log.d(LOG_TAG, "Post body = " + jsonRequest.toString());
 
-        if(!mHttpConnection.post(builtUri.toString(), jsonRequest.toString(), "application/json")) {
+        if(!mHttpConnection.post(builtUri.toString(), jsonRequest.toString(), CONTENT_TYPE)) {
             return false;
         }
 
@@ -145,6 +179,10 @@ public class BugzillaREST implements BugzillaAPI{
         }
 
         return true;
+    }
+
+    public String getAPIVersion() {
+        return API_VERSION;
     }
 
     public Bundle getResult() {
@@ -185,6 +223,10 @@ public class BugzillaREST implements BugzillaAPI{
                 } else if(json.get(key) instanceof Boolean) {
                     mResult.putBoolean(key, json.getBoolean(key));
                 }
+            }
+
+            if(mResult.getBoolean(KEY_ERROR)) {
+                return false;
             }
         } catch(JSONException e) {
             Log.e(LOG_TAG, "JSONException", e);

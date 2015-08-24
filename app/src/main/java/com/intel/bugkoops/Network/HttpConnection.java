@@ -12,8 +12,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 
 public class HttpConnection {
     private final String LOG_TAG = HttpConnection.class.getSimpleName();
@@ -56,13 +60,27 @@ public class HttpConnection {
         }
     }
 
-    private Boolean httpsRequest(String url, String method, String content, String contentType, String userAgent) {
+    private Boolean httpsRequest(String stringUrl, String method, String content, String contentType, String userAgent) {
         try {
             mRequestResult = "";
             mResponseCode = 0;
 
-            URL obj = new URL(url);
-            HttpsURLConnection connection = (HttpsURLConnection) obj.openConnection();
+            URL url = new URL(stringUrl);
+
+            try {
+                SSLContext sslContext = SSLContext.getInstance("TLSv1");
+
+                sslContext.init(null,
+                        null,
+                        null);
+                SSLSocketFactory NoSSLv3Factory = new NoSSLv3SocketFactory(sslContext.getSocketFactory());
+
+                HttpsURLConnection.setDefaultSSLSocketFactory(NoSSLv3Factory);
+            } catch(Exception e) {
+                Log.e(LOG_TAG, "SSL error: ", e);
+                return false;
+            }
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 
             connection.setRequestMethod(method);
             connection.setRequestProperty("User-Agent", userAgent);
