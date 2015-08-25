@@ -218,6 +218,27 @@ public class BugzillaREST implements BugzillaAPI{
         return true;
     }
 
+    public boolean getFields() {
+        Uri builtUri = Uri.parse(mServer).buildUpon()
+                .appendPath("rest")
+                .appendPath("field")
+                .appendPath("bug")
+                .appendQueryParameter("token", mToken)
+                .build();
+
+        if(!mHttpConnection.get(builtUri.toString())) {
+            return false;
+        }
+
+        Log.d(LOG_TAG, "Result get = " + mHttpConnection.getRequestResult());
+
+        if(!translate(mHttpConnection.getRequestResult())) {
+            return false;
+        }
+
+        return true;
+    }
+
     public String getAPIVersion() {
         return API_VERSION;
     }
@@ -274,7 +295,7 @@ public class BugzillaREST implements BugzillaAPI{
                             String componentName = jsonComponent.getString("name");
 
                             Bundle componentBundle = new Bundle();
-                            componentBundle.putString("name", componentName);
+                            componentBundle.putString(KEY_RESULT_NAME, componentName);
 
                             int sortKey = 0;
                             if(jsonComponent.has("sort_key")) {
@@ -285,12 +306,49 @@ public class BugzillaREST implements BugzillaAPI{
 
                             componentsBundle.putBundle(componentName, componentBundle);
                         }
-                        productBundle.putBundle("components", componentsBundle);
-                        productBundle.putString("name", productName);
+                        productBundle.putBundle(KEY_RESULT_COMPONENTS, componentsBundle);
+                        productBundle.putString(KEY_RESULT_NAME, productName);
 
                         productsBundle.putBundle(productName, productBundle);
                     }
                     mResult.putBundle("products", productsBundle);
+                } else if(json.get(key) instanceof JSONArray && key.equalsIgnoreCase("fields")) {
+                    Bundle fieldsBundle = new Bundle();
+                    JSONArray jsonFieldArray = json.getJSONArray("fields");
+                    for(int field = 0; field < jsonFieldArray.length(); ++field) {
+                        JSONObject jsonField = jsonFieldArray.getJSONObject(field);
+                        if(!jsonField.has("values")) {
+                            continue;
+                        }
+                        String fieldName = jsonField.getString("name");
+
+                        Bundle fieldBundle = new Bundle();
+                        fieldBundle.putString(KEY_RESULT_NAME, fieldName);
+
+                        Log.d(LOG_TAG, "fieldName = "+fieldName);
+                        Bundle valuesBundle = new Bundle();
+                        JSONArray jsonValuesArray = jsonField.getJSONArray("values");
+                        for(int value = 0; value < jsonValuesArray.length(); ++value) {
+                            JSONObject jsonValue = jsonValuesArray.getJSONObject(value);
+                            String valueName = jsonValue.getString("name");
+
+                            int sortKey = 0;
+                            if(jsonValue.has("sort_key")) {
+                                sortKey = jsonValue.getInt("sort_key");
+                            }
+
+                            Bundle valueBundle = new Bundle();
+                            valueBundle.putString(KEY_RESULT_NAME, valueName);
+                            valueBundle.putInt(KEY_RESULT_SORTKEY, sortKey);
+
+                            valuesBundle.putBundle(valueName, valueBundle);
+                        }
+                        fieldBundle.putBundle(KEY_RESULT_VALUES, valuesBundle);
+
+                        fieldsBundle.putBundle(translateField(fieldName), fieldBundle);
+                    }
+
+                    mResult.putBundle("fields", fieldsBundle);
                 }
             }
 
@@ -303,5 +361,14 @@ public class BugzillaREST implements BugzillaAPI{
             return false;
         }
         return true;
+    }
+
+    private String translateField(String field) {
+        if(field.equals("rep_platform")) {
+            return "platform";
+        } else if(field.equals("bug_severity")) {
+            return "severity";
+        }
+        return field;
     }
 }

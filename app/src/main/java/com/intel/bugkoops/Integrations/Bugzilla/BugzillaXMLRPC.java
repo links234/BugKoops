@@ -233,6 +233,10 @@ public class BugzillaXMLRPC implements BugzillaAPI{
         return true;
     }
 
+    public boolean getFields() {
+        return true;
+    }
+
     public String getAPIVersion() {
         return API_VERSION;
     }

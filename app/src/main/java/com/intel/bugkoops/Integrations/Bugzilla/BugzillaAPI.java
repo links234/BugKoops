@@ -35,6 +35,10 @@ public interface BugzillaAPI {
 
     String KEY_RESULT_PRODUCTS = "products";
     String KEY_RESULT_COMPONENTS = "components";
+    String KEY_RESULT_VALUES = "values";
+    String KEY_RESULT_SORTKEY = "sort_key";
+    String KEY_RESULT_NAME = "name";
+    String KEY_RESULT_FIELDS = "fields";
 
     boolean version();
 
@@ -47,6 +51,7 @@ public interface BugzillaAPI {
     Bundle save();
 
     boolean getHierarchy();
+    boolean getFields();
 
     String getAPIVersion();
     Bundle getResult();

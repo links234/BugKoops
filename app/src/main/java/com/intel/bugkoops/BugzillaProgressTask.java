@@ -118,6 +118,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
                 case TASK_LOGIN_GET_PRODUCTS_GET_COMPONENTS_GET_FIELDS:
                     login();
                     getHierarchy();
+                    getFields();
                     saveSession();
                     break;
                 case TASK_SESSION_SEND_LOGOUT:
@@ -204,6 +205,17 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
         }
 
         mResult.putBundle(KEY_PRODUCTS, mServer.getResult().getBundle(BugzillaAPI.KEY_RESULT_PRODUCTS));
+    }
+
+    private void getFields() throws Exception {
+        publishProgress("Getting bug fields list ... ");
+        boolean result = mServer.getFields();
+        if(error() || !result) {
+            setTaskResult("Failed to get bug fields");
+            throw new Exception();
+        }
+
+        mResult.putBundle(KEY_FIELDS, mServer.getResult().getBundle(BugzillaAPI.KEY_RESULT_FIELDS));
     }
 
     private void saveSession() {

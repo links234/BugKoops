@@ -22,9 +22,15 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
     private Button mConnectButton;
     private Spinner mProductSpinner;
     private Spinner mComponentSpinner;
+    private Spinner mVersionSpinner;
+    private Spinner mOSSpinner;
+    private Spinner mPlatformSpinner;
+    private Spinner mPrioritySpinner;
+    private Spinner mSeveritySpinner;
 
     private Bundle mSession;
     private Bundle mProducts;
+    private Bundle mFields;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +43,19 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
         mConnectButton = (Button) findViewById(R.id.bugzilla_send_connect_button);
         mProductSpinner = (Spinner) findViewById(R.id.bugzilla_send_product_spinner);
         mComponentSpinner = (Spinner) findViewById(R.id.bugzilla_send_component_spinner);
+        mVersionSpinner = (Spinner) findViewById(R.id.bugzilla_send_version_spinner);
+        mOSSpinner = (Spinner) findViewById(R.id.bugzilla_send_os_spinner);
+        mPlatformSpinner = (Spinner) findViewById(R.id.bugzilla_send_platform_spinner);
+        mPrioritySpinner = (Spinner) findViewById(R.id.bugzilla_send_priority_spinner);
+        mSeveritySpinner = (Spinner) findViewById(R.id.bugzilla_send_severity_spinner);
 
         mProductSpinner.setOnItemSelectedListener(this);
         mComponentSpinner.setOnItemSelectedListener(this);
+        mVersionSpinner.setOnItemSelectedListener(this);
+        mOSSpinner.setOnItemSelectedListener(this);
+        mPlatformSpinner.setOnItemSelectedListener(this);
+        mPrioritySpinner.setOnItemSelectedListener(this);
+        mSeveritySpinner.setOnItemSelectedListener(this);
 
         mServerEditText.setText(BugzillaProgressTask.DEFAULT_SERVER);
         mUserEditText.setText(BugzillaProgressTask.DEFAULT_LOGIN);
@@ -78,6 +94,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                 } else {
                     mSession = result.getBundle(BugzillaProgressTask.KEY_SESSION);
                     mProducts = result.getBundle(BugzillaProgressTask.KEY_PRODUCTS);
+                    mFields = result.getBundle(BugzillaProgressTask.KEY_FIELDS);
 
                     ArrayList<String> productList = new ArrayList<>();
                     for(String key : mProducts.keySet()) {
@@ -86,7 +103,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                     productList.add("Please select a product ...");
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, productList);
                     mProductSpinner.setAdapter(adapter);
-                    mProductSpinner.setSelection(productList.size()-1);
+                    mProductSpinner.setSelection(productList.size() - 1);
                     mProductSpinner.setVisibility(View.VISIBLE);
                 }
                 break;
@@ -127,6 +144,12 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                 String product = parent.getItemAtPosition(pos).toString();
                 if(product.equals("Please select a product ...")) {
                     mComponentSpinner.setVisibility(View.GONE);
+
+                    mVersionSpinner.setVisibility(View.GONE);
+                    mOSSpinner.setVisibility(View.GONE);
+                    mPlatformSpinner.setVisibility(View.GONE);
+                    mPrioritySpinner.setVisibility(View.GONE);
+                    mSeveritySpinner.setVisibility(View.GONE);
                 } else {
                     ArrayList<String> componentList = new ArrayList<>();
                     if(mProducts.getBundle(product) != null) {
@@ -145,7 +168,84 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                 }
                 break;
             case R.id.bugzilla_send_component_spinner:
+                String component = parent.getItemAtPosition(pos).toString();
+                if(component.equals("Please select a component ...")) {
+                    mVersionSpinner.setVisibility(View.GONE);
+                    mOSSpinner.setVisibility(View.GONE);
+                    mPlatformSpinner.setVisibility(View.GONE);
+                    mPrioritySpinner.setVisibility(View.GONE);
+                    mSeveritySpinner.setVisibility(View.GONE);
+                } else {
+                    ArrayList<String> list = new ArrayList<>();
+                    if(mFields.getBundle("version") != null) {
+                        Bundle fieldBundle = mFields.getBundle("version");
+                        Bundle valuesBundle = fieldBundle.getBundle("values");
+                        for (String key : valuesBundle.keySet()) {
+                            list.add(key);
+                        }
+                    }
+                    list.add("Please select a version ...");
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, list);
+                    mVersionSpinner.setAdapter(adapter);
+                    mVersionSpinner.setSelection(list.size()-1);
+                    mVersionSpinner.setVisibility(View.VISIBLE);
 
+                   list = new ArrayList<>();
+                    if(mFields.getBundle("op_sys") != null) {
+                        Bundle fieldBundle = mFields.getBundle("op_sys");
+                        Bundle valuesBundle = fieldBundle.getBundle("values");
+                        for (String key : valuesBundle.keySet()) {
+                            list.add(key);
+                        }
+                    }
+                    list.add("Please select an OS ...");
+                    adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, list);
+                    mOSSpinner.setAdapter(adapter);
+                    mOSSpinner.setSelection(list.size() - 1);
+                    mOSSpinner.setVisibility(View.VISIBLE);
+
+                    list = new ArrayList<>();
+                    if(mFields.getBundle("platform") != null) {
+                        Bundle fieldBundle = mFields.getBundle("platform");
+                        Bundle valuesBundle = fieldBundle.getBundle("values");
+                        for (String key : valuesBundle.keySet()) {
+                            list.add(key);
+                        }
+                    }
+                    list.add("Please select an platform ...");
+                    adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, list);
+                    mPlatformSpinner.setAdapter(adapter);
+                    mPlatformSpinner.setSelection(list.size() - 1);
+                    mPlatformSpinner.setVisibility(View.VISIBLE);
+
+                    list = new ArrayList<>();
+                    if(mFields.getBundle("priority") != null) {
+                        Bundle fieldBundle = mFields.getBundle("priority");
+                        Bundle valuesBundle = fieldBundle.getBundle("values");
+                        for (String key : valuesBundle.keySet()) {
+                            list.add(key);
+                        }
+                    }
+                    list.add("Please select bug priority ...");
+                    adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, list);
+                    mPrioritySpinner.setAdapter(adapter);
+                    mPrioritySpinner.setSelection(list.size() - 1);
+                    mPrioritySpinner.setVisibility(View.VISIBLE);
+
+                    list = new ArrayList<>();
+                    if(mFields.getBundle("severity") != null) {
+                        Bundle fieldBundle = mFields.getBundle("severity");
+                        Bundle valuesBundle = fieldBundle.getBundle("values");
+                        for (String key : valuesBundle.keySet()) {
+                            list.add(key);
+                        }
+                    }
+                    list.add("Please select bug severity ...");
+                    adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, list);
+                    mSeveritySpinner.setAdapter(adapter);
+                    mSeveritySpinner.setSelection(list.size() - 1);
+                    mSeveritySpinner.setVisibility(View.VISIBLE);
+                }
                 break;
         }
     }
