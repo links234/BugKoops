@@ -38,6 +38,18 @@
         android:text="Connect"
         android:onClick="onConnect"/>
 
+    <Spinner
+        android:id="@+id/bugzilla_send_product_spinner"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <Spinner
+        android:id="@+id/bugzilla_send_component_spinner"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/bugzilla_send_status_textview"
         android:layout_width="fill_parent"

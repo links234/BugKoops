@@ -3,10 +3,15 @@ package com.intel.bugkoops;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
+
+import java.util.ArrayList;
 
 public class BugzillaSendActivity extends Activity implements OnTaskCompleted {
     final String LOG_TAG = getClass().getSimpleName();
@@ -15,7 +20,10 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted {
     private EditText mUserEditText;
     private EditText mPasswordEditText;
     private Button mConnectButton;
+    private Spinner mProductSpinner;
+
     private Bundle mSession;
+    private Bundle mProducts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +34,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted {
         mUserEditText = (EditText) findViewById(R.id.bugzilla_send_user_edittext);
         mPasswordEditText = (EditText) findViewById(R.id.bugzilla_send_password_edittext);
         mConnectButton = (Button) findViewById(R.id.bugzilla_send_connect_button);
+        mProductSpinner = (Spinner) findViewById(R.id.bugzilla_send_product_spinner);
 
         mServerEditText.setText(BugzillaProgressTask.DEFAULT_SERVER);
         mUserEditText.setText(BugzillaProgressTask.DEFAULT_LOGIN);
@@ -63,6 +72,17 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted {
                     mConnectButton.setEnabled(true);
                 } else {
                     mSession = result.getBundle(BugzillaProgressTask.KEY_SESSION);
+                    mProducts = result.getBundle(BugzillaProgressTask.KEY_PRODUCTS);
+
+                    ArrayList<String> productList = new ArrayList<>();
+                    for(String key : mProducts.keySet()) {
+                        productList.add(key);
+                    }
+                    productList.add("Please select a product ...");
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, productList);
+                    mProductSpinner.setAdapter(adapter);
+                    mProductSpinner.setSelection(productList.size()-1);
+                    mProductSpinner.setVisibility(View.VISIBLE);
                 }
                 break;
             case BugzillaProgressTask.TASK_SESSION_LOGOUT:
