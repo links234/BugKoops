@@ -229,6 +229,10 @@ public class BugzillaXMLRPC implements BugzillaAPI{
         return session;
     }
 
+    public boolean getHierarchy() {
+        return true;
+    }
+
     public String getAPIVersion() {
         return API_VERSION;
     }
@@ -240,8 +244,8 @@ public class BugzillaXMLRPC implements BugzillaAPI{
     private void setError(String message) {
         mResult = new Bundle();
         Log.d(LOG_TAG, "message = " + message);
-        mResult.putBoolean(KEY_ERROR, true);
-        mResult.putString(KEY_MESSAGE, message);
+        mResult.putBoolean(KEY_RESULT_ERROR, true);
+        mResult.putString(KEY_RESULT_MESSAGE, message);
     }
 
     private boolean translate(String data) {
@@ -283,11 +287,11 @@ public class BugzillaXMLRPC implements BugzillaAPI{
                 }
 
                 if(name.equalsIgnoreCase("faultstring")) {
-                    name = KEY_MESSAGE;
-                    mResult.putBoolean(KEY_ERROR, true);
+                    name = KEY_RESULT_MESSAGE;
+                    mResult.putBoolean(KEY_RESULT_ERROR, true);
                 } else if(name.equalsIgnoreCase("faultcode")) {
                     name = "code";
-                    mResult.putBoolean(KEY_ERROR, true);
+                    mResult.putBoolean(KEY_RESULT_ERROR, true);
                 }
 
                 if(type == null || type.equalsIgnoreCase("string")) {
@@ -300,7 +304,7 @@ public class BugzillaXMLRPC implements BugzillaAPI{
                 }
             }
 
-            if(mResult.getBoolean(KEY_ERROR)) {
+            if(mResult.getBoolean(KEY_RESULT_ERROR)) {
                 return false;
             }
         } catch (Exception e) {

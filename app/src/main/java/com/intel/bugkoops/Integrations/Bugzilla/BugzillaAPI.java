@@ -19,9 +19,6 @@ public interface BugzillaAPI {
     String KEY_USER = "user";
     String KEY_PASSWORD = "password";
 
-    String KEY_ERROR = "error";
-    String KEY_MESSAGE = "message";
-
     String KEY_ID = "id";
     String KEY_PRODUCT = "product";
     String KEY_COMPONENT = "component";
@@ -33,6 +30,12 @@ public interface BugzillaAPI {
     String KEY_PRIORITY = "priority";
     String KEY_SEVERITY = "severity";
 
+    String KEY_RESULT_ERROR = "error";
+    String KEY_RESULT_MESSAGE = "message";
+
+    String KEY_RESULT_PRODUCTS = "products";
+    String KEY_RESULT_COMPONENTS = "components";
+
     boolean version();
 
     boolean login(String user, String password);
@@ -43,7 +46,8 @@ public interface BugzillaAPI {
     void restore(Bundle session);
     Bundle save();
 
-    String getAPIVersion();
+    boolean getHierarchy();
 
+    String getAPIVersion();
     Bundle getResult();
 }

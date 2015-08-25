@@ -7,6 +7,7 @@ import android.util.Log;
 import com.intel.bugkoops.Network.HttpConnection;
 import com.intel.bugkoops.Utility;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -196,6 +197,27 @@ public class BugzillaREST implements BugzillaAPI{
         return session;
     }
 
+    public boolean getHierarchy() {
+        Uri builtUri = Uri.parse(mServer).buildUpon()
+                .appendPath("rest")
+                .appendPath("product")
+                .appendQueryParameter("token", mToken)
+                .appendQueryParameter("type", "enterable")
+                .build();
+
+        if(!mHttpConnection.get(builtUri.toString())) {
+            return false;
+        }
+
+        Log.d(LOG_TAG, "Result get = " + mHttpConnection.getRequestResult());
+
+        if(!translate(mHttpConnection.getRequestResult())) {
+            return false;
+        }
+
+        return true;
+    }
+
     public String getAPIVersion() {
         return API_VERSION;
     }
@@ -207,8 +229,8 @@ public class BugzillaREST implements BugzillaAPI{
     private void setError(String message) {
         mResult = new Bundle();
         Log.d(LOG_TAG, "message = " + message);
-        mResult.putBoolean(KEY_ERROR, true);
-        mResult.putString(KEY_MESSAGE, message);
+        mResult.putBoolean(KEY_RESULT_ERROR, true);
+        mResult.putString(KEY_RESULT_MESSAGE, message);
     }
 
     private boolean translate(String string) {
@@ -237,10 +259,42 @@ public class BugzillaREST implements BugzillaAPI{
                     mResult.putString(key, json.getString(key));
                 } else if(json.get(key) instanceof Boolean) {
                     mResult.putBoolean(key, json.getBoolean(key));
+                } else if(json.get(key) instanceof JSONArray && key.equalsIgnoreCase("products")) {
+                    Bundle productsBundle = new Bundle();
+                    JSONArray jsonProductArray = json.getJSONArray("products");
+                    for(int product = 0; product < jsonProductArray.length(); ++product) {
+                        JSONObject jsonProduct = jsonProductArray.getJSONObject(product);
+                        String productName = jsonProduct.getString("name");
+
+                        Bundle productBundle = new Bundle();
+                        Bundle componentsBundle = new Bundle();
+                        JSONArray jsonComponentArray = jsonProduct.getJSONArray("components");
+                        for(int component = 0; component < jsonComponentArray.length(); ++component) {
+                            JSONObject jsonComponent = jsonComponentArray.getJSONObject(component);
+                            String componentName = jsonComponent.getString("name");
+
+                            Bundle componentBundle = new Bundle();
+                            productBundle.putString("name", componentName);
+
+                            int sortKey = 0;
+                            if(jsonComponent.has("sort_key")) {
+                                sortKey = jsonComponent.getInt("sort_key");
+                            }
+
+                            productBundle.putInt("sort_key", sortKey);
+
+                            componentsBundle.putBundle(componentName, componentBundle);
+                        }
+                        productBundle.putBundle("components", componentsBundle);
+                        productBundle.putString("name", productName);
+
+                        productsBundle.putBundle(productName, productBundle);
+                    }
+                    mResult.putBundle("products", productsBundle);
                 }
             }
 
-            if(mResult.getBoolean(KEY_ERROR)) {
+            if(mResult.getBoolean(KEY_RESULT_ERROR)) {
                 return false;
             }
         } catch(JSONException e) {

@@ -47,6 +47,8 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
     public static final String KEY_CREATED_BUG_URL = "create_bug_url";
     public static final String KEY_ERROR = "error";
     public static final String KEY_MESSAGE = "message";
+    public static final String KEY_PRODUCTS = "products";
+    public static final String KEY_COMPONENTS = "components";
 
     public static final String KEY_TASK = "task";
     public static final int TASK_SEND = 0;
@@ -113,7 +115,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
                     break;
                 case TASK_LOGIN_AND_GET_PRODUCT:
                     login();
-                    getProduct();
+                    getHierarchy();
                     saveSession();
                     break;
                 case TASK_SESSION_SEND_LOGOUT:
@@ -153,7 +155,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
         publishProgress("Found " + mServer.getAPIVersion() + " version " +
                 mServer.getResult().getString(BugzillaAPI.KEY_VERSION));
 
-        Thread.sleep(3000);
+        Thread.sleep(2000);
 
         publishProgress("Logging in ... ");
         boolean result = mServer.login(
@@ -169,8 +171,6 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
         publishProgress("Sending report ... ");
         boolean result = mServer.send(Utility.getBundle(mParams, KEY_REPORT));
         if(error() || !result) {
-            publishProgress("Logging out ... ");
-            mServer.logout();
             setTaskResult("Failed to send report!");
             throw new Exception();
         }
@@ -193,10 +193,15 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
         }
     }
 
-    private void getProduct() throws Exception {
-        publishProgress("Getting product list ... ");
+    private void getHierarchy() throws Exception {
+        publishProgress("Getting product and components list ... ");
+        boolean result = mServer.getHierarchy();
+        if(error() || !result) {
+            setTaskResult("Failed to get product list");
+            throw new Exception();
+        }
 
-        Thread.sleep(3000);
+        mResult.putBundle(KEY_PRODUCTS, mServer.getResult().getBundle(BugzillaAPI.KEY_RESULT_PRODUCTS));
     }
 
     private void saveSession() {
@@ -219,7 +224,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
         if(bundle.getBoolean("error")) {
             Log.e(LOG_TAG, "Bugzilla returned error response with code: " + Integer.toString(
                     bundle.getInt("code")));
-            String message = bundle.getString(BugzillaAPI.KEY_MESSAGE);
+            String message = bundle.getString(BugzillaAPI.KEY_RESULT_MESSAGE);
             if (message != null) {
                 setTaskResult(message);
             }
