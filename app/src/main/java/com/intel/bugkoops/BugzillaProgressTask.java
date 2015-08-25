@@ -44,6 +44,9 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
     public static final String KEY_SERVER = "server";
     public static final String KEY_REPORT = "report";
     public static final String KEY_SESSION = "session";
+    public static final String KEY_CREATED_BUG_URL = "create_bug_url";
+    public static final String KEY_ERROR = "error";
+    public static final String KEY_MESSAGE = "message";
 
     public static final String KEY_TASK = "task";
     public static final int TASK_SEND = 0;
@@ -64,6 +67,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
             mTask = TASK_SEND;
         }
         mResult = new Bundle();
+        mResult.putInt(KEY_TASK, mTask);
 
         mServerUri = Utility.getString(mParams, KEY_SERVER, DEFAULT_SERVER);
 
@@ -125,6 +129,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
 
             return true;
         } catch (Exception e) {
+            mResult.putBoolean(KEY_ERROR, true);
             return false;
         }
     }
@@ -176,7 +181,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
                 .appendQueryParameter(BugzillaAPI.KEY_ID, Integer.toString(reportId))
                 .build().toString();
 
-        Log.d(LOG_TAG, "url = "+bugUrl);
+        mResult.putString(KEY_CREATED_BUG_URL, bugUrl);
     }
 
     private void logout() throws Exception {
