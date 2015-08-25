@@ -154,7 +154,7 @@ public class ReportDetailActivity extends MenuActivity {
                     @Override
                     public void run() {
                         if(Utility.isNetworkAvailable(ReportDetailActivity.this)) {
-                            AsyncTask task = new BugzillaProgressTask(ReportDetailActivity.this, null).execute();
+                            startActivity(new Intent(ReportDetailActivity.this, BugzillaSendActivity.class));
                         } else {
                             Toast.makeText(ReportDetailActivity.this, "You are not connected to internet!", Toast.LENGTH_LONG).show();
                         }

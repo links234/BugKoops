@@ -181,6 +181,21 @@ public class BugzillaREST implements BugzillaAPI{
         return true;
     }
 
+    public void restore(Bundle session) {
+        mToken = session.getString(KEY_TOKEN);
+        mUser = session.getString(KEY_USER);
+        mPassword = session.getString(KEY_PASSWORD);
+    }
+
+    public Bundle save() {
+        Bundle session = new Bundle();
+        session.putString(KEY_TOKEN, mToken);
+        session.putString(KEY_USER, mUser);
+        session.putString(KEY_PASSWORD, mPassword);
+        session.putString(KEY_API, API_VERSION);
+        return session;
+    }
+
     public String getAPIVersion() {
         return API_VERSION;
     }

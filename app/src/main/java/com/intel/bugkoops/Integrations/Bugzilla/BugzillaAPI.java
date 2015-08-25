@@ -13,7 +13,11 @@ public interface BugzillaAPI {
     String DEFAULT_PRIORITY = "P1";
     String DEFAULT_SEVERITY = "critical";
 
+    String KEY_API = "api";
+
     String KEY_TOKEN = "token";
+    String KEY_USER = "user";
+    String KEY_PASSWORD = "password";
 
     String KEY_ERROR = "error";
     String KEY_MESSAGE = "message";
@@ -35,6 +39,9 @@ public interface BugzillaAPI {
     boolean logout();
 
     boolean send(Bundle report);
+
+    void restore(Bundle session);
+    Bundle save();
 
     String getAPIVersion();
 

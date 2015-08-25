@@ -43,17 +43,21 @@
         <activity
             android:name=".ReportDetailActivity"
             android:label="@string/title_activity_report_detail"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ReportActivity" />
+        </activity>
+        <activity
+            android:name=".BugzillaSendActivity"
+            android:label="@string/title_activity_bugzilla_send"
+            android:theme="@android:style/Theme.Holo.Light.Dialog">
         </activity>
 
         <provider
             android:name=".Data.BugKoopsProvider"
             android:authorities="@string/content_authority"
             android:exported="false" />
-
     </application>
 
 </manifest>
