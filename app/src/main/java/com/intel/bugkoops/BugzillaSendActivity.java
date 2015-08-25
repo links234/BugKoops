@@ -18,6 +18,8 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted {
         setContentView(R.layout.activity_bugzilla_send);
 
         mConnectButton = (Button) findViewById(R.id.bugzilla_send_connect_button);
+
+        setFinishOnTouchOutside(false);
     }
 
     public void onConnect(View view) {

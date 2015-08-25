@@ -3,10 +3,8 @@ package com.intel.bugkoops;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.net.Uri;
-import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -77,6 +75,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
     protected void onPreExecute() {
         mDialog.setTitle("Sending report to Bugzilla");
         mDialog.setMessage("Please wait ... ");
+        mDialog.setCanceledOnTouchOutside(false);
         mDialog.show();
     }
 
