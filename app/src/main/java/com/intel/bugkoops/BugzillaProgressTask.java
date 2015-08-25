@@ -33,8 +33,8 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
 
     private int mTask;
 
-    private static final String DEFAULT_LOGIN = "Here comes your default account login";  //CHANGE THIS IN FINAL VERSION
-    private static final String DEFAULT_PASSWORD = "Here comes your default account password";          //CHANGE THIS IN FINAL VERSION -- mai ales asta :)
+    public static final String DEFAULT_LOGIN = "Here comes your default account login";  //CHANGE THIS IN FINAL VERSION
+    public static final String DEFAULT_PASSWORD = "Here comes your default account password";          //CHANGE THIS IN FINAL VERSION -- mai ales asta :)
     public static final String DEFAULT_SERVER = "https://landfill.bugzilla.org/bugzilla-5.0-branch/"; //CHANGE THIS IN FINAL VERSION
 
     //public static final String DEFAULT_SERVER = "https://bugzilla.kernel.org/"; //CHANGE THIS IN FINAL VERSION
@@ -188,10 +188,9 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
         publishProgress("Logging out ... ");
         boolean result = mServer.logout();
         if(error() || !result) {
-            setTaskResult("Report successfully sent but failed to logout!");
+            setTaskResult("Failed to logout!");
             throw new Exception();
         }
-        setTaskResult("Report successfully sent!");
     }
 
     private void getProduct() throws Exception {
