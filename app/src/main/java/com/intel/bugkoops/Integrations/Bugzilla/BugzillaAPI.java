@@ -40,6 +40,12 @@ public interface BugzillaAPI {
     String KEY_RESULT_NAME = "name";
     String KEY_RESULT_FIELDS = "fields";
 
+    String KEY_RESULT_VERSION = "version";
+    String KEY_RESULT_OS = "op_sys";
+    String KEY_RESULT_PLATFORM = "platform";
+    String KEY_RESULT_PRIORITY = "priority";
+    String KEY_RESULT_SEVERITY = "severity";
+
     boolean version();
 
     boolean login(String user, String password);

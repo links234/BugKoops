@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.intel.bugkoops.Integrations.Bugzilla.BugzillaAPI;
+
 import java.util.ArrayList;
 
 public class BugzillaSendActivity extends Activity implements OnTaskCompleted, AdapterView.OnItemSelectedListener {
@@ -177,9 +179,9 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                     mSeveritySpinner.setVisibility(View.GONE);
                 } else {
                     ArrayList<String> list = new ArrayList<>();
-                    if(mFields.getBundle("version") != null) {
-                        Bundle fieldBundle = mFields.getBundle("version");
-                        Bundle valuesBundle = fieldBundle.getBundle("values");
+                    if(mFields.getBundle(BugzillaAPI.KEY_RESULT_VERSION) != null) {
+                        Bundle fieldBundle = mFields.getBundle(BugzillaAPI.KEY_RESULT_VERSION);
+                        Bundle valuesBundle = fieldBundle.getBundle(BugzillaAPI.KEY_RESULT_VALUES);
                         for (String key : valuesBundle.keySet()) {
                             list.add(key);
                         }
@@ -191,9 +193,9 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                     mVersionSpinner.setVisibility(View.VISIBLE);
 
                    list = new ArrayList<>();
-                    if(mFields.getBundle("op_sys") != null) {
-                        Bundle fieldBundle = mFields.getBundle("op_sys");
-                        Bundle valuesBundle = fieldBundle.getBundle("values");
+                    if(mFields.getBundle(BugzillaAPI.KEY_RESULT_OS) != null) {
+                        Bundle fieldBundle = mFields.getBundle(BugzillaAPI.KEY_RESULT_OS);
+                        Bundle valuesBundle = fieldBundle.getBundle(BugzillaAPI.KEY_RESULT_VALUES);
                         for (String key : valuesBundle.keySet()) {
                             list.add(key);
                         }
@@ -205,9 +207,9 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                     mOSSpinner.setVisibility(View.VISIBLE);
 
                     list = new ArrayList<>();
-                    if(mFields.getBundle("platform") != null) {
-                        Bundle fieldBundle = mFields.getBundle("platform");
-                        Bundle valuesBundle = fieldBundle.getBundle("values");
+                    if(mFields.getBundle(BugzillaAPI.KEY_RESULT_PLATFORM) != null) {
+                        Bundle fieldBundle = mFields.getBundle(BugzillaAPI.KEY_RESULT_PLATFORM);
+                        Bundle valuesBundle = fieldBundle.getBundle(BugzillaAPI.KEY_RESULT_VALUES);
                         for (String key : valuesBundle.keySet()) {
                             list.add(key);
                         }
@@ -219,9 +221,9 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                     mPlatformSpinner.setVisibility(View.VISIBLE);
 
                     list = new ArrayList<>();
-                    if(mFields.getBundle("priority") != null) {
-                        Bundle fieldBundle = mFields.getBundle("priority");
-                        Bundle valuesBundle = fieldBundle.getBundle("values");
+                    if(mFields.getBundle(BugzillaAPI.KEY_RESULT_PRIORITY) != null) {
+                        Bundle fieldBundle = mFields.getBundle(BugzillaAPI.KEY_RESULT_PRIORITY);
+                        Bundle valuesBundle = fieldBundle.getBundle(BugzillaAPI.KEY_RESULT_VALUES);
                         for (String key : valuesBundle.keySet()) {
                             list.add(key);
                         }
@@ -233,9 +235,9 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                     mPrioritySpinner.setVisibility(View.VISIBLE);
 
                     list = new ArrayList<>();
-                    if(mFields.getBundle("severity") != null) {
-                        Bundle fieldBundle = mFields.getBundle("severity");
-                        Bundle valuesBundle = fieldBundle.getBundle("values");
+                    if(mFields.getBundle(BugzillaAPI.KEY_RESULT_SEVERITY) != null) {
+                        Bundle fieldBundle = mFields.getBundle(BugzillaAPI.KEY_RESULT_SEVERITY);
+                        Bundle valuesBundle = fieldBundle.getBundle(BugzillaAPI.KEY_RESULT_VALUES);
                         for (String key : valuesBundle.keySet()) {
                             list.add(key);
                         }

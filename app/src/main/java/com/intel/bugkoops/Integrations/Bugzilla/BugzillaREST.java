@@ -325,7 +325,6 @@ public class BugzillaREST implements BugzillaAPI{
                         Bundle fieldBundle = new Bundle();
                         fieldBundle.putString(KEY_RESULT_NAME, fieldName);
 
-                        Log.d(LOG_TAG, "fieldName = "+fieldName);
                         Bundle valuesBundle = new Bundle();
                         JSONArray jsonValuesArray = jsonField.getJSONArray("values");
                         for(int value = 0; value < jsonValuesArray.length(); ++value) {
@@ -365,9 +364,9 @@ public class BugzillaREST implements BugzillaAPI{
 
     private String translateField(String field) {
         if(field.equals("rep_platform")) {
-            return "platform";
+            return KEY_RESULT_PLATFORM;
         } else if(field.equals("bug_severity")) {
-            return "severity";
+            return KEY_RESULT_SEVERITY;
         }
         return field;
     }
