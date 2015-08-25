@@ -31,6 +31,8 @@ public class HttpConnection {
         mUserAgent = userAgent;
     }
 
+    static boolean mNoSSLv3Enabled = false;
+
     public boolean post(String url, String content, String contentType) {
         return request(url, "POST", content, contentType, mUserAgent);
     }
@@ -68,14 +70,17 @@ public class HttpConnection {
             URL url = new URL(stringUrl);
 
             try {
-                SSLContext sslContext = SSLContext.getInstance("TLSv1");
+                if(mNoSSLv3Enabled) {
+                    mNoSSLv3Enabled = true;
+                    SSLContext sslContext = SSLContext.getInstance("TLSv1");
 
-                sslContext.init(null,
-                        null,
-                        null);
-                SSLSocketFactory NoSSLv3Factory = new NoSSLv3SocketFactory(sslContext.getSocketFactory());
+                    sslContext.init(null,
+                            null,
+                            null);
+                    SSLSocketFactory NoSSLv3Factory = new NoSSLv3SocketFactory(sslContext.getSocketFactory());
 
-                HttpsURLConnection.setDefaultSSLSocketFactory(NoSSLv3Factory);
+                    HttpsURLConnection.setDefaultSSLSocketFactory(NoSSLv3Factory);
+                }
             } catch(Exception e) {
                 Log.e(LOG_TAG, "SSL error: ", e);
                 return false;
