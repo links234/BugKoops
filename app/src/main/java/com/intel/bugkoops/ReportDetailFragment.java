@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -53,6 +54,8 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
     private String mInitialTitle;
     private String mInitialText;
 
+    private Snackbar mResultSnackbar;
+
     public ReportDetailFragment() {
         setHasOptionsMenu(true);
     }
@@ -78,6 +81,18 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
             mTitleEdit.setText(mInitialTitle);
             mTextEdit.setText(mInitialText);
         }
+
+        mResultSnackbar = Snackbar.make(
+                rootView.findViewById(R.id.detail_report_snackbar),
+                "",
+                Snackbar.LENGTH_INDEFINITE);
+
+        mResultSnackbar.setAction("OK", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mResultSnackbar.setDuration(0);
+            }
+        });
 
         return rootView;
     }
@@ -185,5 +200,9 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
         }
 
         return report;
+    }
+
+    public void setResultSlackbar(String message) {
+        mResultSnackbar.setText(message).show();
     }
 }

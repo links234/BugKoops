@@ -7,14 +7,20 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.intel.bugkoops.Data.BugKoopsContract;
 
 public class ReportDetailActivity extends MenuActivity {
     private static final String LOG_TAG = ReportDetailActivity.class.getSimpleName();
+
+    public static final String KEY_MESSAGE = "message";
+
+    public static final int ID_BUGZILLA_RESULT = 0;
 
     private long mId;
     private boolean mIsNew;
@@ -154,7 +160,7 @@ public class ReportDetailActivity extends MenuActivity {
                     @Override
                     public void run() {
                         if(Utility.isNetworkAvailable(ReportDetailActivity.this)) {
-                            startActivity(new Intent(ReportDetailActivity.this, BugzillaSendActivity.class));
+                            startActivityForResult(new Intent(ReportDetailActivity.this, BugzillaSendActivity.class), ID_BUGZILLA_RESULT);
                         } else {
                             Toast.makeText(ReportDetailActivity.this, "You are not connected to internet!", Toast.LENGTH_LONG).show();
                         }
@@ -225,6 +231,15 @@ public class ReportDetailActivity extends MenuActivity {
                     .setNeutralButton(getString(R.string.dialog_neutral), dialogClickListener).show();
         } else {
             finish();
+        }
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == ID_BUGZILLA_RESULT) {
+            if(resultCode == RESULT_OK) {
+                String message = data.getStringExtra(KEY_MESSAGE);
+                reportDetailFragment.setResultSlackbar(message);
+            }
         }
     }
 }

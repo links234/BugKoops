@@ -69,20 +69,6 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
 
         mServerUri = Utility.getString(mParams, KEY_SERVER, DEFAULT_SERVER);
 
-        /*
-        mResultSnackbar = Snackbar.make(
-                mActivity.findViewById(R.id.detail_report_snackbar),
-                "",
-                Snackbar.LENGTH_INDEFINITE);
-
-        mResultSnackbar.setAction("OK", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mResultSnackbar.setDuration(0);
-            }
-        });
-        */
-
         mResultTextView = (TextView) mActivity.findViewById(R.id.bugzilla_send_status_textview);
 
         mListener = listener;

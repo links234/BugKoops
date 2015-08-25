@@ -1,6 +1,7 @@
 package com.intel.bugkoops;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -24,6 +25,11 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted {
     }
 
     public void onTaskCompleted(Bundle result) {
-        mConnectButton.setActivated(false);
+        mConnectButton.setEnabled(false);
+
+        Intent intent = new Intent();
+        intent.putExtra(ReportDetailActivity.KEY_MESSAGE,"Report succesfuly sent!");
+        setResult(RESULT_OK, intent);
+        finish();
     }
 }
