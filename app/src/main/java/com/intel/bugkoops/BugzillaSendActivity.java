@@ -3,9 +3,9 @@ package com.intel.bugkoops;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,7 +13,7 @@ import android.widget.Spinner;
 
 import java.util.ArrayList;
 
-public class BugzillaSendActivity extends Activity implements OnTaskCompleted {
+public class BugzillaSendActivity extends Activity implements OnTaskCompleted, AdapterView.OnItemSelectedListener {
     final String LOG_TAG = getClass().getSimpleName();
 
     private EditText mServerEditText;
@@ -21,6 +21,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted {
     private EditText mPasswordEditText;
     private Button mConnectButton;
     private Spinner mProductSpinner;
+    private Spinner mComponentSpinner;
 
     private Bundle mSession;
     private Bundle mProducts;
@@ -35,6 +36,10 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted {
         mPasswordEditText = (EditText) findViewById(R.id.bugzilla_send_password_edittext);
         mConnectButton = (Button) findViewById(R.id.bugzilla_send_connect_button);
         mProductSpinner = (Spinner) findViewById(R.id.bugzilla_send_product_spinner);
+        mComponentSpinner = (Spinner) findViewById(R.id.bugzilla_send_component_spinner);
+
+        mProductSpinner.setOnItemSelectedListener(this);
+        mComponentSpinner.setOnItemSelectedListener(this);
 
         mServerEditText.setText(BugzillaProgressTask.DEFAULT_SERVER);
         mUserEditText.setText(BugzillaProgressTask.DEFAULT_LOGIN);
@@ -58,13 +63,13 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted {
         params.putString(BugzillaProgressTask.KEY_LOGIN, mUserEditText.getText().toString());
         params.putString(BugzillaProgressTask.KEY_PASSWORD, mPasswordEditText.getText().toString());
         params.putBundle(BugzillaProgressTask.KEY_REPORT, report);
-        params.putInt(BugzillaProgressTask.KEY_TASK, BugzillaProgressTask.TASK_LOGIN_AND_GET_PRODUCT);
+        params.putInt(BugzillaProgressTask.KEY_TASK, BugzillaProgressTask.TASK_LOGIN_GET_PRODUCTS_GET_COMPONENTS_GET_FIELDS);
         new BugzillaProgressTask(this, params, this).execute();
     }
 
     public void onTaskCompleted(Bundle result) {
         switch(result.getInt(BugzillaProgressTask.KEY_TASK)) {
-            case BugzillaProgressTask.TASK_LOGIN_AND_GET_PRODUCT:
+            case BugzillaProgressTask.TASK_LOGIN_GET_PRODUCTS_GET_COMPONENTS_GET_FIELDS:
                 if(result.getBoolean(BugzillaProgressTask.KEY_ERROR)) {
                     mServerEditText.setEnabled(true);
                     mUserEditText.setEnabled(true);
@@ -92,7 +97,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted {
                 break;
             case BugzillaProgressTask.TASK_SEND:
                 Intent intent = new Intent();
-                intent.putExtra(ReportDetailActivity.KEY_MESSAGE,"Report succesfuly sent!");
+                intent.putExtra(ReportDetailActivity.KEY_MESSAGE, "Report succesfuly sent!");
                 setResult(RESULT_OK, intent);
                 finish();
                 break;
@@ -113,5 +118,41 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted {
             }
         }
         return super.onKeyUp(keyCode, event);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+        switch (parent.getId()) {
+            case R.id.bugzilla_send_product_spinner:
+                String product = parent.getItemAtPosition(pos).toString();
+                if(product.equals("Please select a product ...")) {
+                    mComponentSpinner.setVisibility(View.GONE);
+                } else {
+                    ArrayList<String> componentList = new ArrayList<>();
+                    if(mProducts.getBundle(product) != null) {
+                        Bundle productBundle = mProducts.getBundle(product);
+                        Bundle componentsBundle = productBundle.getBundle(BugzillaProgressTask.KEY_COMPONENTS);
+                        for (String key : componentsBundle.keySet()) {
+                            Bundle componentBundle = componentsBundle.getBundle(key);
+                            componentList.add(componentBundle.getString(BugzillaProgressTask.KEY_NAME));
+                        }
+                    }
+                    componentList.add("Please select a component ...");
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, componentList);
+                    mComponentSpinner.setAdapter(adapter);
+                    mComponentSpinner.setSelection(componentList.size()-1);
+                    mComponentSpinner.setVisibility(View.VISIBLE);
+                }
+                break;
+            case R.id.bugzilla_send_component_spinner:
+
+                break;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> arg0) {
+        // TODO Auto-generated method stub
+
     }
 }

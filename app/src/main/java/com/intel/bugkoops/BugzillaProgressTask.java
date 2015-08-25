@@ -49,10 +49,12 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_PRODUCTS = "products";
     public static final String KEY_COMPONENTS = "components";
+    public static final String KEY_FIELDS = "fields";
+    public static final String KEY_NAME = "name";
 
     public static final String KEY_TASK = "task";
     public static final int TASK_SEND = 0;
-    public static final int TASK_LOGIN_AND_GET_PRODUCT = 1;
+    public static final int TASK_LOGIN_GET_PRODUCTS_GET_COMPONENTS_GET_FIELDS = 1;
     public static final int TASK_SESSION_SEND_LOGOUT = 2;
     public static final int TASK_SESSION_LOGOUT = 3;
 
@@ -113,7 +115,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
                     send();
                     logout();
                     break;
-                case TASK_LOGIN_AND_GET_PRODUCT:
+                case TASK_LOGIN_GET_PRODUCTS_GET_COMPONENTS_GET_FIELDS:
                     login();
                     getHierarchy();
                     saveSession();

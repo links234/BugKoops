@@ -274,14 +274,14 @@ public class BugzillaREST implements BugzillaAPI{
                             String componentName = jsonComponent.getString("name");
 
                             Bundle componentBundle = new Bundle();
-                            productBundle.putString("name", componentName);
+                            componentBundle.putString("name", componentName);
 
                             int sortKey = 0;
                             if(jsonComponent.has("sort_key")) {
                                 sortKey = jsonComponent.getInt("sort_key");
                             }
 
-                            productBundle.putInt("sort_key", sortKey);
+                            componentBundle.putInt("sort_key", sortKey);
 
                             componentsBundle.putBundle(componentName, componentBundle);
                         }

@@ -12,12 +12,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.security.NoSuchAlgorithmException;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
 
 public class HttpConnection {
     private final String LOG_TAG = HttpConnection.class.getSimpleName();
