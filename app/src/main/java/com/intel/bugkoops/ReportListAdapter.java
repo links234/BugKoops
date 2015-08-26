@@ -79,7 +79,7 @@ public class ReportListAdapter extends CursorAdapter {
                 break;
             }
             case VIEW_TYPE_OTHER: {
-                viewHolder.dateView.setText(Utility.getPrettyDate(date));
+                viewHolder.dateView.setText(Utility.getPrettyDate(context, date));
                 viewHolder.descriptionView.setText(Utility.summarySmall(description));
                 break;
             }

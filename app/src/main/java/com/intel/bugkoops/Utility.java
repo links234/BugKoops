@@ -128,7 +128,7 @@ public class Utility {
         {
             return summary;
         }
-        return summary.substring(0,Math.min(charsPerLine*numberOfLines,summary.length()-1));
+        return summary.substring(0, Math.min(charsPerLine * numberOfLines, summary.length() - 1));
     }
 
     public static String summarySmall(String text) {
@@ -145,7 +145,7 @@ public class Utility {
         return summary(text, NUMBER_OF_LINES, CHARS_PER_LINE);
     }
 
-    public static String getPrettyDate(Date date) {
+    public static String getPrettyDate(Context context, Date date) {
         final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
 
         Date endDate   = new Date();
@@ -160,28 +160,28 @@ public class Utility {
         if(diffInDays==0) {
             if(diffInHours>0) {
                 if(diffInHours == 1) {
-                    return Long.toString(diffInHours) + " hour ago";
+                    return Long.toString(diffInHours) + " " + context.getString(R.string.utility_pretty_date_hour_ago);
                 } else {
-                    return Long.toString(diffInHours) + " hours ago";
+                    return Long.toString(diffInHours) + " " + context.getString(R.string.utility_pretty_date_hours_ago);
                 }
             } else if(diffInMinutes>0) {
                 if(diffInMinutes == 1) {
-                    return Long.toString(diffInMinutes) + " minute ago";
+                    return Long.toString(diffInMinutes) + " " + context.getString(R.string.utility_pretty_date_minute_ago);
                 } else {
-                    return Long.toString(diffInMinutes) + " minutes ago";
+                    return Long.toString(diffInMinutes) + " " + context.getString(R.string.utility_pretty_date_minutes_ago);
                 }
             } else if(diffInSeconds>0) {
                 if(diffInSeconds == 1) {
-                    return Long.toString(diffInSeconds) + " second ago";
+                    return Long.toString(diffInSeconds) + " " + context.getString(R.string.utility_pretty_date_second_ago);
                 } else {
-                    return Long.toString(diffInSeconds) + " seconds ago";
+                    return Long.toString(diffInSeconds) + " " + context.getString(R.string.utility_pretty_date_seconds_ago);
                 }
             } else {
-                return "Just now";
+                return context.getString(R.string.utility_pretty_date_just_now);
             }
         } else if(diffInDays==1) {
             final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-            return "Yesterday at "+dateFormat.format(date);
+            return context.getString(R.string.utility_pretty_date_yesterday_at) + " " +dateFormat.format(date);
         } else {
             final DateFormat dateFormat = new SimpleDateFormat("EEE, d MMM HH:mm:ss");
             return dateFormat.format(date);

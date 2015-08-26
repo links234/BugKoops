@@ -142,4 +142,13 @@
 
     <string name="report_list_fragment_word_selected">Selected</string>
 
+    <string name="utility_pretty_date_hour_ago">hour ago</string>
+    <string name="utility_pretty_date_hours_ago">hours ago</string>
+    <string name="utility_pretty_date_minute_ago">minute ago</string>
+    <string name="utility_pretty_date_minutes_ago">minutes ago</string>
+    <string name="utility_pretty_date_second_ago">second ago</string>
+    <string name="utility_pretty_date_seconds_ago">seconds ago</string>
+    <string name="utility_pretty_date_just_now">Just now</string>
+    <string name="utility_pretty_date_yesterday_at">Yesterday at</string>
+
 </resources>
