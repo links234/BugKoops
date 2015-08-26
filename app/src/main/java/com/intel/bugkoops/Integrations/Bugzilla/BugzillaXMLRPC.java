@@ -24,7 +24,7 @@ public class BugzillaXMLRPC implements BugzillaAPI{
 
     static public final String API_VERSION = "XMLRPC";
 
-    static private final String CONTENT_TYPE = "text/xml";
+    static private final String CONTENT_TYPE = "text/xml; charset=utf-8";
 
     private HttpConnection mHttpConnection;
     private String mServer;

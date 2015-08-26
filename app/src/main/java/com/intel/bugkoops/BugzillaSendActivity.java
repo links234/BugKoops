@@ -3,7 +3,6 @@ package com.intel.bugkoops;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -42,10 +41,20 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
     private Bundle mProducts;
     private Bundle mFields;
 
+    private String mReportTitle;
+    private long mReportDate;
+    private String mReportText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bugzilla_send);
+
+        Bundle data = getIntent().getExtras();
+
+        mReportTitle = Utility.getString(data, ReportDetailActivity.KEY_REPORT_TITLE, "");
+        mReportDate = data.getLong(ReportDetailActivity.KEY_REPORT_DATE, 0);
+        mReportText = Utility.getString(data, ReportDetailActivity.KEY_REPORT_TEXT, "");
 
         mServerEditText = (EditText) findViewById(R.id.bugzilla_send_server_edittext);
         mUserEditText = (EditText) findViewById(R.id.bugzilla_send_user_edittext);
@@ -108,6 +117,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
         params.putBundle(BugzillaProgressTask.KEY_REPORT, report);
 
         Bundle attachment = new Bundle();
+        attachment.putString(BugzillaAPI.KEY_ATTACHMENT_DATA, mReportText);
         params.putBundle(BugzillaProgressTask.KEY_ATTACHMENT, attachment);
 
         params.putInt(BugzillaProgressTask.KEY_TASK, BugzillaProgressTask.TASK_SESSION_SEND_WITH_ATTACHMENT_LOGOUT);
@@ -145,11 +155,9 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                 break;
             case BugzillaProgressTask.TASK_SESSION_SEND_WITH_ATTACHMENT_LOGOUT:
                 if(!result.getBoolean(BugzillaProgressTask.KEY_ERROR)) {
-
-                    Log.d(LOG_TAG, "Bug URL = " + result.getString(BugzillaProgressTask.KEY_CREATED_BUG_URL));
-
                     Intent intent = new Intent();
                     intent.putExtra(ReportDetailActivity.KEY_MESSAGE, "Report succesfuly sent!");
+                    intent.putExtra(ReportDetailActivity.KEY_RESULT, result.getString(BugzillaProgressTask.KEY_CREATED_BUG_URL));
                     setResult(RESULT_OK, intent);
                     mSession = null;
                     finish();

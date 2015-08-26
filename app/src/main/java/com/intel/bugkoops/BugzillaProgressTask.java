@@ -199,7 +199,9 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
 
     private void sendAttachment() throws Exception {
         publishProgress("Sending attachment ... ");
-        boolean result = mServer.sendAttachment(Utility.getBundle(mParams, KEY_ATTACHMENT));
+        Bundle attachment = Utility.getBundle(mParams, KEY_ATTACHMENT);
+        attachment.putInt(BugzillaAPI.KEY_ATTACHMENT_BUGID, mResult.getInt(KEY_CREATED_BUG_ID));
+        boolean result = mServer.sendAttachment(attachment);
         if(error() || !result) {
             setTaskResult("Failed to send attachment!");
             throw new Exception();

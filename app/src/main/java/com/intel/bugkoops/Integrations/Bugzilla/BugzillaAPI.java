@@ -13,6 +13,11 @@ public interface BugzillaAPI {
     String DEFAULT_PRIORITY = "P1";
     String DEFAULT_SEVERITY = "critical";
 
+    String DEFAULT_ATTACHMENT_CONTENT_TYPE = "text/plain";
+    String DEFAULT_ATTACHMENT_SUMMARY = "Bug Koops generated attachment";
+    String DEFAULT_ATTACHMENT_FILE_NAME = "Oops message";
+
+
     String KEY_API = "api";
 
     String KEY_TOKEN = "token";
@@ -29,6 +34,10 @@ public interface BugzillaAPI {
     String KEY_PLATFORM = "platform";
     String KEY_PRIORITY = "priority";
     String KEY_SEVERITY = "severity";
+
+    String KEY_ATTACHMENT_BUGID = "attachment_id";
+    String KEY_ATTACHMENT_DATA = "attachment_data";
+    String KEY_ATTACHMENT_CONTENT_TYPE = "attachment_content_type";
 
     String KEY_RESULT_ERROR = "error";
     String KEY_RESULT_MESSAGE = "message";

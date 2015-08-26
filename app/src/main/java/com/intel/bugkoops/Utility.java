@@ -224,4 +224,11 @@ public class Utility {
         }
         return bundle.getBundle(key);
     }
+
+    public static int getInt(Bundle bundle, String key, int defaultValue) {
+        if(bundle == null) {
+            return defaultValue;
+        }
+        return bundle.getInt(key, defaultValue);
+    }
 }

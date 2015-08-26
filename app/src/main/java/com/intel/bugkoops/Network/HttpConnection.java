@@ -4,10 +4,10 @@ import android.net.Uri;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -49,7 +49,7 @@ public class HttpConnection {
 
     private boolean request(String url, String method, String content, String contentType, String userAgent) {
         if(contentType == null) {
-            contentType = "application/json";
+            contentType = "application/json; charset=utf-8";
         }
 
         Uri builtUri = Uri.parse(url);
@@ -92,28 +92,31 @@ public class HttpConnection {
             if(content != null) {
                 connection.setDoOutput(true);
 
+                byte[] contentData = content.getBytes("UTF-8");
+
                 connection.setRequestProperty("Content-Type", contentType);
-                connection.setRequestProperty("Content-Length",  String.valueOf(content.length()));
+                connection.setRequestProperty("Content-Length", String.valueOf(contentData.length));
 
-                OutputStream outputStream = connection.getOutputStream();
-                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, "UTF-8");
+                DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
 
-                outputStreamWriter.write(content);
+                dataOutputStream.write(contentData);
 
-                outputStreamWriter.flush();
-                outputStream.close();
+                dataOutputStream.flush();
+                dataOutputStream.close();
             }
 
             mResponseCode = connection.getResponseCode();
 
-            BufferedReader input;
-            if (mResponseCode == HttpURLConnection.HTTP_OK) {
-                input = new BufferedReader( new InputStreamReader(
-                        connection.getInputStream()));
-            } else {
-                input = new BufferedReader( new InputStreamReader(
-                        connection.getErrorStream()));
+            InputStream inputStream = null;
+            try
+            {
+                inputStream = connection.getInputStream();
             }
+            catch(IOException exception)
+            {
+                inputStream = connection.getErrorStream();
+            }
+            BufferedReader input = new BufferedReader( new InputStreamReader(inputStream) );
 
             String inputLine;
             StringBuilder response = new StringBuilder();
@@ -136,13 +139,14 @@ public class HttpConnection {
         return false;
     }
 
-    private Boolean httpRequest(String url, String method, String content, String contentType, String userAgent) {
+    private Boolean httpRequest(String stringUrl, String method, String content, String contentType, String userAgent) {
         try {
             mRequestResult = "";
             mResponseCode = 0;
 
-            URL obj = new URL(url);
-            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+            URL url = new URL(stringUrl);
+
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod(method);
             connection.setRequestProperty("User-Agent", userAgent);
@@ -151,28 +155,31 @@ public class HttpConnection {
             if(content != null) {
                 connection.setDoOutput(true);
 
+                byte[] contentData = content.getBytes("UTF-8");
+
                 connection.setRequestProperty("Content-Type", contentType);
-                connection.setRequestProperty("Content-Length",  String.valueOf(content.length()));
+                connection.setRequestProperty("Content-Length", String.valueOf(contentData.length));
 
-                OutputStream outputStream = connection.getOutputStream();
-                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, "UTF-8");
+                DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
 
-                outputStreamWriter.write(content);
+                dataOutputStream.write(contentData);
 
-                outputStreamWriter.flush();
-                outputStream.close();
+                dataOutputStream.flush();
+                dataOutputStream.close();
             }
 
             mResponseCode = connection.getResponseCode();
 
-            BufferedReader input;
-            if (mResponseCode == HttpURLConnection.HTTP_OK) {
-                input = new BufferedReader( new InputStreamReader(
-                        connection.getInputStream()));
-            } else {
-                input = new BufferedReader( new InputStreamReader(
-                        connection.getErrorStream()));
+            InputStream inputStream = null;
+            try
+            {
+                inputStream = connection.getInputStream();
             }
+            catch(IOException exception)
+            {
+                inputStream = connection.getErrorStream();
+            }
+            BufferedReader input = new BufferedReader( new InputStreamReader(inputStream) );
 
             String inputLine;
             StringBuilder response = new StringBuilder();

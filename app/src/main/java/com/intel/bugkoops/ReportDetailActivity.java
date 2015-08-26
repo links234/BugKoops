@@ -6,8 +6,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.intel.bugkoops.Data.BugKoopsContract;
@@ -16,6 +20,11 @@ public class ReportDetailActivity extends MenuActivity {
     private static final String LOG_TAG = ReportDetailActivity.class.getSimpleName();
 
     public static final String KEY_MESSAGE = "message";
+    public static final String KEY_RESULT = "result";
+
+    public static final String KEY_REPORT_TITLE = "report_title";
+    public static final String KEY_REPORT_DATE = "report_date";
+    public static final String KEY_REPORT_TEXT = "report_text";
 
     public static final int ID_BUGZILLA_RESULT = 0;
 
@@ -157,7 +166,13 @@ public class ReportDetailActivity extends MenuActivity {
                     @Override
                     public void run() {
                         if(Utility.isNetworkAvailable(ReportDetailActivity.this)) {
-                            startActivityForResult(new Intent(ReportDetailActivity.this, BugzillaSendActivity.class), ID_BUGZILLA_RESULT);
+                            Intent intent = new Intent(ReportDetailActivity.this, BugzillaSendActivity.class);
+                            Bundle data = new Bundle();
+                            data.putString(KEY_REPORT_TITLE, reportDetailFragment.getTitle());
+                            data.putLong(KEY_REPORT_DATE, reportDetailFragment.getDate());
+                            data.putString(KEY_REPORT_TEXT, reportDetailFragment.getText());
+                            intent.putExtras(data);
+                            startActivityForResult(intent, ID_BUGZILLA_RESULT);
                         } else {
                             Toast.makeText(ReportDetailActivity.this, "You are not connected to internet!", Toast.LENGTH_LONG).show();
                         }
@@ -236,6 +251,23 @@ public class ReportDetailActivity extends MenuActivity {
             if(resultCode == RESULT_OK) {
                 String message = data.getStringExtra(KEY_MESSAGE);
                 reportDetailFragment.setResultSlackbar(message);
+
+                final TextView vmessage = new TextView(this);
+
+                final SpannableString s =
+                        new SpannableString(data.getStringExtra(KEY_RESULT));
+                Linkify.addLinks(s, Linkify.WEB_URLS);
+                vmessage.setText(s);
+                vmessage.setMovementMethod(LinkMovementMethod.getInstance());
+
+                new AlertDialog.Builder(this)
+                        .setTitle("Bugzilla bug url")
+                        .setCancelable(true)
+                        .setIcon(android.R.drawable.ic_dialog_info)
+                        .setPositiveButton("Dismiss", null)
+                        .setView(vmessage)
+                        .create()
+                        .show();
             }
         }
     }

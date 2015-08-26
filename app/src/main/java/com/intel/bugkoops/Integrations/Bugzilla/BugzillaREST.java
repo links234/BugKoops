@@ -2,6 +2,7 @@ package com.intel.bugkoops.Integrations.Bugzilla;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 
 import com.intel.bugkoops.Network.HttpConnection;
@@ -18,7 +19,7 @@ public class BugzillaREST implements BugzillaAPI{
 
     static public final String API_VERSION = "REST";
 
-    static private final String CONTENT_TYPE = "application/json";
+    static private final String CONTENT_TYPE = "text/plain; charset=utf-8";
 
     private HttpConnection mHttpConnection;
     private String mServer;
@@ -56,8 +57,6 @@ public class BugzillaREST implements BugzillaAPI{
                 return false;
             }
 
-            Log.d(LOG_TAG, "Result get = " + mHttpConnection.getRequestResult());
-
             if (!translate(mHttpConnection.getRequestResult())) {
                 return false;
             }
@@ -87,8 +86,6 @@ public class BugzillaREST implements BugzillaAPI{
             return false;
         }
 
-        Log.d(LOG_TAG, "Result get = " + mHttpConnection.getRequestResult());
-
         if(!translate(mHttpConnection.getRequestResult())) {
             return false;
         }
@@ -116,8 +113,6 @@ public class BugzillaREST implements BugzillaAPI{
         if(!mHttpConnection.get(builtUri.toString())) {
             return false;
         }
-
-        Log.d(LOG_TAG, "Result get = " + mHttpConnection.getRequestResult());
 
         if(!translate(mHttpConnection.getRequestResult()))
         {
@@ -167,13 +162,10 @@ public class BugzillaREST implements BugzillaAPI{
             return false;
         }
 
-        Log.d(LOG_TAG, "Post body = " + jsonRequest.toString());
-
         if(!mHttpConnection.post(builtUri.toString(), jsonRequest.toString(), CONTENT_TYPE)) {
             return false;
         }
 
-        Log.d(LOG_TAG, "Result get = " + mHttpConnection.getRequestResult());
 
         if(!translate(mHttpConnection.getRequestResult())) {
             return false;
@@ -183,6 +175,45 @@ public class BugzillaREST implements BugzillaAPI{
     }
 
     public boolean sendAttachment(Bundle attachment) {
+        String data = Utility.getString(attachment, KEY_ATTACHMENT_DATA);
+        int bugId = Utility.getInt(attachment, KEY_ATTACHMENT_BUGID, -1);
+        String contentType = Utility.getString(attachment, KEY_ATTACHMENT_CONTENT_TYPE, DEFAULT_ATTACHMENT_CONTENT_TYPE);
+
+        if(bugId == -1) {
+            setError("There is no bug id associated with the attachment");
+        }
+
+        Uri builtUri = Uri.parse(mServer).buildUpon()
+                .appendPath("rest")
+                .appendPath("bug")
+                .appendPath(Integer.toString(bugId))
+                .appendPath("attachment")
+                .appendQueryParameter("token", mToken)
+                .build();
+
+        JSONObject jsonRequest = new JSONObject();
+        try {
+            JSONArray bugIds = new JSONArray();
+            bugIds.put(bugId);
+
+            jsonRequest.put("ids", bugIds);
+            jsonRequest.put("data", Base64.encodeToString(data.getBytes(), Base64.DEFAULT));
+            jsonRequest.put("file_name", DEFAULT_ATTACHMENT_FILE_NAME);
+            jsonRequest.put("summary", DEFAULT_ATTACHMENT_SUMMARY);
+            jsonRequest.put("content_type", contentType);
+        } catch(JSONException e) {
+            Log.e(LOG_TAG, "JSONException", e);
+            return false;
+        }
+
+        if(!mHttpConnection.post(builtUri.toString(), jsonRequest.toString(), CONTENT_TYPE)) {
+            return false;
+        }
+
+
+        if(!translate(mHttpConnection.getRequestResult())) {
+            return false;
+        }
         return true;
     }
 
@@ -213,8 +244,6 @@ public class BugzillaREST implements BugzillaAPI{
             return false;
         }
 
-        Log.d(LOG_TAG, "Result get = " + mHttpConnection.getRequestResult());
-
         if(!translate(mHttpConnection.getRequestResult())) {
             return false;
         }
@@ -234,8 +263,6 @@ public class BugzillaREST implements BugzillaAPI{
             return false;
         }
 
-        Log.d(LOG_TAG, "Result get = " + mHttpConnection.getRequestResult());
-
         if(!translate(mHttpConnection.getRequestResult())) {
             return false;
         }
@@ -253,7 +280,6 @@ public class BugzillaREST implements BugzillaAPI{
 
     private void setError(String message) {
         mResult = new Bundle();
-        Log.d(LOG_TAG, "message = " + message);
         mResult.putBoolean(KEY_RESULT_ERROR, true);
         mResult.putString(KEY_RESULT_MESSAGE, message);
     }
@@ -280,7 +306,9 @@ public class BugzillaREST implements BugzillaAPI{
 
             while( keys.hasNext() ) {
                 String key = (String)keys.next();
-                if(json.get(key) instanceof String) {
+                if(json.get(key) instanceof Integer) {
+                    mResult.putInt(key, json.getInt(key));
+                } else if(json.get(key) instanceof String) {
                     mResult.putString(key, json.getString(key));
                 } else if(json.get(key) instanceof Boolean) {
                     mResult.putBoolean(key, json.getBoolean(key));
