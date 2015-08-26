@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.intel.bugkoops.Data.BugKoopsContract;
-import com.journeyapps.barcodescanner.Util;
 
 import java.util.Date;
 

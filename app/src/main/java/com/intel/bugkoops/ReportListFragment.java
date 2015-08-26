@@ -50,11 +50,6 @@ public class ReportListFragment extends Fragment implements LoaderManager.Loader
     static final int COL_REPORT_TITLE = 2;
     static final int COL_REPORT_TEXT = 3;
 
-    /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
-     */
     public interface Callback {
         void onItemSelected(Uri dateUri);
     }

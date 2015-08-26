@@ -3,7 +3,6 @@ package com.intel.bugkoops.Data;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.net.Uri;
-import android.text.format.Time;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -20,8 +19,6 @@ public class ReportManager {
 
         ContentValues reportValues = new ContentValues();
 
-        // Then add the data, along with the corresponding name of the data type,
-        // so the content provider knows what kind of value is being inserted.
         reportValues.put(BugKoopsContract.ReportEntry.COLUMN_DATE, BugKoopsContract.dateToDB(new Date()));
         reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TITLE, "Scanned report");
         reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TEXT, text);
