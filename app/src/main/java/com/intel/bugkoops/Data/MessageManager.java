@@ -23,53 +23,53 @@ public class MessageManager {
     public static void push(int messageId, int packetCount, int packetId, String result) {
         lastScanGotHere = true;
 
-        if(db.get(messageId) == null) {
+        if (db.get(messageId) == null) {
             db.put(messageId, new HashMap<Integer, HashMap<Integer, String>>());
         }
-        if(db.get(messageId).get(packetCount) == null) {
+        if (db.get(messageId).get(packetCount) == null) {
             db.get(messageId).put(packetCount, new HashMap<Integer, String>());
         }
 
-        if(startTime.get(messageId) == null) {
+        if (startTime.get(messageId) == null) {
             startTime.put(messageId, new HashMap<Integer, Long>());
         }
-        if(startTime.get(messageId).get(packetCount) == null) {
+        if (startTime.get(messageId).get(packetCount) == null) {
             startTime.get(messageId).put(packetCount, SystemClock.elapsedRealtime());
         }
 
-        HashMap<Integer,String> messageDb = db.get(messageId).get(packetCount);
+        HashMap<Integer, String> messageDb = db.get(messageId).get(packetCount);
 
-        messageDb.put(packetId,result);
+        messageDb.put(packetId, result);
 
         lastPacketStatus = new byte[packetCount];
-        for(int id = 1; id <= packetCount; ++id) {
-            if(messageDb.containsKey(id)) {
-                lastPacketStatus[id-1] = PACKET_STATUS_DONE;
+        for (int id = 1; id <= packetCount; ++id) {
+            if (messageDb.containsKey(id)) {
+                lastPacketStatus[id - 1] = PACKET_STATUS_DONE;
             } else {
-                lastPacketStatus[id-1] = PACKET_STATUS_NOTFOUND;
+                lastPacketStatus[id - 1] = PACKET_STATUS_NOTFOUND;
             }
         }
-        lastPacketStatus[packetId-1] = PACKET_STATUS_LAST_SCANNED;
+        lastPacketStatus[packetId - 1] = PACKET_STATUS_LAST_SCANNED;
 
-        if(messageDb.size() == packetCount) {
+        if (messageDb.size() == packetCount) {
 
             String text = "";
 
-            for(int id = 1; id <= packetCount; ++id) {
+            for (int id = 1; id <= packetCount; ++id) {
                 text += messageDb.get(id);
             }
 
-            lastElapsedTime = SystemClock.elapsedRealtime()-startTime.get(messageId).get(packetCount);
+            lastElapsedTime = SystemClock.elapsedRealtime() - startTime.get(messageId).get(packetCount);
 
             ReportManager.push(text);
 
             db.get(messageId).remove(packetCount);
-            if(db.get(messageId).size()==0) {
+            if (db.get(messageId).size() == 0) {
                 db.remove(messageId);
             }
 
             startTime.get(messageId).remove(packetCount);
-            if(startTime.get(messageId).size()==0) {
+            if (startTime.get(messageId).size() == 0) {
                 startTime.remove(messageId);
             }
         }

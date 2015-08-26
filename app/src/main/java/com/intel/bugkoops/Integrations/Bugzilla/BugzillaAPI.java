@@ -58,17 +58,22 @@ public interface BugzillaAPI {
     boolean version();
 
     boolean login(String user, String password);
+
     boolean logout();
 
     boolean send(Bundle report);
+
     boolean sendAttachment(Bundle attachment);
 
     void restore(Bundle session);
+
     Bundle save();
 
     boolean getHierarchy();
+
     boolean getFields();
 
     String getAPIVersion();
+
     Bundle getResult();
 }

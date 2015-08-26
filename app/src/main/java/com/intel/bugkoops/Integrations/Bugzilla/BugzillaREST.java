@@ -14,7 +14,7 @@ import org.json.JSONObject;
 
 import java.util.Iterator;
 
-public class BugzillaREST implements BugzillaAPI{
+public class BugzillaREST implements BugzillaAPI {
     final String LOG_TAG = getClass().getSimpleName();
 
     static public final String API_VERSION = "REST";
@@ -47,7 +47,7 @@ public class BugzillaREST implements BugzillaAPI{
     }
 
     public boolean version() {
-        if(mVersion == null) {
+        if (mVersion == null) {
             Uri builtUri = Uri.parse(mServer).buildUpon()
                     .appendPath("rest")
                     .appendPath("version")
@@ -71,7 +71,7 @@ public class BugzillaREST implements BugzillaAPI{
     }
 
     public boolean login(String user, String password) {
-        if(mToken != null && !user.equals(mUser) && !password.equals(mPassword)) {
+        if (mToken != null && !user.equals(mUser) && !password.equals(mPassword)) {
             logout();
         }
 
@@ -82,15 +82,15 @@ public class BugzillaREST implements BugzillaAPI{
                 .appendQueryParameter("password", password)
                 .build();
 
-        if(!mHttpConnection.get(builtUri.toString())) {
+        if (!mHttpConnection.get(builtUri.toString())) {
             return false;
         }
 
-        if(!translate(mHttpConnection.getRequestResult())) {
+        if (!translate(mHttpConnection.getRequestResult())) {
             return false;
         }
 
-        if(mResult.getString(KEY_TOKEN) == null) {
+        if (mResult.getString(KEY_TOKEN) == null) {
             setError("Login response does not contain any token");
             return false;
         }
@@ -110,12 +110,11 @@ public class BugzillaREST implements BugzillaAPI{
                 .appendQueryParameter("token", mToken)
                 .build();
 
-        if(!mHttpConnection.get(builtUri.toString())) {
+        if (!mHttpConnection.get(builtUri.toString())) {
             return false;
         }
 
-        if(!translate(mHttpConnection.getRequestResult()))
-        {
+        if (!translate(mHttpConnection.getRequestResult())) {
             return false;
         }
 
@@ -157,17 +156,17 @@ public class BugzillaREST implements BugzillaAPI{
             jsonRequest.put(KEY_PRIORITY, priority);
             jsonRequest.put(KEY_PLATFORM, platform);
             jsonRequest.put(KEY_SEVERITY, severity);
-        } catch(JSONException e) {
+        } catch (JSONException e) {
             Log.e(LOG_TAG, "JSONException", e);
             return false;
         }
 
-        if(!mHttpConnection.post(builtUri.toString(), jsonRequest.toString(), CONTENT_TYPE)) {
+        if (!mHttpConnection.post(builtUri.toString(), jsonRequest.toString(), CONTENT_TYPE)) {
             return false;
         }
 
 
-        if(!translate(mHttpConnection.getRequestResult())) {
+        if (!translate(mHttpConnection.getRequestResult())) {
             return false;
         }
 
@@ -179,7 +178,7 @@ public class BugzillaREST implements BugzillaAPI{
         int bugId = Utility.getInt(attachment, KEY_ATTACHMENT_BUGID, -1);
         String contentType = Utility.getString(attachment, KEY_ATTACHMENT_CONTENT_TYPE, DEFAULT_ATTACHMENT_CONTENT_TYPE);
 
-        if(bugId == -1) {
+        if (bugId == -1) {
             setError("There is no bug id associated with the attachment");
         }
 
@@ -201,17 +200,17 @@ public class BugzillaREST implements BugzillaAPI{
             jsonRequest.put("file_name", DEFAULT_ATTACHMENT_FILE_NAME);
             jsonRequest.put("summary", DEFAULT_ATTACHMENT_SUMMARY);
             jsonRequest.put("content_type", contentType);
-        } catch(JSONException e) {
+        } catch (JSONException e) {
             Log.e(LOG_TAG, "JSONException", e);
             return false;
         }
 
-        if(!mHttpConnection.post(builtUri.toString(), jsonRequest.toString(), CONTENT_TYPE)) {
+        if (!mHttpConnection.post(builtUri.toString(), jsonRequest.toString(), CONTENT_TYPE)) {
             return false;
         }
 
 
-        if(!translate(mHttpConnection.getRequestResult())) {
+        if (!translate(mHttpConnection.getRequestResult())) {
             return false;
         }
         return true;
@@ -240,11 +239,11 @@ public class BugzillaREST implements BugzillaAPI{
                 .appendQueryParameter("type", "enterable")
                 .build();
 
-        if(!mHttpConnection.get(builtUri.toString())) {
+        if (!mHttpConnection.get(builtUri.toString())) {
             return false;
         }
 
-        if(!translate(mHttpConnection.getRequestResult())) {
+        if (!translate(mHttpConnection.getRequestResult())) {
             return false;
         }
 
@@ -259,11 +258,11 @@ public class BugzillaREST implements BugzillaAPI{
                 .appendQueryParameter("token", mToken)
                 .build();
 
-        if(!mHttpConnection.get(builtUri.toString())) {
+        if (!mHttpConnection.get(builtUri.toString())) {
             return false;
         }
 
-        if(!translate(mHttpConnection.getRequestResult())) {
+        if (!translate(mHttpConnection.getRequestResult())) {
             return false;
         }
 
@@ -288,10 +287,10 @@ public class BugzillaREST implements BugzillaAPI{
         try {
             JSONObject jsonResult = new JSONObject(string);
 
-            if(!translate(jsonResult)) {
+            if (!translate(jsonResult)) {
                 return false;
             }
-        } catch(JSONException e) {
+        } catch (JSONException e) {
             Log.e(LOG_TAG, "JSONException", e);
             setError("Server response is corrupted!");
             return false;
@@ -304,25 +303,25 @@ public class BugzillaREST implements BugzillaAPI{
         try {
             Iterator<?> keys = json.keys();
 
-            while( keys.hasNext() ) {
-                String key = (String)keys.next();
-                if(json.get(key) instanceof Integer) {
+            while (keys.hasNext()) {
+                String key = (String) keys.next();
+                if (json.get(key) instanceof Integer) {
                     mResult.putInt(key, json.getInt(key));
-                } else if(json.get(key) instanceof String) {
+                } else if (json.get(key) instanceof String) {
                     mResult.putString(key, json.getString(key));
-                } else if(json.get(key) instanceof Boolean) {
+                } else if (json.get(key) instanceof Boolean) {
                     mResult.putBoolean(key, json.getBoolean(key));
-                } else if(json.get(key) instanceof JSONArray && key.equalsIgnoreCase("products")) {
+                } else if (json.get(key) instanceof JSONArray && key.equalsIgnoreCase("products")) {
                     Bundle productsBundle = new Bundle();
                     JSONArray jsonProductArray = json.getJSONArray("products");
-                    for(int product = 0; product < jsonProductArray.length(); ++product) {
+                    for (int product = 0; product < jsonProductArray.length(); ++product) {
                         JSONObject jsonProduct = jsonProductArray.getJSONObject(product);
                         String productName = jsonProduct.getString("name");
 
                         Bundle productBundle = new Bundle();
                         Bundle componentsBundle = new Bundle();
                         JSONArray jsonComponentArray = jsonProduct.getJSONArray("components");
-                        for(int component = 0; component < jsonComponentArray.length(); ++component) {
+                        for (int component = 0; component < jsonComponentArray.length(); ++component) {
                             JSONObject jsonComponent = jsonComponentArray.getJSONObject(component);
                             String componentName = jsonComponent.getString("name");
 
@@ -330,7 +329,7 @@ public class BugzillaREST implements BugzillaAPI{
                             componentBundle.putString(KEY_RESULT_NAME, componentName);
 
                             int sortKey = 0;
-                            if(jsonComponent.has("sort_key")) {
+                            if (jsonComponent.has("sort_key")) {
                                 sortKey = jsonComponent.getInt("sort_key");
                             }
 
@@ -344,12 +343,12 @@ public class BugzillaREST implements BugzillaAPI{
                         productsBundle.putBundle(productName, productBundle);
                     }
                     mResult.putBundle("products", productsBundle);
-                } else if(json.get(key) instanceof JSONArray && key.equalsIgnoreCase("fields")) {
+                } else if (json.get(key) instanceof JSONArray && key.equalsIgnoreCase("fields")) {
                     Bundle fieldsBundle = new Bundle();
                     JSONArray jsonFieldArray = json.getJSONArray("fields");
-                    for(int field = 0; field < jsonFieldArray.length(); ++field) {
+                    for (int field = 0; field < jsonFieldArray.length(); ++field) {
                         JSONObject jsonField = jsonFieldArray.getJSONObject(field);
-                        if(!jsonField.has("values")) {
+                        if (!jsonField.has("values")) {
                             continue;
                         }
                         String fieldName = jsonField.getString("name");
@@ -359,12 +358,12 @@ public class BugzillaREST implements BugzillaAPI{
 
                         Bundle valuesBundle = new Bundle();
                         JSONArray jsonValuesArray = jsonField.getJSONArray("values");
-                        for(int value = 0; value < jsonValuesArray.length(); ++value) {
+                        for (int value = 0; value < jsonValuesArray.length(); ++value) {
                             JSONObject jsonValue = jsonValuesArray.getJSONObject(value);
                             String valueName = jsonValue.getString("name");
 
                             int sortKey = 0;
-                            if(jsonValue.has("sort_key")) {
+                            if (jsonValue.has("sort_key")) {
                                 sortKey = jsonValue.getInt("sort_key");
                             }
 
@@ -383,10 +382,10 @@ public class BugzillaREST implements BugzillaAPI{
                 }
             }
 
-            if(mResult.getBoolean(KEY_RESULT_ERROR)) {
+            if (mResult.getBoolean(KEY_RESULT_ERROR)) {
                 return false;
             }
-        } catch(JSONException e) {
+        } catch (JSONException e) {
             Log.e(LOG_TAG, "JSONException", e);
             setError("Server response is corupted!");
             return false;
@@ -395,9 +394,9 @@ public class BugzillaREST implements BugzillaAPI{
     }
 
     private String translateField(String field) {
-        if(field.equals("rep_platform")) {
+        if (field.equals("rep_platform")) {
             return KEY_RESULT_PLATFORM;
-        } else if(field.equals("bug_severity")) {
+        } else if (field.equals("bug_severity")) {
             return KEY_RESULT_SEVERITY;
         }
         return field;

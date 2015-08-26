@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
-public class ReportActivity extends MenuActivity implements ReportListFragment.Callback  {
+public class ReportActivity extends MenuActivity implements ReportListFragment.Callback {
     private final String LOG_TAG = getClass().getSimpleName();
 
     private boolean mTwoPane;
@@ -16,7 +16,7 @@ public class ReportActivity extends MenuActivity implements ReportListFragment.C
 
         mTwoPane = false;
 
-        ReportListFragment forecastFragment =  ((ReportListFragment)getFragmentManager()
+        ReportListFragment forecastFragment = ((ReportListFragment) getFragmentManager()
                 .findFragmentById(R.id.fragment_report_list));
         forecastFragment.setUseTodayLayout(!mTwoPane);
     }

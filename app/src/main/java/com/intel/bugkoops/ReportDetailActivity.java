@@ -39,7 +39,7 @@ public class ReportDetailActivity extends MenuActivity {
 
         if (savedInstanceState == null) {
             Uri uri = getIntent().getData();
-            if(uri != null) {
+            if (uri != null) {
                 Bundle arguments = new Bundle();
                 arguments.putParcelable(ReportDetailFragment.DETAIL_URI, uri);
 
@@ -75,11 +75,11 @@ public class ReportDetailActivity extends MenuActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_report_detail_save:
-                if(reportDetailFragment.modified()) {
+                if (reportDetailFragment.modified()) {
                     DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            switch (which){
+                            switch (which) {
                                 case DialogInterface.BUTTON_POSITIVE:
                                     reportDetailFragment.save();
                                     break;
@@ -90,7 +90,7 @@ public class ReportDetailActivity extends MenuActivity {
                     };
 
                     String alertDialogMessage = getString(R.string.dialog_save_report_question);
-                    if(reportDetailFragment.firstTime()) {
+                    if (reportDetailFragment.firstTime()) {
                         alertDialogMessage = getString(R.string.dialog_save_new_report_question);
                     }
 
@@ -104,7 +104,7 @@ public class ReportDetailActivity extends MenuActivity {
                 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        switch (which){
+                        switch (which) {
                             case DialogInterface.BUTTON_POSITIVE:
                                 final ContentResolver contentResolver = getContentResolver();
                                 contentResolver.delete(BugKoopsContract.ReportEntry.buildUriFromId(mId),
@@ -165,7 +165,7 @@ public class ReportDetailActivity extends MenuActivity {
                 saveBeforeSend(new Runnable() {
                     @Override
                     public void run() {
-                        if(Utility.isNetworkAvailable(ReportDetailActivity.this)) {
+                        if (Utility.isNetworkAvailable(ReportDetailActivity.this)) {
                             Intent intent = new Intent(ReportDetailActivity.this, BugzillaSendActivity.class);
                             Bundle data = new Bundle();
                             data.putString(KEY_REPORT_TITLE, reportDetailFragment.getTitle());
@@ -186,7 +186,7 @@ public class ReportDetailActivity extends MenuActivity {
     }
 
     public void saveBeforeSend(final Runnable action) {
-        if(reportDetailFragment.modified()) {
+        if (reportDetailFragment.modified()) {
             DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -213,11 +213,11 @@ public class ReportDetailActivity extends MenuActivity {
 
     @Override
     public void onBackPressed() {
-        if(reportDetailFragment.modified()) {
+        if (reportDetailFragment.modified()) {
             DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    switch (which){
+                    switch (which) {
                         case DialogInterface.BUTTON_POSITIVE:
                             reportDetailFragment.save();
                             finish();
@@ -232,7 +232,7 @@ public class ReportDetailActivity extends MenuActivity {
             };
 
             String alertDialogMessage = getString(R.string.dialog_discard_report_change_question);
-            if(reportDetailFragment.firstTime()) {
+            if (reportDetailFragment.firstTime()) {
                 alertDialogMessage = getString(R.string.dialog_discard_report_new_question);
             }
 
@@ -247,8 +247,8 @@ public class ReportDetailActivity extends MenuActivity {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == ID_BUGZILLA_RESULT) {
-            if(resultCode == RESULT_OK) {
+        if (requestCode == ID_BUGZILLA_RESULT) {
+            if (resultCode == RESULT_OK) {
                 String message = data.getStringExtra(KEY_MESSAGE);
                 reportDetailFragment.setResultSlackbar(message);
 

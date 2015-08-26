@@ -15,12 +15,12 @@ public class BugzillaAutoDetect {
 
     public BugzillaAPI open() {
         BugzillaAPI connection = new BugzillaREST(mServer, mUserAgent);
-        if(connection.version()) {
-           return connection;
+        if (connection.version()) {
+            return connection;
         }
 
         connection = new BugzillaXMLRPC(mServer, mUserAgent);
-        if(connection.version()) {
+        if (connection.version()) {
             return connection;
         }
 
@@ -29,7 +29,7 @@ public class BugzillaAutoDetect {
 
     public BugzillaAPI restore(Bundle session) {
         BugzillaAPI connection;
-        if(session.getString(BugzillaAPI.KEY_API).equals(BugzillaREST.API_VERSION)) {
+        if (session.getString(BugzillaAPI.KEY_API).equals(BugzillaREST.API_VERSION)) {
             connection = new BugzillaREST(mServer, mUserAgent);
         } else {
             connection = new BugzillaXMLRPC(mServer, mUserAgent);

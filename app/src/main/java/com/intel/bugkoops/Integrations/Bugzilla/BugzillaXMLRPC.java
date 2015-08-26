@@ -19,7 +19,7 @@ import java.io.StringReader;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-public class BugzillaXMLRPC implements BugzillaAPI{
+public class BugzillaXMLRPC implements BugzillaAPI {
     final String LOG_TAG = getClass().getSimpleName();
 
     static public final String API_VERSION = "XMLRPC";
@@ -54,7 +54,7 @@ public class BugzillaXMLRPC implements BugzillaAPI{
     }
 
     public boolean version() {
-        if(mVersion == null) {
+        if (mVersion == null) {
             Uri builtUri = Uri.parse(mServer).buildUpon()
                     .appendPath("xmlrpc.cgi")
                     .build();
@@ -87,7 +87,7 @@ public class BugzillaXMLRPC implements BugzillaAPI{
     }
 
     public boolean login(String user, String password) {
-        if(mToken != null && !user.equals(mUser) && !password.equals(mPassword)) {
+        if (mToken != null && !user.equals(mUser) && !password.equals(mPassword)) {
             logout();
         }
 
@@ -106,17 +106,17 @@ public class BugzillaXMLRPC implements BugzillaAPI{
 
         Log.d(LOG_TAG, "Post body = " + request.toString());
 
-        if(!mHttpConnection.post(builtUri.toString(), request.toString(), CONTENT_TYPE)) {
+        if (!mHttpConnection.post(builtUri.toString(), request.toString(), CONTENT_TYPE)) {
             return false;
         }
 
         Log.d(LOG_TAG, "Result get = " + mHttpConnection.getRequestResult());
 
-        if(!translate(mHttpConnection.getRequestResult())) {
+        if (!translate(mHttpConnection.getRequestResult())) {
             return false;
         }
 
-        if(mResult.getString(KEY_TOKEN) == null) {
+        if (mResult.getString(KEY_TOKEN) == null) {
             setError("Login response does not contain any token");
             return false;
         }
@@ -130,7 +130,7 @@ public class BugzillaXMLRPC implements BugzillaAPI{
     }
 
     public boolean logout() {
-        if(mToken == null) {
+        if (mToken == null) {
             return false;
         }
 
@@ -148,14 +148,13 @@ public class BugzillaXMLRPC implements BugzillaAPI{
 
         Log.d(LOG_TAG, "Post body = " + request.toString());
 
-        if(!mHttpConnection.post(builtUri.toString(), request.toString(), CONTENT_TYPE)) {
+        if (!mHttpConnection.post(builtUri.toString(), request.toString(), CONTENT_TYPE)) {
             return false;
         }
 
         Log.d(LOG_TAG, "Result get = " + mHttpConnection.getRequestResult());
 
-        if(!translate(mHttpConnection.getRequestResult()))
-        {
+        if (!translate(mHttpConnection.getRequestResult())) {
             return false;
         }
 
@@ -201,7 +200,7 @@ public class BugzillaXMLRPC implements BugzillaAPI{
 
         Log.d(LOG_TAG, "Post body = " + request.toString());
 
-        if(!mHttpConnection.post(builtUri.toString(), request.toString(), CONTENT_TYPE)) {
+        if (!mHttpConnection.post(builtUri.toString(), request.toString(), CONTENT_TYPE)) {
             return false;
         }
 
@@ -264,7 +263,7 @@ public class BugzillaXMLRPC implements BugzillaAPI{
             Document dom = builder.parse(new InputSource(new StringReader(data)));
             Element root = dom.getDocumentElement();
             NodeList items = root.getElementsByTagName("member");
-            for(int i=0; i<items.getLength(); ++i) {
+            for (int i = 0; i < items.getLength(); ++i) {
                 Node item = items.item(i);
                 NodeList properties = item.getChildNodes();
 
@@ -272,16 +271,16 @@ public class BugzillaXMLRPC implements BugzillaAPI{
                 String type = null;
                 String value = null;
 
-                for(int j=0; j<properties.getLength(); ++j) {
+                for (int j = 0; j < properties.getLength(); ++j) {
                     Node property = properties.item(j);
                     String propName = property.getNodeName().toLowerCase();
 
-                    if(propName.equalsIgnoreCase("name")) {
+                    if (propName.equalsIgnoreCase("name")) {
                         name = property.getFirstChild().getNodeValue().toLowerCase();
-                    } else if(propName.equalsIgnoreCase("value")) {
+                    } else if (propName.equalsIgnoreCase("value")) {
                         type = property.getFirstChild().getNodeName();
 
-                        if(type == null) {
+                        if (type == null) {
                             value = property.getFirstChild().getNodeValue();
                         } else {
                             value = property.getFirstChild().getFirstChild().getNodeValue();
@@ -289,30 +288,30 @@ public class BugzillaXMLRPC implements BugzillaAPI{
                     }
                 }
 
-                if(name == null || value == null) {
+                if (name == null || value == null) {
                     setError("Invalid XMLRPC response: <name,value> pair is incomplete");
                     return false;
                 }
 
-                if(name.equalsIgnoreCase("faultstring")) {
+                if (name.equalsIgnoreCase("faultstring")) {
                     name = KEY_RESULT_MESSAGE;
                     mResult.putBoolean(KEY_RESULT_ERROR, true);
-                } else if(name.equalsIgnoreCase("faultcode")) {
+                } else if (name.equalsIgnoreCase("faultcode")) {
                     name = "code";
                     mResult.putBoolean(KEY_RESULT_ERROR, true);
                 }
 
-                if(type == null || type.equalsIgnoreCase("string")) {
+                if (type == null || type.equalsIgnoreCase("string")) {
                     mResult.putString(name, value);
-                } else if(type.equalsIgnoreCase("int") ||
+                } else if (type.equalsIgnoreCase("int") ||
                         type.equalsIgnoreCase("i4")) {
                     mResult.putInt(name, Integer.valueOf(value));
-                } else if(type.equalsIgnoreCase("boolean")) {
+                } else if (type.equalsIgnoreCase("boolean")) {
                     mResult.putBoolean(name, Boolean.valueOf(value));
                 }
             }
 
-            if(mResult.getBoolean(KEY_RESULT_ERROR)) {
+            if (mResult.getBoolean(KEY_RESULT_ERROR)) {
                 return false;
             }
         } catch (Exception e) {

@@ -31,9 +31,9 @@ public class ReportManager {
 
         long reportId = ContentUris.parseId(insertedUri);
 
-       // Toast.makeText(ScannerActivity.getInstance(), text,
+        // Toast.makeText(ScannerActivity.getInstance(), text,
         //        Toast.LENGTH_SHORT).show();
-        Toast.makeText(ScannerActivity.getInstance(), "Time elapsed: "+
+        Toast.makeText(ScannerActivity.getInstance(), "Time elapsed: " +
                 Float.toString(MessageManager.getLastElapsedTime()), Toast.LENGTH_SHORT).show();
     }
 }

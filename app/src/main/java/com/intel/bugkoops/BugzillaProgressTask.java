@@ -67,7 +67,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
         mTaskResult = null;
 
         mParams = params;
-        if(mParams != null) {
+        if (mParams != null) {
             mTask = mParams.getInt(KEY_TASK);
         } else {
             mTask = TASK_SEND;
@@ -95,13 +95,13 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
             mDialog.dismiss();
         }
 
-        if(mTaskResult == null) {
+        if (mTaskResult == null) {
             if (!success) {
                 mTaskResult = mActivity.getString(R.string.bugzilla_progress_task_unexpected_error);
             }
         }
 
-        if(mTaskResult != null) {
+        if (mTaskResult != null) {
             mResultTextView.setText(mTaskResult);
             mResultTextView.setVisibility(View.VISIBLE);
         }
@@ -111,7 +111,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
 
     protected Boolean doInBackground(final String... args) {
         try {
-            switch(mTask) {
+            switch (mTask) {
                 case TASK_SEND:
                     login();
                     send();
@@ -157,7 +157,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
 
         mServer = bugzillaAutoDetect.open();
 
-        if(mServer == null) {
+        if (mServer == null) {
             setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_unsupported_server_api));
             throw new Exception();
         }
@@ -174,7 +174,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
         boolean result = mServer.login(
                 Utility.getString(mParams, KEY_LOGIN, DEFAULT_LOGIN),
                 Utility.getString(mParams, KEY_PASSWORD, DEFAULT_PASSWORD));
-        if(error() || !result) {
+        if (error() || !result) {
             setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_login));
             throw new Exception();
         }
@@ -183,7 +183,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
     private void send() throws Exception {
         publishProgress(mActivity.getString(R.string.bugzilla_progress_task_sending_report));
         boolean result = mServer.send(Utility.getBundle(mParams, KEY_REPORT));
-        if(error() || !result) {
+        if (error() || !result) {
             setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_send_report));
             throw new Exception();
         }
@@ -203,7 +203,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
         Bundle attachment = Utility.getBundle(mParams, KEY_ATTACHMENT);
         attachment.putInt(BugzillaAPI.KEY_ATTACHMENT_BUGID, mResult.getInt(KEY_CREATED_BUG_ID));
         boolean result = mServer.sendAttachment(attachment);
-        if(error() || !result) {
+        if (error() || !result) {
             setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_send_attachment));
             throw new Exception();
         }
@@ -212,7 +212,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
     private void logout() throws Exception {
         publishProgress(mActivity.getString(R.string.bugzilla_progress_task_logging_out));
         boolean result = mServer.logout();
-        if(error() || !result) {
+        if (error() || !result) {
             setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_logout));
             throw new Exception();
         }
@@ -221,7 +221,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
     private void getHierarchy() throws Exception {
         publishProgress(mActivity.getString(R.string.bugzilla_progress_task_get_hierarchy));
         boolean result = mServer.getHierarchy();
-        if(error() || !result) {
+        if (error() || !result) {
             setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_get_hierarchy));
             throw new Exception();
         }
@@ -232,7 +232,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
     private void getFields() throws Exception {
         publishProgress(mActivity.getString(R.string.bugzilla_progress_task_get_fields));
         boolean result = mServer.getFields();
-        if(error() || !result) {
+        if (error() || !result) {
             setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_get_fields));
             throw new Exception();
         }
@@ -251,13 +251,13 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
     }
 
     private void setTaskResult(String result) {
-        if(mTaskResult == null) {
+        if (mTaskResult == null) {
             mTaskResult = result;
         }
     }
 
     private boolean error(Bundle bundle) {
-        if(bundle.getBoolean("error")) {
+        if (bundle.getBoolean("error")) {
             String message = bundle.getString(BugzillaAPI.KEY_RESULT_MESSAGE);
             mResult.putBoolean(KEY_ERROR, true);
             if (message != null) {

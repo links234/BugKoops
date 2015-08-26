@@ -63,8 +63,7 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
         @Override
         public void barcodeResult(BarcodeResult result) {
             boolean scannerFailed = false;
-            if(result.getResultMetadata() == null)
-            {
+            if (result.getResultMetadata() == null) {
                 scannerFailed = true;
             } else {
                 if (result.getResultMetadata().get(
@@ -73,8 +72,7 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
                 }
             }
 
-            if(!scannerFailed)
-            {
+            if (!scannerFailed) {
                 List<byte[]> listData = (List<byte[]>) result.getResultMetadata().get(
                         ResultMetadataType.BYTE_SEGMENTS);
 
@@ -159,7 +157,7 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        if(Utility.isFullscreenEnabled(this)) {
+        if (Utility.isFullscreenEnabled(this)) {
             requestWindowFeature(Window.FEATURE_NO_TITLE);
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                     WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -171,14 +169,14 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
         mBarcodeScannerView.decodeContinuous(callback);
         mBarcodeScannerView.setTorchListener(this);
 
-        mSwitchFlashButton = (ImageButton)findViewById(R.id.switch_flashlight);
+        mSwitchFlashButton = (ImageButton) findViewById(R.id.switch_flashlight);
         if (!hasFlash()) {
             mSwitchFlashButton.setVisibility(View.GONE);
         }
 
-        mSwitchOrientationLockingButton = (ImageButton)findViewById(R.id.switch_orientation_locking);
-        mSwitchInverseScanButton = (ImageButton)findViewById(R.id.switch_inverse_scan);
-        mSwitchCameraButton = (ImageButton)findViewById(R.id.switch_camera);
+        mSwitchOrientationLockingButton = (ImageButton) findViewById(R.id.switch_orientation_locking);
+        mSwitchInverseScanButton = (ImageButton) findViewById(R.id.switch_inverse_scan);
+        mSwitchCameraButton = (ImageButton) findViewById(R.id.switch_camera);
 
         loadDefaultSettings();
 
@@ -193,7 +191,7 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
 
         mBarcodeScannerView.getBarcodeView().getCameraSettings().setRequestedCameraId(mCameraId);
         mBarcodeScannerView.getBarcodeView().getCameraSettings().setScanInverted(mInverseScan);
-        if(mFlashState == FLASH_STATE_ON) {
+        if (mFlashState == FLASH_STATE_ON) {
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -201,7 +199,7 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
                     mBarcodeScannerView.setTorchOn();
                 }
             }, RELOAD_TORCH_DELAY);
-        } else if(mFlashState == FLASH_STATE_AUTO) {
+        } else if (mFlashState == FLASH_STATE_AUTO) {
             mBarcodeScannerView.getBarcodeView().getCameraSettings().setAutoTorchEnabled(true);
         }
 
@@ -361,7 +359,7 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
     }
 
     private void unlockOrientation() {
-        if(mLockedOrientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
+        if (mLockedOrientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
             mLockedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
             setRequestedOrientation(mLockedOrientation);
         }
@@ -404,7 +402,7 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
     }
 
     @Override
-    protected void onSaveInstanceState (Bundle outState) {
+    protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
         saveStateToBundle(outState);

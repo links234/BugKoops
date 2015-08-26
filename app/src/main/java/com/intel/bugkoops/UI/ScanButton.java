@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.widget.Button;
+
 import com.intel.bugkoops.R;
 
 public class ScanButton extends Button {
@@ -77,7 +78,7 @@ public class ScanButton extends Button {
         mCenterX = width / 2;
         mCenterY = height / 2;
         mOuterRadius = Math.min(width, height) / 2;
-        mInnerRadius = (int)((float)mOuterRadius*INNER_RADIUS_PERCENTAGE);
+        mInnerRadius = (int) ((float) mOuterRadius * INNER_RADIUS_PERCENTAGE);
         enableRing();
     }
 
@@ -109,7 +110,7 @@ public class ScanButton extends Button {
 
     private void enableRing() {
         mHandler.removeCallbacksAndMessages(null);
-        long goBackTime = (long)((animationProgress)/(mOuterRadius-mInnerRadius)*NORMAL_ANIMATION_TIME);
+        long goBackTime = (long) ((animationProgress) / (mOuterRadius - mInnerRadius) * NORMAL_ANIMATION_TIME);
 
         mPressedAnimator.setFloatValues(animationProgress, 0.0f);
         mPressedAnimator.setRepeatCount(0);

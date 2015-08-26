@@ -34,7 +34,7 @@ public class MainActivity extends MenuActivity {
     }
 
     public void onScan(View view) {
-        if(!mScan) {
+        if (!mScan) {
             mScan = true;
             final Animation scanAnim = AnimationUtils.loadAnimation(this, R.anim.anim_scan);
 
@@ -78,7 +78,7 @@ public class MainActivity extends MenuActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        ((ScanButton)findViewById(R.id.scan_button)).reset();
+        ((ScanButton) findViewById(R.id.scan_button)).reset();
     }
 
     static MainActivity getInstance() {

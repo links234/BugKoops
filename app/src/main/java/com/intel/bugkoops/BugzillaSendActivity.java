@@ -125,9 +125,9 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
     }
 
     public void onTaskCompleted(Bundle result) {
-        switch(result.getInt(BugzillaProgressTask.KEY_TASK)) {
+        switch (result.getInt(BugzillaProgressTask.KEY_TASK)) {
             case BugzillaProgressTask.TASK_LOGIN_GET_PRODUCTS_GET_COMPONENTS_GET_FIELDS:
-                if(result.getBoolean(BugzillaProgressTask.KEY_ERROR)) {
+                if (result.getBoolean(BugzillaProgressTask.KEY_ERROR)) {
                     mServerEditText.setEnabled(true);
                     mUserEditText.setEnabled(true);
                     mPasswordEditText.setEnabled(true);
@@ -138,7 +138,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                     mFields = result.getBundle(BugzillaProgressTask.KEY_FIELDS);
 
                     ArrayList<String> productList = new ArrayList<>();
-                    for(String key : mProducts.keySet()) {
+                    for (String key : mProducts.keySet()) {
                         productList.add(key);
                     }
                     productList.add(getString(R.string.bugzilla_send_activity_default_product));
@@ -154,7 +154,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                 finish();
                 break;
             case BugzillaProgressTask.TASK_SESSION_SEND_WITH_ATTACHMENT_LOGOUT:
-                if(!result.getBoolean(BugzillaProgressTask.KEY_ERROR)) {
+                if (!result.getBoolean(BugzillaProgressTask.KEY_ERROR)) {
                     Intent intent = new Intent();
                     intent.putExtra(ReportDetailActivity.KEY_MESSAGE, getString(R.string.bugzilla_send_activity_success));
                     intent.putExtra(ReportDetailActivity.KEY_RESULT, result.getString(BugzillaProgressTask.KEY_CREATED_BUG_URL));
@@ -169,7 +169,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if(mSession != null) {
+            if (mSession != null) {
                 Bundle params = new Bundle();
                 params.putBundle(BugzillaProgressTask.KEY_SESSION, mSession);
                 params.putInt(BugzillaProgressTask.KEY_TASK, BugzillaProgressTask.TASK_SESSION_LOGOUT);
@@ -187,7 +187,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
         switch (parent.getId()) {
             case R.id.bugzilla_send_product_spinner:
                 String product = parent.getItemAtPosition(pos).toString();
-                if(product.equals(getString(R.string.bugzilla_send_activity_default_product))) {
+                if (product.equals(getString(R.string.bugzilla_send_activity_default_product))) {
                     mComponentSpinner.setVisibility(View.GONE);
 
                     mVersionSpinner.setVisibility(View.GONE);
@@ -198,7 +198,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                     mSendButton.setVisibility(View.GONE);
                 } else {
                     ArrayList<String> componentList = new ArrayList<>();
-                    if(mProducts.getBundle(product) != null) {
+                    if (mProducts.getBundle(product) != null) {
                         Bundle productBundle = mProducts.getBundle(product);
                         Bundle componentsBundle = productBundle.getBundle(BugzillaProgressTask.KEY_COMPONENTS);
                         for (String key : componentsBundle.keySet()) {
@@ -209,13 +209,13 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                     componentList.add(getString(R.string.bugzilla_send_activity_default_component));
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, componentList);
                     mComponentSpinner.setAdapter(adapter);
-                    mComponentSpinner.setSelection(componentList.size()-1);
+                    mComponentSpinner.setSelection(componentList.size() - 1);
                     mComponentSpinner.setVisibility(View.VISIBLE);
                 }
                 break;
             case R.id.bugzilla_send_component_spinner:
                 String component = parent.getItemAtPosition(pos).toString();
-                if(component.equals(getString(R.string.bugzilla_send_activity_default_component))) {
+                if (component.equals(getString(R.string.bugzilla_send_activity_default_component))) {
                     mVersionSpinner.setVisibility(View.GONE);
                     mOSSpinner.setVisibility(View.GONE);
                     mPlatformSpinner.setVisibility(View.GONE);
@@ -224,7 +224,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                     mSendButton.setVisibility(View.GONE);
                 } else {
                     ArrayList<String> list = new ArrayList<>();
-                    if(mFields.getBundle(BugzillaAPI.KEY_RESULT_VERSION) != null) {
+                    if (mFields.getBundle(BugzillaAPI.KEY_RESULT_VERSION) != null) {
                         Bundle fieldBundle = mFields.getBundle(BugzillaAPI.KEY_RESULT_VERSION);
                         Bundle valuesBundle = fieldBundle.getBundle(BugzillaAPI.KEY_RESULT_VALUES);
                         for (String key : valuesBundle.keySet()) {
@@ -234,11 +234,11 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                     list.add(getString(R.string.bugzilla_send_activity_default_version));
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, list);
                     mVersionSpinner.setAdapter(adapter);
-                    mVersionSpinner.setSelection(list.size()-1);
+                    mVersionSpinner.setSelection(list.size() - 1);
                     mVersionSpinner.setVisibility(View.VISIBLE);
 
-                   list = new ArrayList<>();
-                    if(mFields.getBundle(BugzillaAPI.KEY_RESULT_OS) != null) {
+                    list = new ArrayList<>();
+                    if (mFields.getBundle(BugzillaAPI.KEY_RESULT_OS) != null) {
                         Bundle fieldBundle = mFields.getBundle(BugzillaAPI.KEY_RESULT_OS);
                         Bundle valuesBundle = fieldBundle.getBundle(BugzillaAPI.KEY_RESULT_VALUES);
                         for (String key : valuesBundle.keySet()) {
@@ -252,7 +252,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                     mOSSpinner.setVisibility(View.VISIBLE);
 
                     list = new ArrayList<>();
-                    if(mFields.getBundle(BugzillaAPI.KEY_RESULT_PLATFORM) != null) {
+                    if (mFields.getBundle(BugzillaAPI.KEY_RESULT_PLATFORM) != null) {
                         Bundle fieldBundle = mFields.getBundle(BugzillaAPI.KEY_RESULT_PLATFORM);
                         Bundle valuesBundle = fieldBundle.getBundle(BugzillaAPI.KEY_RESULT_VALUES);
                         for (String key : valuesBundle.keySet()) {
@@ -266,7 +266,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                     mPlatformSpinner.setVisibility(View.VISIBLE);
 
                     list = new ArrayList<>();
-                    if(mFields.getBundle(BugzillaAPI.KEY_RESULT_PRIORITY) != null) {
+                    if (mFields.getBundle(BugzillaAPI.KEY_RESULT_PRIORITY) != null) {
                         Bundle fieldBundle = mFields.getBundle(BugzillaAPI.KEY_RESULT_PRIORITY);
                         Bundle valuesBundle = fieldBundle.getBundle(BugzillaAPI.KEY_RESULT_VALUES);
                         for (String key : valuesBundle.keySet()) {
@@ -280,7 +280,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                     mPrioritySpinner.setVisibility(View.VISIBLE);
 
                     list = new ArrayList<>();
-                    if(mFields.getBundle(BugzillaAPI.KEY_RESULT_SEVERITY) != null) {
+                    if (mFields.getBundle(BugzillaAPI.KEY_RESULT_SEVERITY) != null) {
                         Bundle fieldBundle = mFields.getBundle(BugzillaAPI.KEY_RESULT_SEVERITY);
                         Bundle valuesBundle = fieldBundle.getBundle(BugzillaAPI.KEY_RESULT_VALUES);
                         for (String key : valuesBundle.keySet()) {
@@ -335,7 +335,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
     }
 
     void checkForSendButton() {
-        if(mVersionChoosed && mOSChoosed && mPlatformChoosed && mPriorityChoosed && mSeverityChoosed) {
+        if (mVersionChoosed && mOSChoosed && mPlatformChoosed && mPriorityChoosed && mSeverityChoosed) {
             mSendButton.setVisibility(View.VISIBLE);
         } else {
             mSendButton.setVisibility(View.GONE);

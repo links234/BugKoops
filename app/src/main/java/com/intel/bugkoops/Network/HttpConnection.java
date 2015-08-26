@@ -48,12 +48,12 @@ public class HttpConnection {
     }
 
     private boolean request(String url, String method, String content, String contentType, String userAgent) {
-        if(contentType == null) {
+        if (contentType == null) {
             contentType = "application/json; charset=utf-8";
         }
 
         Uri builtUri = Uri.parse(url);
-        if(builtUri.getScheme() == null || builtUri.getScheme().equals("https")) {
+        if (builtUri.getScheme() == null || builtUri.getScheme().equals("https")) {
             return httpsRequest(url, method, content, contentType, userAgent);
         } else {
             return httpRequest(url, method, content, contentType, userAgent);
@@ -68,7 +68,7 @@ public class HttpConnection {
             URL url = new URL(stringUrl);
 
             try {
-                if(mNoSSLv3Enabled) {
+                if (mNoSSLv3Enabled) {
                     mNoSSLv3Enabled = true;
                     SSLContext sslContext = SSLContext.getInstance("TLSv1");
 
@@ -79,7 +79,7 @@ public class HttpConnection {
 
                     HttpsURLConnection.setDefaultSSLSocketFactory(NoSSLv3Factory);
                 }
-            } catch(Exception e) {
+            } catch (Exception e) {
                 Log.e(LOG_TAG, "SSL error: ", e);
                 return false;
             }
@@ -89,7 +89,7 @@ public class HttpConnection {
             connection.setRequestProperty("User-Agent", userAgent);
 
             connection.setDoInput(true);
-            if(content != null) {
+            if (content != null) {
                 connection.setDoOutput(true);
 
                 byte[] contentData = content.getBytes("UTF-8");
@@ -108,15 +108,12 @@ public class HttpConnection {
             mResponseCode = connection.getResponseCode();
 
             InputStream inputStream = null;
-            try
-            {
+            try {
                 inputStream = connection.getInputStream();
-            }
-            catch(IOException exception)
-            {
+            } catch (IOException exception) {
                 inputStream = connection.getErrorStream();
             }
-            BufferedReader input = new BufferedReader( new InputStreamReader(inputStream) );
+            BufferedReader input = new BufferedReader(new InputStreamReader(inputStream));
 
             String inputLine;
             StringBuilder response = new StringBuilder();
@@ -129,11 +126,11 @@ public class HttpConnection {
             mRequestResult = response.toString();
 
             return true;
-        } catch(MalformedURLException e) {
+        } catch (MalformedURLException e) {
             Log.e(LOG_TAG, "MalformedInputException", e);
-        } catch(ProtocolException e) {
+        } catch (ProtocolException e) {
             Log.e(LOG_TAG, "ProtocolException", e);
-        } catch(IOException e) {
+        } catch (IOException e) {
             Log.e(LOG_TAG, "IOException", e);
         }
         return false;
@@ -152,7 +149,7 @@ public class HttpConnection {
             connection.setRequestProperty("User-Agent", userAgent);
 
             connection.setDoInput(true);
-            if(content != null) {
+            if (content != null) {
                 connection.setDoOutput(true);
 
                 byte[] contentData = content.getBytes("UTF-8");
@@ -171,15 +168,12 @@ public class HttpConnection {
             mResponseCode = connection.getResponseCode();
 
             InputStream inputStream = null;
-            try
-            {
+            try {
                 inputStream = connection.getInputStream();
-            }
-            catch(IOException exception)
-            {
+            } catch (IOException exception) {
                 inputStream = connection.getErrorStream();
             }
-            BufferedReader input = new BufferedReader( new InputStreamReader(inputStream) );
+            BufferedReader input = new BufferedReader(new InputStreamReader(inputStream));
 
             String inputLine;
             StringBuilder response = new StringBuilder();
@@ -192,11 +186,11 @@ public class HttpConnection {
             mRequestResult = response.toString();
 
             return true;
-        } catch(MalformedURLException e) {
+        } catch (MalformedURLException e) {
             Log.e(LOG_TAG, "MalformedInputException", e);
-        } catch(ProtocolException e) {
+        } catch (ProtocolException e) {
             Log.e(LOG_TAG, "ProtocolException", e);
-        } catch(IOException e) {
+        } catch (IOException e) {
             Log.e(LOG_TAG, "IOException", e);
         }
         return false;

@@ -27,12 +27,12 @@ public class BugKoopsProvider extends ContentProvider {
 
     //report._ID = ?
     private static final String sReportById =
-            BugKoopsContract.ReportEntry.TABLE_NAME+
+            BugKoopsContract.ReportEntry.TABLE_NAME +
                     "." + BugKoopsContract.ReportEntry._ID + " = ? ";
 
     //report.date >= ?
     private static final String sReportByDateGreaterOrEqual =
-            BugKoopsContract.ReportEntry.TABLE_NAME+
+            BugKoopsContract.ReportEntry.TABLE_NAME +
                     "." + BugKoopsContract.ReportEntry.COLUMN_DATE + " >= ? ";
 
 
@@ -111,8 +111,7 @@ public class BugKoopsProvider extends ContentProvider {
         Cursor retCursor;
         switch (sUriMatcher.match(uri)) {
             // "report/id/#"
-            case REPORT_WITH_ID:
-            {
+            case REPORT_WITH_ID: {
                 retCursor = getReportById(uri, projection, sortOrder);
                 break;
             }
@@ -151,7 +150,7 @@ public class BugKoopsProvider extends ContentProvider {
         switch (match) {
             case REPORT: {
                 long _id = db.insert(BugKoopsContract.ReportEntry.TABLE_NAME, null, values);
-                if ( _id > 0 )
+                if (_id > 0)
                     returnUri = BugKoopsContract.ReportEntry.buildUriFromId(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
@@ -159,7 +158,7 @@ public class BugKoopsProvider extends ContentProvider {
             }
             case PROFILE: {
                 long _id = db.insert(BugKoopsContract.ProfileEntry.TABLE_NAME, null, values);
-                if ( _id > 0 )
+                if (_id > 0)
                     returnUri = BugKoopsContract.ProfileEntry.buildUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
@@ -178,7 +177,7 @@ public class BugKoopsProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         int rowsDeleted;
 
-        if ( null == selection ) selection = "1";
+        if (null == selection) selection = "1";
         switch (match) {
             case REPORT:
                 rowsDeleted = db.delete(

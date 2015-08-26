@@ -105,7 +105,7 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if ( null != mUri ) {
+        if (null != mUri) {
             return new CursorLoader(
                     getActivity(),
                     mUri,
@@ -146,7 +146,7 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
         final ContentResolver contentResolver = getActivity().getContentResolver();
         ContentValues reportValues = new ContentValues();
 
-        if(mUri != null) {
+        if (mUri != null) {
             reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TITLE, title);
             reportValues.put(BugKoopsContract.ReportEntry.COLUMN_TEXT, text);
             contentResolver.update(mUri, reportValues, null, null);
@@ -189,14 +189,14 @@ public class ReportDetailFragment extends Fragment implements LoaderManager.Load
 
     public String getReport(int reportType) {
         String report = "";
-        if( (reportType&REPORT_TYPE_TITLE) != 0) {
-            report += "<title>\n"+mInitialTitle+"\n</title>\n";
+        if ((reportType & REPORT_TYPE_TITLE) != 0) {
+            report += "<title>\n" + mInitialTitle + "\n</title>\n";
         }
-        if( (reportType&REPORT_TYPE_DATE) != 0) {
-            report += "<date>\n"+Utility.getDate(BugKoopsContract.dateFromDB(mInitialDate))+"\n</date>\n";
+        if ((reportType & REPORT_TYPE_DATE) != 0) {
+            report += "<date>\n" + Utility.getDate(BugKoopsContract.dateFromDB(mInitialDate)) + "\n</date>\n";
         }
-        if( (reportType&REPORT_TYPE_TEXT) != 0) {
-            report += "<text>\n"+mInitialText+"\n</text>\n";
+        if ((reportType & REPORT_TYPE_TEXT) != 0) {
+            report += "<text>\n" + mInitialText + "\n</text>\n";
         }
 
         return report;

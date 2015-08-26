@@ -21,6 +21,7 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
@@ -28,7 +29,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 
-public class NoSSLv3SocketFactory extends SSLSocketFactory{
+public class NoSSLv3SocketFactory extends SSLSocketFactory {
     private final SSLSocketFactory delegate;
 
     public NoSSLv3SocketFactory() {

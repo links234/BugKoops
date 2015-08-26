@@ -103,7 +103,7 @@ public class Utility {
     }
 
     public static String bytesToString(byte[] data) {
-        String text="";
+        String text = "";
         try {
             text = new String(data, "ISO-8859-1");
         } catch (UnsupportedEncodingException e) {
@@ -114,18 +114,16 @@ public class Utility {
 
     public static String summary(String text, int numberOfLines, int charsPerLine) {
         String summary = new String();
-        String[] lines = text.split("\\r?\\n",numberOfLines);
-        for(String line : lines) {
-            if(summary.length() + line.length() >= charsPerLine*numberOfLines)
-            {
+        String[] lines = text.split("\\r?\\n", numberOfLines);
+        for (String line : lines) {
+            if (summary.length() + line.length() >= charsPerLine * numberOfLines) {
                 break;
             }
             summary += line;
             summary += "\n";
         }
 
-        if(summary.length()==0)
-        {
+        if (summary.length() == 0) {
             return summary;
         }
         return summary.substring(0, Math.min(charsPerLine * numberOfLines, summary.length() - 1));
@@ -148,30 +146,30 @@ public class Utility {
     public static String getPrettyDate(Context context, Date date) {
         final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
 
-        Date endDate   = new Date();
+        Date endDate = new Date();
 
-        long duration  = endDate.getTime() - date.getTime();
+        long duration = endDate.getTime() - date.getTime();
 
         long diffInSeconds = TimeUnit.MILLISECONDS.toSeconds(duration);
         long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(duration);
         long diffInHours = TimeUnit.MILLISECONDS.toHours(duration);
-        long diffInDays = (int)(duration/DAY_IN_MILLIS);
+        long diffInDays = (int) (duration / DAY_IN_MILLIS);
 
-        if(diffInDays==0) {
-            if(diffInHours>0) {
-                if(diffInHours == 1) {
+        if (diffInDays == 0) {
+            if (diffInHours > 0) {
+                if (diffInHours == 1) {
                     return Long.toString(diffInHours) + " " + context.getString(R.string.utility_pretty_date_hour_ago);
                 } else {
                     return Long.toString(diffInHours) + " " + context.getString(R.string.utility_pretty_date_hours_ago);
                 }
-            } else if(diffInMinutes>0) {
-                if(diffInMinutes == 1) {
+            } else if (diffInMinutes > 0) {
+                if (diffInMinutes == 1) {
                     return Long.toString(diffInMinutes) + " " + context.getString(R.string.utility_pretty_date_minute_ago);
                 } else {
                     return Long.toString(diffInMinutes) + " " + context.getString(R.string.utility_pretty_date_minutes_ago);
                 }
-            } else if(diffInSeconds>0) {
-                if(diffInSeconds == 1) {
+            } else if (diffInSeconds > 0) {
+                if (diffInSeconds == 1) {
                     return Long.toString(diffInSeconds) + " " + context.getString(R.string.utility_pretty_date_second_ago);
                 } else {
                     return Long.toString(diffInSeconds) + " " + context.getString(R.string.utility_pretty_date_seconds_ago);
@@ -179,9 +177,9 @@ public class Utility {
             } else {
                 return context.getString(R.string.utility_pretty_date_just_now);
             }
-        } else if(diffInDays==1) {
+        } else if (diffInDays == 1) {
             final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-            return context.getString(R.string.utility_pretty_date_yesterday_at) + " " +dateFormat.format(date);
+            return context.getString(R.string.utility_pretty_date_yesterday_at) + " " + dateFormat.format(date);
         } else {
             final DateFormat dateFormat = new SimpleDateFormat("EEE, d MMM HH:mm:ss");
             return dateFormat.format(date);
@@ -201,14 +199,14 @@ public class Utility {
     }
 
     public static String defaultValue(String string, String defaultValue) {
-        if(string == null) {
+        if (string == null) {
             return defaultValue;
         }
         return string;
     }
 
     public static String getString(Bundle bundle, String key) {
-        if(bundle == null) {
+        if (bundle == null) {
             return null;
         }
         return bundle.getString(key);
@@ -219,14 +217,14 @@ public class Utility {
     }
 
     public static Bundle getBundle(Bundle bundle, String key) {
-        if(bundle == null) {
+        if (bundle == null) {
             return null;
         }
         return bundle.getBundle(key);
     }
 
     public static int getInt(Bundle bundle, String key, int defaultValue) {
-        if(bundle == null) {
+        if (bundle == null) {
             return defaultValue;
         }
         return bundle.getInt(key, defaultValue);

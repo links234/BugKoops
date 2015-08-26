@@ -78,7 +78,8 @@ public class ReportListFragment extends Fragment implements LoaderManager.Loader
 
         mAddFAB = (FloatingActionButton) rootView.findViewById(R.id.action_report_list_add);
         mAddFAB.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
+            @Override
+            public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), ReportDetailActivity.class);
                 startActivity(intent);
             }
@@ -125,7 +126,7 @@ public class ReportListFragment extends Fragment implements LoaderManager.Loader
                 switch (item.getItemId()) {
                     case R.id.action_report_list_modal_select_all:
                         for (int position = 0; position < mListView.getAdapter().getCount(); ++position) {
-                            if(!checked.get(position)) {
+                            if (!checked.get(position)) {
                                 mListView.performItemClick(
                                         mListView.getAdapter().getView(position, null, null),
                                         position,
@@ -137,7 +138,7 @@ public class ReportListFragment extends Fragment implements LoaderManager.Loader
                         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                switch (which){
+                                switch (which) {
                                     case DialogInterface.BUTTON_POSITIVE:
                                         final ContentResolver contentResolver = getActivity().getContentResolver();
                                         for (int i = 0; i < checked.size(); i++) {

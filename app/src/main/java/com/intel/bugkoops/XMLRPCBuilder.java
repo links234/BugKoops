@@ -85,6 +85,6 @@ public class XMLRPCBuilder {
     }
 
     public String toString() {
-        return mWriter.toString();
+        return mSerializer.toString();
     }
 }
