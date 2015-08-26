@@ -105,7 +105,7 @@ public class ReportListFragment extends Fragment implements LoaderManager.Loader
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
                 final int checkedCount = mListView.getCheckedItemCount();
-                mode.setTitle(checkedCount + " Selected");
+                mode.setTitle(checkedCount + " " + getString(R.string.report_list_fragment_word_selected));
             }
 
             @Override

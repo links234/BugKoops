@@ -140,4 +140,6 @@
     <string name="bugzilla_send_activity_default_priority">Please select bug priority &#8230;</string>
     <string name="bugzilla_send_activity_default_severity">Please select bug severity &#8230;</string>
 
+    <string name="report_list_fragment_word_selected">Selected</string>
+
 </resources>
