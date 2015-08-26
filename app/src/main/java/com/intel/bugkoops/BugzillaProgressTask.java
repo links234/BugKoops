@@ -42,9 +42,11 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
     public static final String KEY_LOGIN = "login";
     public static final String KEY_PASSWORD = "password";
     public static final String KEY_SERVER = "server";
+    public static final String KEY_ATTACHMENT = "attachment";
     public static final String KEY_REPORT = "report";
     public static final String KEY_SESSION = "session";
-    public static final String KEY_CREATED_BUG_URL = "create_bug_url";
+    public static final String KEY_CREATED_BUG_URL = "created_bug_url";
+    public static final String KEY_CREATED_BUG_ID = "created_bug_id";
     public static final String KEY_ERROR = "error";
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_PRODUCTS = "products";
@@ -56,7 +58,8 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
     public static final int TASK_SEND = 0;
     public static final int TASK_LOGIN_GET_PRODUCTS_GET_COMPONENTS_GET_FIELDS = 1;
     public static final int TASK_SESSION_SEND_LOGOUT = 2;
-    public static final int TASK_SESSION_LOGOUT = 3;
+    public static final int TASK_SESSION_SEND_WITH_ATTACHMENT_LOGOUT = 3;
+    public static final int TASK_SESSION_LOGOUT = 4;
 
     public BugzillaProgressTask(Activity activity, Bundle params, OnTaskCompleted listener) {
         mActivity = activity;
@@ -126,6 +129,12 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
                     send();
                     logout();
                     break;
+                case TASK_SESSION_SEND_WITH_ATTACHMENT_LOGOUT:
+                    loadSession();
+                    send();
+                    sendAttachment();
+                    logout();
+                    break;
                 case TASK_SESSION_LOGOUT:
                     loadSession();
                     logout();
@@ -185,6 +194,16 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
                 .build().toString();
 
         mResult.putString(KEY_CREATED_BUG_URL, bugUrl);
+        mResult.putInt(KEY_CREATED_BUG_ID, reportId);
+    }
+
+    private void sendAttachment() throws Exception {
+        publishProgress("Sending attachment ... ");
+        boolean result = mServer.sendAttachment(Utility.getBundle(mParams, KEY_ATTACHMENT));
+        if(error() || !result) {
+            setTaskResult("Failed to send attachment!");
+            throw new Exception();
+        }
     }
 
     private void logout() throws Exception {
@@ -239,6 +258,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
             Log.e(LOG_TAG, "Bugzilla returned error response with code: " + Integer.toString(
                     bundle.getInt("code")));
             String message = bundle.getString(BugzillaAPI.KEY_RESULT_MESSAGE);
+            mResult.putBoolean(KEY_ERROR, true);
             if (message != null) {
                 setTaskResult(message);
             }

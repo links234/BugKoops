@@ -52,6 +52,7 @@ public interface BugzillaAPI {
     boolean logout();
 
     boolean send(Bundle report);
+    boolean sendAttachment(Bundle attachment);
 
     void restore(Bundle session);
     Bundle save();

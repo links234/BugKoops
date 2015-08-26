@@ -214,6 +214,10 @@ public class BugzillaXMLRPC implements BugzillaAPI{
         return true;
     }
 
+    public boolean sendAttachment(Bundle attachment) {
+        return true;
+    }
+
     public void restore(Bundle session) {
         mToken = session.getString(KEY_TOKEN);
         mUser = session.getString(KEY_USER);

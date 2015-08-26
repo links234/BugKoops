@@ -3,6 +3,7 @@ package com.intel.bugkoops;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -29,6 +30,13 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
     private Spinner mPlatformSpinner;
     private Spinner mPrioritySpinner;
     private Spinner mSeveritySpinner;
+    private Button mSendButton;
+
+    private boolean mVersionChoosed;
+    private boolean mOSChoosed;
+    private boolean mPlatformChoosed;
+    private boolean mPriorityChoosed;
+    private boolean mSeverityChoosed;
 
     private Bundle mSession;
     private Bundle mProducts;
@@ -50,6 +58,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
         mPlatformSpinner = (Spinner) findViewById(R.id.bugzilla_send_platform_spinner);
         mPrioritySpinner = (Spinner) findViewById(R.id.bugzilla_send_priority_spinner);
         mSeveritySpinner = (Spinner) findViewById(R.id.bugzilla_send_severity_spinner);
+        mSendButton = (Button) findViewById(R.id.bugzilla_send_send_button);
 
         mProductSpinner.setOnItemSelectedListener(this);
         mComponentSpinner.setOnItemSelectedListener(this);
@@ -74,14 +83,34 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
         mPasswordEditText.setEnabled(false);
         mConnectButton.setEnabled(false);
 
-        Bundle report = new Bundle();
 
         Bundle params = new Bundle();
         params.putString(BugzillaProgressTask.KEY_SERVER, mServerEditText.getText().toString());
         params.putString(BugzillaProgressTask.KEY_LOGIN, mUserEditText.getText().toString());
         params.putString(BugzillaProgressTask.KEY_PASSWORD, mPasswordEditText.getText().toString());
-        params.putBundle(BugzillaProgressTask.KEY_REPORT, report);
+
         params.putInt(BugzillaProgressTask.KEY_TASK, BugzillaProgressTask.TASK_LOGIN_GET_PRODUCTS_GET_COMPONENTS_GET_FIELDS);
+        new BugzillaProgressTask(this, params, this).execute();
+    }
+
+    public void onSend(View view) {
+        Bundle params = new Bundle();
+        params.putBundle(BugzillaProgressTask.KEY_SESSION, mSession);
+
+        Bundle report = new Bundle();
+        report.putString(BugzillaAPI.KEY_PRODUCT, mProductSpinner.getSelectedItem().toString());
+        report.putString(BugzillaAPI.KEY_COMPONENT, mComponentSpinner.getSelectedItem().toString());
+        report.putString(BugzillaAPI.KEY_VERSION, mVersionSpinner.getSelectedItem().toString());
+        report.putString(BugzillaAPI.KEY_OS, mOSSpinner.getSelectedItem().toString());
+        report.putString(BugzillaAPI.KEY_PLATFORM, mPlatformSpinner.getSelectedItem().toString());
+        report.putString(BugzillaAPI.KEY_PRIORITY, mPrioritySpinner.getSelectedItem().toString());
+        report.putString(BugzillaAPI.KEY_SEVERITY, mSeveritySpinner.getSelectedItem().toString());
+        params.putBundle(BugzillaProgressTask.KEY_REPORT, report);
+
+        Bundle attachment = new Bundle();
+        params.putBundle(BugzillaProgressTask.KEY_ATTACHMENT, attachment);
+
+        params.putInt(BugzillaProgressTask.KEY_TASK, BugzillaProgressTask.TASK_SESSION_SEND_WITH_ATTACHMENT_LOGOUT);
         new BugzillaProgressTask(this, params, this).execute();
     }
 
@@ -114,11 +143,17 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                 mSession = null;
                 finish();
                 break;
-            case BugzillaProgressTask.TASK_SEND:
-                Intent intent = new Intent();
-                intent.putExtra(ReportDetailActivity.KEY_MESSAGE, "Report succesfuly sent!");
-                setResult(RESULT_OK, intent);
-                finish();
+            case BugzillaProgressTask.TASK_SESSION_SEND_WITH_ATTACHMENT_LOGOUT:
+                if(!result.getBoolean(BugzillaProgressTask.KEY_ERROR)) {
+
+                    Log.d(LOG_TAG, "Bug URL = " + result.getString(BugzillaProgressTask.KEY_CREATED_BUG_URL));
+
+                    Intent intent = new Intent();
+                    intent.putExtra(ReportDetailActivity.KEY_MESSAGE, "Report succesfuly sent!");
+                    setResult(RESULT_OK, intent);
+                    mSession = null;
+                    finish();
+                }
                 break;
         }
     }
@@ -152,6 +187,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                     mPlatformSpinner.setVisibility(View.GONE);
                     mPrioritySpinner.setVisibility(View.GONE);
                     mSeveritySpinner.setVisibility(View.GONE);
+                    mSendButton.setVisibility(View.GONE);
                 } else {
                     ArrayList<String> componentList = new ArrayList<>();
                     if(mProducts.getBundle(product) != null) {
@@ -177,6 +213,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                     mPlatformSpinner.setVisibility(View.GONE);
                     mPrioritySpinner.setVisibility(View.GONE);
                     mSeveritySpinner.setVisibility(View.GONE);
+                    mSendButton.setVisibility(View.GONE);
                 } else {
                     ArrayList<String> list = new ArrayList<>();
                     if(mFields.getBundle(BugzillaAPI.KEY_RESULT_VERSION) != null) {
@@ -214,7 +251,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                             list.add(key);
                         }
                     }
-                    list.add("Please select an platform ...");
+                    list.add("Please select a platform ...");
                     adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, list);
                     mPlatformSpinner.setAdapter(adapter);
                     mPlatformSpinner.setSelection(list.size() - 1);
@@ -247,7 +284,38 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                     mSeveritySpinner.setAdapter(adapter);
                     mSeveritySpinner.setSelection(list.size() - 1);
                     mSeveritySpinner.setVisibility(View.VISIBLE);
+
+                    mVersionChoosed = false;
+                    mOSChoosed = false;
+                    mPlatformChoosed = false;
+                    mPriorityChoosed = false;
+                    mSeverityChoosed = false;
                 }
+                break;
+            case R.id.bugzilla_send_version_spinner:
+                String version = parent.getItemAtPosition(pos).toString();
+                mVersionChoosed = !version.equals("Please select a version ...");
+                checkForSendButton();
+                break;
+            case R.id.bugzilla_send_os_spinner:
+                String os = parent.getItemAtPosition(pos).toString();
+                mOSChoosed = !os.equals("Please select an OS ...");
+                checkForSendButton();
+                break;
+            case R.id.bugzilla_send_platform_spinner:
+                String platform = parent.getItemAtPosition(pos).toString();
+                mPlatformChoosed = !platform.equals("Please select a platform ...");
+                checkForSendButton();
+                break;
+            case R.id.bugzilla_send_priority_spinner:
+                String priority = parent.getItemAtPosition(pos).toString();
+                mPriorityChoosed = !priority.equals("Please select bug priority ...");
+                checkForSendButton();
+                break;
+            case R.id.bugzilla_send_severity_spinner:
+                String severity = parent.getItemAtPosition(pos).toString();
+                mSeverityChoosed = !severity.equals("Please select bug severity ...");
+                checkForSendButton();
                 break;
         }
     }
@@ -256,5 +324,13 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
     public void onNothingSelected(AdapterView<?> arg0) {
         // TODO Auto-generated method stub
 
+    }
+
+    void checkForSendButton() {
+        if(mVersionChoosed && mOSChoosed && mPlatformChoosed && mPriorityChoosed && mSeverityChoosed) {
+            mSendButton.setVisibility(View.VISIBLE);
+        } else {
+            mSendButton.setVisibility(View.GONE);
+        }
     }
 }
