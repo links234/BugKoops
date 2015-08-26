@@ -113,4 +113,22 @@
 
     <string name="content_authority" translatable="false">com.intel.bugkoops</string>
 
+    <string name="bugzilla_progress_task_unexpected_error">Unexpected error!</string>
+    <string name="bugzilla_progress_task_login_checking_version">Checking server version &#8230;</string>
+    <string name="bugzilla_progress_task_error_unsupported_server_api">Unsupported server API!</string>
+    <string name="bugzilla_progress_task_login_word_found">Found</string>
+    <string name="bugzilla_progress_task_login_word_version">version</string>
+    <string name="bugzilla_progress_task_logging_in">Logging in &#8230;</string>
+    <string name="bugzilla_progress_task_error_login">Failed to login!</string>
+    <string name="bugzilla_progress_task_sending_report">Sending report &#8230;</string>
+    <string name="bugzilla_progress_task_error_send_report">Failed to send report!</string>
+    <string name="bugzilla_progress_task_sending_attachment">Sending attachment &#8230;</string>
+    <string name="bugzilla_progress_task_error_send_attachment">Failed to send attachment!</string>
+    <string name="bugzilla_progress_task_logging_out">Logging out &#8230;</string>
+    <string name="bugzilla_progress_task_error_logout">Failed to logout!</string>
+    <string name="bugzilla_progress_task_get_hierarchy">Getting product and components list &#8230;</string>
+    <string name="bugzilla_progress_task_error_get_hierarchy">Failed to get product list</string>
+    <string name="bugzilla_progress_task_get_fields">Getting bug fields list &#8230;</string>
+    <string name="bugzilla_progress_task_error_get_fields">Failed to get bug fields</string>
+
 </resources>

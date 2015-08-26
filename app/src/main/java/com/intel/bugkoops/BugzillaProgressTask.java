@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -14,7 +13,7 @@ import com.intel.bugkoops.Integrations.Bugzilla.BugzillaAutoDetect;
 
 public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
     final String LOG_TAG = getClass().getSimpleName();
-    final String USER_AGENT = "BugKoops";
+    final String USER_AGENT = "Bug Koops";
 
     private OnTaskCompleted mListener;
 
@@ -98,7 +97,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
 
         if(mTaskResult == null) {
             if (!success) {
-                mTaskResult = "Unexpected error!";
+                mTaskResult = mActivity.getString(R.string.bugzilla_progress_task_unexpected_error);
             }
         }
 
@@ -153,37 +152,39 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
     }
 
     private void login() throws Exception {
-        publishProgress("Checking server version ... ");
+        publishProgress(mActivity.getString(R.string.bugzilla_progress_task_login_checking_version));
         BugzillaAutoDetect bugzillaAutoDetect = new BugzillaAutoDetect(mServerUri, USER_AGENT);
 
         mServer = bugzillaAutoDetect.open();
 
         if(mServer == null) {
-            setTaskResult("Unsupported server API!");
+            setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_unsupported_server_api));
             throw new Exception();
         }
 
         mServer.version();
-        publishProgress("Found " + mServer.getAPIVersion() + " version " +
-                mServer.getResult().getString(BugzillaAPI.KEY_VERSION));
+        publishProgress(mActivity.getString(R.string.bugzilla_progress_task_login_word_found) +
+                " " + mServer.getAPIVersion() + " " +
+                mActivity.getString(R.string.bugzilla_progress_task_login_word_version) +
+                " " + mServer.getResult().getString(BugzillaAPI.KEY_VERSION));
 
         Thread.sleep(2000);
 
-        publishProgress("Logging in ... ");
+        publishProgress(mActivity.getString(R.string.bugzilla_progress_task_logging_in));
         boolean result = mServer.login(
                 Utility.getString(mParams, KEY_LOGIN, DEFAULT_LOGIN),
                 Utility.getString(mParams, KEY_PASSWORD, DEFAULT_PASSWORD));
         if(error() || !result) {
-            setTaskResult("Failed to login!");
+            setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_login));
             throw new Exception();
         }
     }
 
     private void send() throws Exception {
-        publishProgress("Sending report ... ");
+        publishProgress(mActivity.getString(R.string.bugzilla_progress_task_sending_report));
         boolean result = mServer.send(Utility.getBundle(mParams, KEY_REPORT));
         if(error() || !result) {
-            setTaskResult("Failed to send report!");
+            setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_send_report));
             throw new Exception();
         }
         int reportId = mServer.getResult().getInt(BugzillaAPI.KEY_ID);
@@ -198,30 +199,30 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
     }
 
     private void sendAttachment() throws Exception {
-        publishProgress("Sending attachment ... ");
+        publishProgress(mActivity.getString(R.string.bugzilla_progress_task_sending_attachment));
         Bundle attachment = Utility.getBundle(mParams, KEY_ATTACHMENT);
         attachment.putInt(BugzillaAPI.KEY_ATTACHMENT_BUGID, mResult.getInt(KEY_CREATED_BUG_ID));
         boolean result = mServer.sendAttachment(attachment);
         if(error() || !result) {
-            setTaskResult("Failed to send attachment!");
+            setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_send_attachment));
             throw new Exception();
         }
     }
 
     private void logout() throws Exception {
-        publishProgress("Logging out ... ");
+        publishProgress(mActivity.getString(R.string.bugzilla_progress_task_logging_out));
         boolean result = mServer.logout();
         if(error() || !result) {
-            setTaskResult("Failed to logout!");
+            setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_logout));
             throw new Exception();
         }
     }
 
     private void getHierarchy() throws Exception {
-        publishProgress("Getting product and components list ... ");
+        publishProgress(mActivity.getString(R.string.bugzilla_progress_task_get_hierarchy));
         boolean result = mServer.getHierarchy();
         if(error() || !result) {
-            setTaskResult("Failed to get product list");
+            setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_get_hierarchy));
             throw new Exception();
         }
 
@@ -229,10 +230,10 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
     }
 
     private void getFields() throws Exception {
-        publishProgress("Getting bug fields list ... ");
+        publishProgress(mActivity.getString(R.string.bugzilla_progress_task_get_fields));
         boolean result = mServer.getFields();
         if(error() || !result) {
-            setTaskResult("Failed to get bug fields");
+            setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_get_fields));
             throw new Exception();
         }
 
@@ -257,8 +258,6 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
 
     private boolean error(Bundle bundle) {
         if(bundle.getBoolean("error")) {
-            Log.e(LOG_TAG, "Bugzilla returned error response with code: " + Integer.toString(
-                    bundle.getInt("code")));
             String message = bundle.getString(BugzillaAPI.KEY_RESULT_MESSAGE);
             mResult.putBoolean(KEY_ERROR, true);
             if (message != null) {
