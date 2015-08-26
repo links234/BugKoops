@@ -141,7 +141,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                     for(String key : mProducts.keySet()) {
                         productList.add(key);
                     }
-                    productList.add("Please select a product ...");
+                    productList.add(getString(R.string.bugzilla_send_activity_default_product));
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, productList);
                     mProductSpinner.setAdapter(adapter);
                     mProductSpinner.setSelection(productList.size() - 1);
@@ -156,7 +156,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
             case BugzillaProgressTask.TASK_SESSION_SEND_WITH_ATTACHMENT_LOGOUT:
                 if(!result.getBoolean(BugzillaProgressTask.KEY_ERROR)) {
                     Intent intent = new Intent();
-                    intent.putExtra(ReportDetailActivity.KEY_MESSAGE, "Report succesfuly sent!");
+                    intent.putExtra(ReportDetailActivity.KEY_MESSAGE, getString(R.string.bugzilla_send_activity_success));
                     intent.putExtra(ReportDetailActivity.KEY_RESULT, result.getString(BugzillaProgressTask.KEY_CREATED_BUG_URL));
                     setResult(RESULT_OK, intent);
                     mSession = null;
@@ -187,7 +187,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
         switch (parent.getId()) {
             case R.id.bugzilla_send_product_spinner:
                 String product = parent.getItemAtPosition(pos).toString();
-                if(product.equals("Please select a product ...")) {
+                if(product.equals(getString(R.string.bugzilla_send_activity_default_product))) {
                     mComponentSpinner.setVisibility(View.GONE);
 
                     mVersionSpinner.setVisibility(View.GONE);
@@ -206,7 +206,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                             componentList.add(componentBundle.getString(BugzillaProgressTask.KEY_NAME));
                         }
                     }
-                    componentList.add("Please select a component ...");
+                    componentList.add(getString(R.string.bugzilla_send_activity_default_component));
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, componentList);
                     mComponentSpinner.setAdapter(adapter);
                     mComponentSpinner.setSelection(componentList.size()-1);
@@ -215,7 +215,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                 break;
             case R.id.bugzilla_send_component_spinner:
                 String component = parent.getItemAtPosition(pos).toString();
-                if(component.equals("Please select a component ...")) {
+                if(component.equals(getString(R.string.bugzilla_send_activity_default_component))) {
                     mVersionSpinner.setVisibility(View.GONE);
                     mOSSpinner.setVisibility(View.GONE);
                     mPlatformSpinner.setVisibility(View.GONE);
@@ -231,7 +231,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                             list.add(key);
                         }
                     }
-                    list.add("Please select a version ...");
+                    list.add(getString(R.string.bugzilla_send_activity_default_version));
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, list);
                     mVersionSpinner.setAdapter(adapter);
                     mVersionSpinner.setSelection(list.size()-1);
@@ -245,7 +245,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                             list.add(key);
                         }
                     }
-                    list.add("Please select an OS ...");
+                    list.add(getString(R.string.bugzilla_send_activity_default_os));
                     adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, list);
                     mOSSpinner.setAdapter(adapter);
                     mOSSpinner.setSelection(list.size() - 1);
@@ -259,7 +259,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                             list.add(key);
                         }
                     }
-                    list.add("Please select a platform ...");
+                    list.add(getString(R.string.bugzilla_send_activity_default_platform));
                     adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, list);
                     mPlatformSpinner.setAdapter(adapter);
                     mPlatformSpinner.setSelection(list.size() - 1);
@@ -273,7 +273,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                             list.add(key);
                         }
                     }
-                    list.add("Please select bug priority ...");
+                    list.add(getString(R.string.bugzilla_send_activity_default_priority));
                     adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, list);
                     mPrioritySpinner.setAdapter(adapter);
                     mPrioritySpinner.setSelection(list.size() - 1);
@@ -287,7 +287,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                             list.add(key);
                         }
                     }
-                    list.add("Please select bug severity ...");
+                    list.add(getString(R.string.bugzilla_send_activity_default_severity));
                     adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, list);
                     mSeveritySpinner.setAdapter(adapter);
                     mSeveritySpinner.setSelection(list.size() - 1);
@@ -302,27 +302,27 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                 break;
             case R.id.bugzilla_send_version_spinner:
                 String version = parent.getItemAtPosition(pos).toString();
-                mVersionChoosed = !version.equals("Please select a version ...");
+                mVersionChoosed = !version.equals(getString(R.string.bugzilla_send_activity_default_version));
                 checkForSendButton();
                 break;
             case R.id.bugzilla_send_os_spinner:
                 String os = parent.getItemAtPosition(pos).toString();
-                mOSChoosed = !os.equals("Please select an OS ...");
+                mOSChoosed = !os.equals(getString(R.string.bugzilla_send_activity_default_os));
                 checkForSendButton();
                 break;
             case R.id.bugzilla_send_platform_spinner:
                 String platform = parent.getItemAtPosition(pos).toString();
-                mPlatformChoosed = !platform.equals("Please select a platform ...");
+                mPlatformChoosed = !platform.equals(getString(R.string.bugzilla_send_activity_default_platform));
                 checkForSendButton();
                 break;
             case R.id.bugzilla_send_priority_spinner:
                 String priority = parent.getItemAtPosition(pos).toString();
-                mPriorityChoosed = !priority.equals("Please select bug priority ...");
+                mPriorityChoosed = !priority.equals(getString(R.string.bugzilla_send_activity_default_priority));
                 checkForSendButton();
                 break;
             case R.id.bugzilla_send_severity_spinner:
                 String severity = parent.getItemAtPosition(pos).toString();
-                mSeverityChoosed = !severity.equals("Please select bug severity ...");
+                mSeverityChoosed = !severity.equals(getString(R.string.bugzilla_send_activity_default_severity));
                 checkForSendButton();
                 break;
         }

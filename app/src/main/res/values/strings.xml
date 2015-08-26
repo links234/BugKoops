@@ -131,4 +131,13 @@
     <string name="bugzilla_progress_task_get_fields">Getting bug fields list &#8230;</string>
     <string name="bugzilla_progress_task_error_get_fields">Failed to get bug fields</string>
 
+    <string name="bugzilla_send_activity_success">Report successfuly sent!</string>
+    <string name="bugzilla_send_activity_default_product">Please select a product &#8230;</string>
+    <string name="bugzilla_send_activity_default_component">Please select a component &#8230;</string>
+    <string name="bugzilla_send_activity_default_version">Please select a version &#8230;</string>
+    <string name="bugzilla_send_activity_default_os">Please select an OS &#8230;</string>
+    <string name="bugzilla_send_activity_default_platform">Please select a platform &#8230;</string>
+    <string name="bugzilla_send_activity_default_priority">Please select bug priority &#8230;</string>
+    <string name="bugzilla_send_activity_default_severity">Please select bug severity &#8230;</string>
+
 </resources>
