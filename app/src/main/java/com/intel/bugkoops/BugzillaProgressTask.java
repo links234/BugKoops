@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -29,6 +30,8 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
 
     private String mServerUri;
     private BugzillaAPI mServer;
+
+    private boolean mReloggedFromError;
 
     private int mTask;
 
@@ -75,7 +78,8 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
         mResult = new Bundle();
         mResult.putInt(KEY_TASK, mTask);
 
-        mServerUri = Utility.getString(mParams, KEY_SERVER, DEFAULT_SERVER);
+        mServerUri = Utility.getString(mParams, KEY_SERVER,
+                Utility.getString(mParams.getBundle(KEY_SESSION), KEY_SERVER, DEFAULT_SERVER));
 
         mResultTextView = (TextView) mActivity.findViewById(R.id.bugzilla_send_status_textview);
 
@@ -117,24 +121,24 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
             switch (mTask) {
                 case TASK_SEND:
                     login();
-                    send();
+                    send(true);
                     logout();
                     break;
                 case TASK_LOGIN_GET_PRODUCTS_GET_COMPONENTS_GET_FIELDS:
                     login();
-                    getHierarchy();
-                    getFields();
+                    getHierarchy(true);
+                    getFields(true);
                     saveSession();
                     break;
                 case TASK_SESSION_SEND_LOGOUT:
                     loadSession();
-                    send();
+                    send(true);
                     logout();
                     break;
                 case TASK_SESSION_SEND_WITH_ATTACHMENT_LOGOUT:
                     loadSession();
-                    send();
-                    sendAttachment();
+                    send(true);
+                    sendAttachment(true);
                     logout();
                     break;
                 case TASK_SESSION_LOGOUT:
@@ -177,18 +181,35 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
         boolean result = mServer.login(
                 Utility.getString(mParams, KEY_LOGIN, DEFAULT_LOGIN),
                 Utility.getString(mParams, KEY_PASSWORD, DEFAULT_PASSWORD));
-        if (error() || !result) {
+        if (error(false) || !result) {
             setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_login));
             throw new Exception();
         }
     }
 
-    private void send() throws Exception {
+    private boolean relogin() {
+        publishProgress("Re-logging in ...");
+        mServer.invalidate();
+        boolean result = mServer.login(
+                Utility.getString(mParams, KEY_LOGIN, DEFAULT_LOGIN),
+                Utility.getString(mParams, KEY_PASSWORD, DEFAULT_PASSWORD));
+        if (error(false) || !result) {
+            setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_login));
+            return false;
+        }
+        return true;
+    }
+
+    private void send(boolean relogOnSessionExpired) throws Exception {
         publishProgress(mActivity.getString(R.string.bugzilla_progress_task_sending_report));
         boolean result = mServer.send(Utility.getBundle(mParams, KEY_REPORT));
-        if (error() || !result) {
-            setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_send_report));
-            throw new Exception();
+        if (error(relogOnSessionExpired) || !result) {
+            if (mReloggedFromError) {
+                send(false);
+            } else {
+                setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_send_report));
+                throw new Exception();
+            }
         }
         int reportId = mServer.getResult().getInt(BugzillaAPI.KEY_ID);
 
@@ -201,54 +222,69 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
         mResult.putInt(KEY_CREATED_BUG_ID, reportId);
     }
 
-    private void sendAttachment() throws Exception {
+    private void sendAttachment(boolean relogOnSessionExpired) throws Exception {
         publishProgress(mActivity.getString(R.string.bugzilla_progress_task_sending_attachment));
         Bundle attachment = Utility.getBundle(mParams, KEY_ATTACHMENT);
         attachment.putInt(BugzillaAPI.KEY_ATTACHMENT_BUGID, mResult.getInt(KEY_CREATED_BUG_ID));
         boolean result = mServer.sendAttachment(attachment);
-        if (error() || !result) {
-            setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_send_attachment));
-            throw new Exception();
+        if (error(relogOnSessionExpired) || !result) {
+            if (mReloggedFromError) {
+                sendAttachment(false);
+            } else {
+                setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_send_attachment));
+                throw new Exception();
+            }
         }
     }
 
     private void logout() throws Exception {
         publishProgress(mActivity.getString(R.string.bugzilla_progress_task_logging_out));
         boolean result = mServer.logout();
-        if (error() || !result) {
+        if (error(false) || !result) {
             setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_logout));
             throw new Exception();
         }
     }
 
-    private void getHierarchy() throws Exception {
+    private void getHierarchy(boolean relogOnSessionExpired) throws Exception {
         publishProgress(mActivity.getString(R.string.bugzilla_progress_task_get_hierarchy));
         boolean result = mServer.getHierarchy();
-        if (error() || !result) {
-            setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_get_hierarchy));
-            throw new Exception();
+        if (error(relogOnSessionExpired) || !result) {
+            if (mReloggedFromError) {
+                getHierarchy(false);
+            } else {
+                setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_get_hierarchy));
+                throw new Exception();
+            }
         }
 
         mResult.putBundle(KEY_PRODUCTS, mServer.getResult().getBundle(BugzillaAPI.KEY_RESULT_PRODUCTS));
     }
 
-    private void getFields() throws Exception {
+    private void getFields(boolean relogOnSessionExpired) throws Exception {
         publishProgress(mActivity.getString(R.string.bugzilla_progress_task_get_fields));
         boolean result = mServer.getFields();
-        if (error() || !result) {
-            setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_get_fields));
-            throw new Exception();
+        if (error(relogOnSessionExpired) || !result) {
+            if (mReloggedFromError) {
+                getFields(false);
+            } else {
+                setTaskResult(mActivity.getString(R.string.bugzilla_progress_task_error_get_fields));
+                throw new Exception();
+            }
         }
 
         mResult.putBundle(KEY_FIELDS, mServer.getResult().getBundle(BugzillaAPI.KEY_RESULT_FIELDS));
     }
 
     private void saveSession() {
-        mResult.putBundle(KEY_SESSION, mServer.save());
+        Bundle session = mServer.save();
+        session.putString(KEY_SERVER, mServerUri);
+        mResult.putBundle(KEY_SESSION, session);
     }
 
     private void loadSession() {
-        BugzillaAutoDetect bugzillaAutoDetect = new BugzillaAutoDetect(mServerUri, USER_AGENT);
+        BugzillaAutoDetect bugzillaAutoDetect = new BugzillaAutoDetect(
+                mParams.getBundle(KEY_SESSION).getString(KEY_SERVER), USER_AGENT);
 
         mServer = bugzillaAutoDetect.restore(mParams.getBundle(KEY_SESSION));
     }
@@ -259,11 +295,23 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
         }
     }
 
-    private boolean error(Bundle bundle) {
+    private boolean error(boolean relogOnExpiredSession, Bundle bundle) {
+        mReloggedFromError = false;
         if (bundle.getBoolean("error")) {
             String message = bundle.getString(BugzillaAPI.KEY_RESULT_MESSAGE);
             mResult.putBoolean(KEY_ERROR, true);
             if (message != null) {
+                if (relogOnExpiredSession) {
+                    if (message.toLowerCase().contains("token") &&
+                            (message.toLowerCase().contains("not valid")
+                                    || message.toLowerCase().contains("expired"))) {
+                        if (relogin()) {
+                            mReloggedFromError = true;
+                            return true;
+                        }
+                        return false;
+                    }
+                }
                 setTaskResult(message);
             }
             return true;
@@ -271,7 +319,7 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
         return false;
     }
 
-    private boolean error() {
-        return error(mServer.getResult());
+    private boolean error(boolean relogOnExpiredSession) {
+        return error(relogOnExpiredSession, mServer.getResult());
     }
 }

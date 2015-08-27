@@ -103,6 +103,15 @@ public class BugzillaREST implements BugzillaAPI {
         return true;
     }
 
+    public boolean invalidate() {
+        mToken = null;
+
+        mUser = null;
+        mPassword = null;
+
+        return true;
+    }
+
     public boolean logout() {
         Uri builtUri = Uri.parse(mServer).buildUpon()
                 .appendPath("rest")
@@ -177,6 +186,8 @@ public class BugzillaREST implements BugzillaAPI {
         String data = Utility.getString(attachment, KEY_ATTACHMENT_DATA);
         int bugId = Utility.getInt(attachment, KEY_ATTACHMENT_BUGID, -1);
         String contentType = Utility.getString(attachment, KEY_ATTACHMENT_CONTENT_TYPE, DEFAULT_ATTACHMENT_CONTENT_TYPE);
+        String fileName = Utility.getString(attachment, KEY_ATTACHMENT_FILENAME, DEFAULT_ATTACHMENT_FILE_NAME);
+        String summary = Utility.getString(attachment, KEY_ATTACHMENT_SUMMARY, DEFAULT_ATTACHMENT_SUMMARY);
 
         if (bugId == -1) {
             setError("There is no bug id associated with the attachment");
@@ -197,8 +208,8 @@ public class BugzillaREST implements BugzillaAPI {
 
             jsonRequest.put("ids", bugIds);
             jsonRequest.put("data", Base64.encodeToString(data.getBytes(), Base64.DEFAULT));
-            jsonRequest.put("file_name", DEFAULT_ATTACHMENT_FILE_NAME);
-            jsonRequest.put("summary", DEFAULT_ATTACHMENT_SUMMARY);
+            jsonRequest.put("file_name", fileName);
+            jsonRequest.put("summary", summary);
             jsonRequest.put("content_type", contentType);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "JSONException", e);
@@ -375,7 +386,7 @@ public class BugzillaREST implements BugzillaAPI {
                         }
                         fieldBundle.putBundle(KEY_RESULT_VALUES, valuesBundle);
 
-                        fieldsBundle.putBundle(translateField(fieldName), fieldBundle);
+                        fieldsBundle.putBundle(translateFieldName(fieldName), fieldBundle);
                     }
 
                     mResult.putBundle("fields", fieldsBundle);
@@ -393,7 +404,7 @@ public class BugzillaREST implements BugzillaAPI {
         return true;
     }
 
-    private String translateField(String field) {
+    private String translateFieldName(String field) {
         if (field.equals("rep_platform")) {
             return KEY_RESULT_PLATFORM;
         } else if (field.equals("bug_severity")) {

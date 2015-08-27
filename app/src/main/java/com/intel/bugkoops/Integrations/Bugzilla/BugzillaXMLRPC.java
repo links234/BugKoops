@@ -2,6 +2,7 @@ package com.intel.bugkoops.Integrations.Bugzilla;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 
 import com.intel.bugkoops.Network.HttpConnection;
@@ -16,7 +17,6 @@ import org.xml.sax.InputSource;
 
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -124,6 +124,15 @@ public class BugzillaXMLRPC implements BugzillaAPI {
         return true;
     }
 
+    public boolean invalidate() {
+        mToken = null;
+
+        mUser = null;
+        mPassword = null;
+
+        return true;
+    }
+
     public boolean logout() {
         if (mToken == null) {
             return false;
@@ -201,6 +210,47 @@ public class BugzillaXMLRPC implements BugzillaAPI {
     }
 
     public boolean sendAttachment(Bundle attachment) {
+        Uri builtUri = Uri.parse(mServer).buildUpon()
+                .appendPath("xmlrpc.cgi")
+                .build();
+
+        String data = Utility.getString(attachment, KEY_ATTACHMENT_DATA);
+        int bugId = Utility.getInt(attachment, KEY_ATTACHMENT_BUGID, -1);
+        String contentType = Utility.getString(attachment, KEY_ATTACHMENT_CONTENT_TYPE, DEFAULT_ATTACHMENT_CONTENT_TYPE);
+        String fileName = Utility.getString(attachment, KEY_ATTACHMENT_FILENAME, DEFAULT_ATTACHMENT_FILE_NAME);
+        String summary = Utility.getString(attachment, KEY_ATTACHMENT_SUMMARY, DEFAULT_ATTACHMENT_SUMMARY);
+
+        if (bugId == -1) {
+            setError("There is no bug id associated with the attachment");
+        }
+
+        XMLRPCBuilder request = new XMLRPCBuilder();
+
+        request.start("Bug.add_attachment");
+        request.startStruct();
+        request.member(KEY_TOKEN, mToken);
+
+        request.startArray("ids");
+        request.putValue(bugId);
+        request.endArray();
+
+        request.memberBase64("data", Base64.encodeToString(data.getBytes(), Base64.DEFAULT));
+
+        request.member("file_name", fileName);
+        request.member("summary", summary);
+        request.member("content_type", contentType);
+
+        request.endStruct();
+        request.end();
+
+        if (!mHttpConnection.post(builtUri.toString(), request.toString(), CONTENT_TYPE)) {
+            return false;
+        }
+
+        if (!translate(mHttpConnection.getRequestResult())) {
+            return false;
+        }
+
         return true;
     }
 
@@ -273,23 +323,18 @@ public class BugzillaXMLRPC implements BugzillaAPI {
             return false;
         }
 
-
         ArrayList<String> productKeys = new ArrayList<>();
         for (String key : products.keySet()) {
             productKeys.add(key);
         }
 
         for (String productKey : productKeys) {
-            Log.d(LOG_TAG, "productKey = " + productKey);
-
             Bundle product = products.getBundle(productKey);
             if (product == null) {
                 setError("Not a valid product structure.");
                 return false;
             }
             String productName = Utility.getString(product, "name", "");
-
-            Log.d(LOG_TAG, "Product name = " + productName);
 
             Bundle components = product.getBundle("components");
             if (components == null) {
@@ -303,12 +348,8 @@ public class BugzillaXMLRPC implements BugzillaAPI {
             }
 
             for (String componentKey : componentKeys) {
-
-                Log.d(LOG_TAG, "componentKey = " + componentKey);
                 Bundle component = components.getBundle(componentKey);
                 String componentName = Utility.getString(component, "name", "");
-
-                Log.d(LOG_TAG, "Component Name = " + componentName);
 
                 components.remove(componentKey);
                 components.putBundle(componentName, component);
@@ -344,6 +385,67 @@ public class BugzillaXMLRPC implements BugzillaAPI {
         if (!translate(mHttpConnection.getRequestResult())) {
             return false;
         }
+
+        Bundle fields = mResult.getBundle("fields");
+        if (fields == null) {
+            setError("There is no \"fields\" field!");
+            return false;
+        }
+
+        ArrayList<String> fieldKeys = new ArrayList<>();
+        for (String key : fields.keySet()) {
+            fieldKeys.add(key);
+        }
+
+        Bundle translatedFields = new Bundle();
+
+        for (String fieldKey : fieldKeys) {
+            Log.d(LOG_TAG, "fieldKey = " + fieldKey);
+
+            Bundle field = fields.getBundle(fieldKey);
+            if (field == null) {
+                setError("Not a valid field structure.");
+                return false;
+            }
+            String fieldName = Utility.getString(field, "name", "");
+
+            Log.d(LOG_TAG, "Field name = " + fieldName);
+
+            Bundle values = field.getBundle("values");
+            if (values == null) {
+                continue;
+            }
+
+            fieldName = translateFieldName(fieldName);
+
+            ArrayList<String> valueKeys = new ArrayList<>();
+            for (String key : values.keySet()) {
+                valueKeys.add(key);
+            }
+
+            Bundle translatedValues = new Bundle();
+            for (String valueKey : valueKeys) {
+
+                Log.d(LOG_TAG, "valueKey = " + valueKey);
+                Bundle value = values.getBundle(valueKey);
+                String valueName = Utility.getString(value, "name", "");
+
+                Log.d(LOG_TAG, "Value Name = " + valueName);
+
+                Bundle translatedValue = new Bundle();
+                translatedValue.putString(BugzillaAPI.KEY_RESULT_NAME, valueName);
+
+                translatedValues.putBundle(valueName, translatedValue);
+            }
+
+            Bundle translatedField = new Bundle();
+            translatedField.putString(BugzillaAPI.KEY_RESULT_NAME, fieldName);
+            translatedField.putBundle(BugzillaAPI.KEY_RESULT_VALUES, translatedValues);
+
+            translatedFields.putBundle(fieldName, translatedField);
+        }
+
+        mResult.putBundle(BugzillaAPI.KEY_RESULT_FIELDS, translatedFields);
 
         return true;
     }
@@ -497,5 +599,14 @@ public class BugzillaXMLRPC implements BugzillaAPI {
         }
 
         return arrayBundle;
+    }
+
+    private String translateFieldName(String field) {
+        if (field.equals("rep_platform")) {
+            return KEY_RESULT_PLATFORM;
+        } else if (field.equals("bug_severity")) {
+            return KEY_RESULT_SEVERITY;
+        }
+        return field;
     }
 }

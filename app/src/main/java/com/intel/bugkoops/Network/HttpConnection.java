@@ -55,7 +55,7 @@ public class HttpConnection {
         Log.d(LOG_TAG, "Request to: " + url);
         Log.d(LOG_TAG, "Method: " + method);
         Log.d(LOG_TAG, "Content Type: " + contentType);
-        if(content != null) {
+        if (content != null) {
             Log.d(LOG_TAG, "Content: " + content);
         } else {
             Log.d(LOG_TAG, "No content");

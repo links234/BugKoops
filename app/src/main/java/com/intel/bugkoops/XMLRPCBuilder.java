@@ -84,6 +84,23 @@ public class XMLRPCBuilder {
         }
     }
 
+    public void memberBase64(String name, String value) {
+        try {
+            mSerializer.startTag("", "member");
+            mSerializer.startTag("", "name");
+            mSerializer.text(name);
+            mSerializer.endTag("", "name");
+            mSerializer.startTag("", "value");
+            mSerializer.startTag("", "base64");
+            mSerializer.text(value);
+            mSerializer.endTag("", "base64");
+            mSerializer.endTag("", "value");
+            mSerializer.endTag("", "member");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void startArray(String name) {
         try {
             mSerializer.startTag("", "member");

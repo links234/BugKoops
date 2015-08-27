@@ -38,6 +38,8 @@ public interface BugzillaAPI {
     String KEY_ATTACHMENT_BUGID = "attachment_id";
     String KEY_ATTACHMENT_DATA = "attachment_data";
     String KEY_ATTACHMENT_CONTENT_TYPE = "attachment_content_type";
+    String KEY_ATTACHMENT_FILENAME = "attachment_file_name";
+    String KEY_ATTACHMENT_SUMMARY = "attachment_summary";
 
     String KEY_RESULT_ERROR = "error";
     String KEY_RESULT_MESSAGE = "message";
@@ -58,6 +60,8 @@ public interface BugzillaAPI {
     boolean version();
 
     boolean login(String user, String password);
+
+    boolean invalidate();
 
     boolean logout();
 
