@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.intel.bugkoops.Integrations.Bugzilla.BugzillaAPI;
 
@@ -30,6 +31,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
     private Spinner mPrioritySpinner;
     private Spinner mSeveritySpinner;
     private Button mSendButton;
+    private TextView mStatusTextView;
 
     private boolean mVersionChoosed;
     private boolean mOSChoosed;
@@ -68,6 +70,7 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
         mPrioritySpinner = (Spinner) findViewById(R.id.bugzilla_send_priority_spinner);
         mSeveritySpinner = (Spinner) findViewById(R.id.bugzilla_send_severity_spinner);
         mSendButton = (Button) findViewById(R.id.bugzilla_send_send_button);
+        mStatusTextView = (TextView) findViewById(R.id.bugzilla_send_status_textview);
 
         mProductSpinner.setOnItemSelectedListener(this);
         mComponentSpinner.setOnItemSelectedListener(this);

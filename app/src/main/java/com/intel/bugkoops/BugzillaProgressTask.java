@@ -87,6 +87,9 @@ public class BugzillaProgressTask extends AsyncTask<String, String, Boolean> {
         mDialog.setMessage("Please wait ... ");
         mDialog.setCanceledOnTouchOutside(false);
         mDialog.show();
+
+        mResultTextView.setText("");
+        mResultTextView.setVisibility(View.GONE);
     }
 
     @Override
