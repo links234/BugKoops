@@ -84,7 +84,44 @@ public class XMLRPCBuilder {
         }
     }
 
+    public void startArray(String name) {
+        try {
+            mSerializer.startTag("", "member");
+            mSerializer.startTag("", "name");
+            mSerializer.text(name);
+            mSerializer.endTag("", "name");
+            mSerializer.startTag("", "value");
+            mSerializer.startTag("", "array");
+            mSerializer.startTag("", "data");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void endArray() {
+        try {
+            mSerializer.endTag("", "data");
+            mSerializer.endTag("", "array");
+            mSerializer.endTag("", "value");
+            mSerializer.endTag("", "member");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void putValue(int value) {
+        try {
+            mSerializer.startTag("", "value");
+            mSerializer.startTag("", "int");
+            mSerializer.text(Integer.toString(value));
+            mSerializer.endTag("", "int");
+            mSerializer.endTag("", "value");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public String toString() {
-        return mSerializer.toString();
+        return mWriter.toString();
     }
 }

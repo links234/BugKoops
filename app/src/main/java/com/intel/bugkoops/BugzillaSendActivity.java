@@ -138,8 +138,10 @@ public class BugzillaSendActivity extends Activity implements OnTaskCompleted, A
                     mFields = result.getBundle(BugzillaProgressTask.KEY_FIELDS);
 
                     ArrayList<String> productList = new ArrayList<>();
-                    for (String key : mProducts.keySet()) {
-                        productList.add(key);
+                    if (mProducts != null) {
+                        for (String key : mProducts.keySet()) {
+                            productList.add(key);
+                        }
                     }
                     productList.add(getString(R.string.bugzilla_send_activity_default_product));
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, productList);

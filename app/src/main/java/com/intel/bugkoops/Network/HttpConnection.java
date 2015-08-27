@@ -52,6 +52,15 @@ public class HttpConnection {
             contentType = "application/json; charset=utf-8";
         }
 
+        Log.d(LOG_TAG, "Request to: " + url);
+        Log.d(LOG_TAG, "Method: " + method);
+        Log.d(LOG_TAG, "Content Type: " + contentType);
+        if(content != null) {
+            Log.d(LOG_TAG, "Content: " + content);
+        } else {
+            Log.d(LOG_TAG, "No content");
+        }
+
         Uri builtUri = Uri.parse(url);
         if (builtUri.getScheme() == null || builtUri.getScheme().equals("https")) {
             return httpsRequest(url, method, content, contentType, userAgent);
@@ -124,6 +133,9 @@ public class HttpConnection {
             input.close();
 
             mRequestResult = response.toString();
+
+            Log.d(LOG_TAG, "Response code: " + mResponseCode);
+            Log.d(LOG_TAG, "Request result: " + mRequestResult);
 
             return true;
         } catch (MalformedURLException e) {

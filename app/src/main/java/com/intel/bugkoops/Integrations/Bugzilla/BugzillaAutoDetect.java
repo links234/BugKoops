@@ -16,7 +16,7 @@ public class BugzillaAutoDetect {
     public BugzillaAPI open() {
         BugzillaAPI connection = new BugzillaREST(mServer, mUserAgent);
         if (connection.version()) {
-            return connection;
+            //return connection;
         }
 
         connection = new BugzillaXMLRPC(mServer, mUserAgent);

@@ -15,6 +15,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -66,12 +68,9 @@ public class BugzillaXMLRPC implements BugzillaAPI {
             request.endStruct();
             request.end();
 
-            Log.d(LOG_TAG, "Post body = " + request.toString());
-
             if (!mHttpConnection.post(builtUri.toString(), request.toString(), CONTENT_TYPE)) {
                 return false;
             }
-            Log.d(LOG_TAG, "Result get = " + mHttpConnection.getRequestResult());
 
             if (!translate(mHttpConnection.getRequestResult())) {
                 return false;
@@ -104,13 +103,9 @@ public class BugzillaXMLRPC implements BugzillaAPI {
         request.endStruct();
         request.end();
 
-        Log.d(LOG_TAG, "Post body = " + request.toString());
-
         if (!mHttpConnection.post(builtUri.toString(), request.toString(), CONTENT_TYPE)) {
             return false;
         }
-
-        Log.d(LOG_TAG, "Result get = " + mHttpConnection.getRequestResult());
 
         if (!translate(mHttpConnection.getRequestResult())) {
             return false;
@@ -146,13 +141,9 @@ public class BugzillaXMLRPC implements BugzillaAPI {
         request.endStruct();
         request.end();
 
-        Log.d(LOG_TAG, "Post body = " + request.toString());
-
         if (!mHttpConnection.post(builtUri.toString(), request.toString(), CONTENT_TYPE)) {
             return false;
         }
-
-        Log.d(LOG_TAG, "Result get = " + mHttpConnection.getRequestResult());
 
         if (!translate(mHttpConnection.getRequestResult())) {
             return false;
@@ -198,13 +189,9 @@ public class BugzillaXMLRPC implements BugzillaAPI {
         request.endStruct();
         request.end();
 
-        Log.d(LOG_TAG, "Post body = " + request.toString());
-
         if (!mHttpConnection.post(builtUri.toString(), request.toString(), CONTENT_TYPE)) {
             return false;
         }
-
-        Log.d(LOG_TAG, "Result get = " + mHttpConnection.getRequestResult());
 
         if (!translate(mHttpConnection.getRequestResult())) {
             return false;
@@ -233,10 +220,131 @@ public class BugzillaXMLRPC implements BugzillaAPI {
     }
 
     public boolean getHierarchy() {
+        Uri builtUri = Uri.parse(mServer).buildUpon()
+                .appendPath("xmlrpc.cgi")
+                .build();
+
+        XMLRPCBuilder request = new XMLRPCBuilder();
+
+        request.start("Product.get_enterable_products");
+        request.startStruct();
+        request.member(KEY_TOKEN, mToken);
+        request.endStruct();
+        request.end();
+
+        if (!mHttpConnection.post(builtUri.toString(), request.toString(), CONTENT_TYPE)) {
+            return false;
+        }
+
+        if (!translate(mHttpConnection.getRequestResult())) {
+            return false;
+        }
+
+        Bundle ids = mResult.getBundle("ids");
+
+        if (ids == null) {
+            return false;
+        }
+
+        request.start("Product.get");
+        request.startStruct();
+        request.startArray("ids");
+        for (String key : ids.keySet()) {
+            if (!(ids.get(key) instanceof Integer)) {
+                return false;
+            }
+            request.putValue(ids.getInt(key));
+        }
+        request.endArray();
+        request.endStruct();
+        request.end();
+
+        if (!mHttpConnection.post(builtUri.toString(), request.toString(), CONTENT_TYPE)) {
+            return false;
+        }
+
+        if (!translate(mHttpConnection.getRequestResult())) {
+            return false;
+        }
+
+        Bundle products = mResult.getBundle("products");
+        if (products == null) {
+            setError("There is no \"products\" field!");
+            return false;
+        }
+
+
+        ArrayList<String> productKeys = new ArrayList<>();
+        for (String key : products.keySet()) {
+            productKeys.add(key);
+        }
+
+        for (String productKey : productKeys) {
+            Log.d(LOG_TAG, "productKey = " + productKey);
+
+            Bundle product = products.getBundle(productKey);
+            if (product == null) {
+                setError("Not a valid product structure.");
+                return false;
+            }
+            String productName = Utility.getString(product, "name", "");
+
+            Log.d(LOG_TAG, "Product name = " + productName);
+
+            Bundle components = product.getBundle("components");
+            if (components == null) {
+                setError("There is no \"components\" field!");
+                return false;
+            }
+
+            ArrayList<String> componentKeys = new ArrayList<>();
+            for (String key : components.keySet()) {
+                componentKeys.add(key);
+            }
+
+            for (String componentKey : componentKeys) {
+
+                Log.d(LOG_TAG, "componentKey = " + componentKey);
+                Bundle component = components.getBundle(componentKey);
+                String componentName = Utility.getString(component, "name", "");
+
+                Log.d(LOG_TAG, "Component Name = " + componentName);
+
+                components.remove(componentKey);
+                components.putBundle(componentName, component);
+            }
+            product.putBundle("components", components);
+
+            products.remove(productKey);
+            products.putBundle(productName, product);
+        }
+
+        mResult.putBundle("products", products);
+
         return true;
     }
 
     public boolean getFields() {
+        Uri builtUri = Uri.parse(mServer).buildUpon()
+                .appendPath("xmlrpc.cgi")
+                .build();
+
+        XMLRPCBuilder request = new XMLRPCBuilder();
+
+        request.start("Bug.fields");
+        request.startStruct();
+        request.member(KEY_TOKEN, mToken);
+        request.endStruct();
+        request.end();
+
+        if (!mHttpConnection.post(builtUri.toString(), request.toString(), CONTENT_TYPE)) {
+            return false;
+        }
+
+        if (!translate(mHttpConnection.getRequestResult())) {
+            return false;
+        }
+
         return true;
     }
 
@@ -250,65 +358,30 @@ public class BugzillaXMLRPC implements BugzillaAPI {
 
     private void setError(String message) {
         mResult = new Bundle();
-        Log.d(LOG_TAG, "message = " + message);
         mResult.putBoolean(KEY_RESULT_ERROR, true);
         mResult.putString(KEY_RESULT_MESSAGE, message);
     }
 
     private boolean translate(String data) {
-        mResult = new Bundle();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document dom = builder.parse(new InputSource(new StringReader(data)));
             Element root = dom.getDocumentElement();
-            NodeList items = root.getElementsByTagName("member");
-            for (int i = 0; i < items.getLength(); ++i) {
-                Node item = items.item(i);
-                NodeList properties = item.getChildNodes();
 
-                String name = null;
-                String type = null;
-                String value = null;
+            if (root.getFirstChild().getNodeName().equalsIgnoreCase("fault")) {
+                NodeList items = root.getFirstChild().getFirstChild().getFirstChild().getChildNodes();
 
-                for (int j = 0; j < properties.getLength(); ++j) {
-                    Node property = properties.item(j);
-                    String propName = property.getNodeName().toLowerCase();
+                mResult = translate(items);
+                return false;
+            } else if (root.getFirstChild().getFirstChild().getFirstChild().getFirstChild() == null) {
+                mResult = new Bundle();
+                return true;
+            } else {
+                NodeList items = root.getFirstChild().getFirstChild().getFirstChild()
+                        .getFirstChild().getChildNodes();
 
-                    if (propName.equalsIgnoreCase("name")) {
-                        name = property.getFirstChild().getNodeValue().toLowerCase();
-                    } else if (propName.equalsIgnoreCase("value")) {
-                        type = property.getFirstChild().getNodeName();
-
-                        if (type == null) {
-                            value = property.getFirstChild().getNodeValue();
-                        } else {
-                            value = property.getFirstChild().getFirstChild().getNodeValue();
-                        }
-                    }
-                }
-
-                if (name == null || value == null) {
-                    setError("Invalid XMLRPC response: <name,value> pair is incomplete");
-                    return false;
-                }
-
-                if (name.equalsIgnoreCase("faultstring")) {
-                    name = KEY_RESULT_MESSAGE;
-                    mResult.putBoolean(KEY_RESULT_ERROR, true);
-                } else if (name.equalsIgnoreCase("faultcode")) {
-                    name = "code";
-                    mResult.putBoolean(KEY_RESULT_ERROR, true);
-                }
-
-                if (type == null || type.equalsIgnoreCase("string")) {
-                    mResult.putString(name, value);
-                } else if (type.equalsIgnoreCase("int") ||
-                        type.equalsIgnoreCase("i4")) {
-                    mResult.putInt(name, Integer.valueOf(value));
-                } else if (type.equalsIgnoreCase("boolean")) {
-                    mResult.putBoolean(name, Boolean.valueOf(value));
-                }
+                mResult = translate(items);
             }
 
             if (mResult.getBoolean(KEY_RESULT_ERROR)) {
@@ -319,5 +392,110 @@ public class BugzillaXMLRPC implements BugzillaAPI {
             return false;
         }
         return true;
+    }
+
+    private void putToBundle(Bundle bundle, String name, String type, String value) {
+        if (type == null || type.equalsIgnoreCase("string")) {
+            bundle.putString(name, value);
+        } else if (type.equalsIgnoreCase("int") ||
+                type.equalsIgnoreCase("i4")) {
+            bundle.putInt(name, Integer.valueOf(value));
+        } else if (type.equalsIgnoreCase("boolean")) {
+            bundle.putBoolean(name, Boolean.valueOf(value));
+        }
+    }
+
+    private Bundle translate(NodeList items) throws Exception {
+        Bundle bundle = new Bundle();
+        for (int i = 0; i < items.getLength(); ++i) {
+            Node item = items.item(i);
+            NodeList properties = item.getChildNodes();
+
+            String name = null;
+            String type = null;
+            String value = "";
+
+            Bundle arrayBundle = null;
+
+            boolean ignore = false;
+
+            for (int j = 0; j < properties.getLength(); ++j) {
+                Node property = properties.item(j);
+                String propName = property.getNodeName().toLowerCase();
+
+                if (propName.equalsIgnoreCase("name")) {
+                    name = property.getFirstChild().getNodeValue().toLowerCase();
+                } else if (propName.equalsIgnoreCase("value")) {
+                    type = property.getFirstChild().getNodeName();
+
+                    if (type == null) {
+                        value = property.getFirstChild().getNodeValue();
+                    } else if (type.equalsIgnoreCase("array")) {
+                        NodeList arrayItems = property.getFirstChild().getFirstChild().getChildNodes();
+
+                        arrayBundle = translateArray(arrayItems);
+                    } else if (type.equalsIgnoreCase("struct")) {
+                        ignore = true;
+                        bundle.putAll(translate(property.getFirstChild().getChildNodes()));
+                    } else {
+                        if (property.getFirstChild().getFirstChild() == null) {
+                            value = "";
+                        } else {
+                            value = property.getFirstChild().getFirstChild().getNodeValue();
+                        }
+                    }
+                }
+            }
+
+            if (ignore) {
+                continue;
+            }
+
+            if (arrayBundle != null) {
+                bundle.putBundle(name, arrayBundle);
+            } else {
+                if (name == null || type == null) {
+                    setError("<name,value> pair is incomplete");
+                    throw new Exception();
+                }
+
+                if (value == null) {
+                    value = "";
+                }
+
+                if (name.equalsIgnoreCase("faultstring")) {
+                    bundle.putString(KEY_RESULT_MESSAGE, value);
+                    bundle.putBoolean(KEY_RESULT_ERROR, true);
+                } else if (name.equalsIgnoreCase("faultcode")) {
+                    bundle.putInt("code", Integer.valueOf(value));
+                    bundle.putBoolean(KEY_RESULT_ERROR, true);
+                } else {
+                    putToBundle(bundle, name, type, value);
+                }
+            }
+        }
+        return bundle;
+    }
+
+    private Bundle translateArray(NodeList arrayItems) throws Exception {
+        Bundle arrayBundle = new Bundle();
+
+        for (int arrayIndex = 0; arrayIndex < arrayItems.getLength(); ++arrayIndex) {
+            Node arrayElement = arrayItems.item(arrayIndex);
+            arrayElement.getNodeName();
+
+            String arrayElementType = arrayElement.getFirstChild().getNodeName();
+            String arrayElementValue = arrayElement.getFirstChild().getFirstChild().getNodeValue();
+
+            if (arrayElementType.equalsIgnoreCase("array")) {
+                arrayBundle.putBundle(Integer.toString(arrayIndex), translateArray(arrayElement.getFirstChild().getFirstChild().getChildNodes()));
+            } else if (arrayElementType.equalsIgnoreCase("struct")) {
+                arrayBundle.putBundle(Integer.toString(arrayIndex), translate(arrayElement.getFirstChild().getChildNodes()));
+            } else {
+                putToBundle(arrayBundle, Integer.toString(arrayIndex), arrayElementType, arrayElementValue);
+            }
+        }
+
+        return arrayBundle;
     }
 }
