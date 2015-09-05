@@ -229,4 +229,12 @@ public class Utility {
         }
         return bundle.getInt(key, defaultValue);
     }
+
+    public static byte xor(byte[] data, int start, int length) {
+        int ans = 0;
+        for(int index = start; index<start+length; ++index) {
+            ans = ans ^ (int)(data[index]);
+        }
+        return (byte)(ans&0xFF);
+    }
 }
