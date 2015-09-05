@@ -32,17 +32,29 @@ public class PacketManager {
             return;
         }
 
-        int messageId = data[0];
-        int packetCount = data[1];
-        int packetId = data[2];
-        byte encode = data[3];
+        byte version = data[0];
+        byte messageId = data[1];
+        byte packetCount = data[2];
+        byte packetId = data[3];
+        byte encode = data[4];
+        byte checkSum = data[5];
 
-        if (packetId > packetCount) {
-            Log.e(LOG_TAG, "Invalid packetId");
+        if(Utility.xor(data, 0, 6) != 0) {
+            Log.e(LOG_TAG, "BK1: Invalid header (checksum failed)");
             return;
         }
 
-        data = Arrays.copyOfRange(data, 4, data.length);
+        if(version > 0) {
+            Log.e(LOG_TAG, "BK1: Unsupported version!");
+            return;
+        }
+
+        if (packetId > packetCount) {
+            Log.e(LOG_TAG, "BK1: Invalid packetId");
+            return;
+        }
+
+        data = Arrays.copyOfRange(data, 6, data.length);
 
         DecodeResult result = new DecodeResult();
         switch (encode) {
@@ -53,7 +65,7 @@ public class PacketManager {
                 result = BK1DecodeDeflate(data);
                 break;
             default:
-                Log.e(LOG_TAG, "Invalid BK encode byte!");
+                Log.e(LOG_TAG, "BK1: Invalid encode byte!");
                 result.message = "";
                 result.status = DecodeResult.STATUS_FAILED;
                 break;
@@ -92,17 +104,17 @@ public class PacketManager {
         byte[] decompressedBytes = new byte[decompressedByteCount];
         try {
             if (inflater.inflate(decompressedBytes) != decompressedByteCount) {
-                Log.e(LOG_TAG, "Header data size does not match decompressed data size!");
+                Log.e(LOG_TAG, "BK1 Deflate: Header data size does not match decompressed data size!");
                 failed = true;
             }
         } catch (DataFormatException e) {
-            Log.e(LOG_TAG, "Invalid data format! ");
+            Log.e(LOG_TAG, "BK1 Deflate: Invalid data format! ");
             failed = true;
         }
         inflater.end();
 
         if (failed) {
-            Log.e(LOG_TAG, "Failed to decode deflate data!");
+            Log.e(LOG_TAG, "BK1 Deflate: Failed to decode deflate data!");
             result.status = DecodeResult.STATUS_FAILED;
         } else {
             result.message = Utility.bytesToString(decompressedBytes);
