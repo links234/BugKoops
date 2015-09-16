@@ -71,7 +71,11 @@ public class PacketManager {
                 break;
         }
 
-        MessageManager.push(messageId, packetCount, packetId, result.message);
+        if(result.status == DecodeResult.STATUS_FAILED) {
+            Log.e(LOG_TAG, "BK1: Failed to decode packet!");
+        } else {
+            MessageManager.push(messageId, packetCount, packetId, result.message);
+        }
     }
 
     private static DecodeResult BK1DecodeNone(byte[] data) {
