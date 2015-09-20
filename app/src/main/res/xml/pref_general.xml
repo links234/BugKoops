@@ -9,6 +9,7 @@
     <ListPreference
         android:title="@string/pref_cameraid_label"
         android:key="@string/pref_cameraid_key"
+        android:summary="%s"
         android:defaultValue="@string/pref_cameraid_default"
         android:entryValues="@array/pref_cameraid_values"
         android:entries="@array/pref_cameraid_options" />
@@ -16,6 +17,7 @@
     <ListPreference
         android:title="@string/pref_flashstate_label"
         android:key="@string/pref_flashstate_key"
+        android:summary="%s"
         android:defaultValue="@string/pref_flashstate_default"
         android:entryValues="@array/pref_flashstate_values"
         android:entries="@array/pref_flashstate_options" />
@@ -23,6 +25,7 @@
     <ListPreference
         android:title="@string/pref_focusingmode_label"
         android:key="@string/pref_focusingmode_key"
+        android:summary="%s"
         android:defaultValue="@string/pref_focusingmode_default"
         android:entryValues="@array/pref_focusingmode_values"
         android:entries="@array/pref_focusingmode_options" />
