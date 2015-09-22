@@ -116,10 +116,11 @@ public class ScannerActivity extends Activity implements CompoundBarcodeView.Tor
 
                     byte[] packetStatus = MessageManager.getLastPacketStatus();
 
-                    int width = preview.getWidth() / (packetStatus.length + 1);
-                    int height = width;
+                    int border = preview.getWidth() / 20;
+                    int width = (preview.getWidth() - border * 2) / packetStatus.length;
+                    int height = preview.getHeight() / 10;
 
-                    int x = width / 2;
+                    int x = border;
                     int y = 0;
 
                     for (int i = 0; i < packetStatus.length; ++i) {
