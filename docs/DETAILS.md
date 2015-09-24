@@ -83,4 +83,4 @@ Just use Android Studio code prettify, more important is the problem abstraction
 [2]: https://github.com/zxing/zxing/
 [3]: https://bugzilla.kernel.org/
 [4]: FORMAT.md
-[5]: diagram.png
+[5]: appoverview.png

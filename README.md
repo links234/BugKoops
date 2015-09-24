@@ -19,6 +19,6 @@ design overview and more technical details.
 [2]: https://github.com/zxing/zxing/
 [3]: https://github.com/links234/qr-linux-kernel
 [4]: https://github.com/links234/py-qr-transfer
-[5]: DETAILS.md
+[5]: docs/DETAILS.md
 [6]: http://www.intel.com
 [7]: http://www.apache.org/licenses/LICENSE-2.0
