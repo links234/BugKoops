@@ -1,7 +1,7 @@
 # Bug Koops 1
 **Bug Koops 1 (BK1)** is a simple format used by Bug Koops to compose back a data blob from multiple packets.
-Please note that besides the guarantee that the data is not corrupt, there are no ties to the way you
-get the packets (so no error correction). You can use any other barcode or any other way to transfer
+Please note that besides the guarantee that the data is not corrupt (so no error correction), there
+are no ties to the way you get the packets. You can use any other barcode or any other way to transfer
 the packets as long as it supports binary data.
 
 ## The format
@@ -34,13 +34,15 @@ as possible.
 Because this format is designed specifically for 1-way transfer it makes sense to put some info about
 this here.
 
-Since the receiver can't request for anything (actually say anything) the only option is to continuously
-send all of them for more than enough time so that the other end is able to capture them all.
+Since the receiver can't request for anything (actually say anything, not even ACK) the only option
+is to continuously send all of them for more than enough time so that the other end is able to capture
+them all.
 
 ### Bug Koops case (QRs)
-Since we can only draw (read send) one QR at a time we don't have too much of a choice, we have to
+Since we can only draw (read as send) one QR at a time we don't have too much of a choice, we have to
 iterate over all packets indefinitely. The only things we can tune are how much time we can show one
-QR and in what order. The strategies that I played with (except for random walking which is just lame):
+QR (increasing the probability of receive) and in what order. The strategies that I played with (except
+for random walking which is just lame):
 * **Naive**: circular iterating over packets with one pointer and with fixed time slice for every packet
 * **Tortoise and Rabbit**: circular iterating over packets with 2 pointers in parallel (one twice as fast as the other)
 
